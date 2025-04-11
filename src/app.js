@@ -6,7 +6,8 @@ const app = express();
 
 app.use('/', homeRouter);
 // view engine setup
-// app.set('views', path.join(__dirname, '../../src', 'views'));
 app.set('views', path.join('./src/views'));
 app.set('view engine', 'ejs');
+app.use(express.static('./src/public'));
+
 export default app;
