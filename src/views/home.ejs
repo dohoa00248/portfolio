@@ -16,11 +16,27 @@
       rel="stylesheet"
     />
 
+    <!-- Reset CSS -->
     <style>
+      /* Reset CSS */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body,
+      html {
+        height: 100%;
+        width: 100%;
+      }
+
       body {
         font-family: 'Roboto', sans-serif;
         scroll-behavior: smooth;
       }
+
+      /* Other Custom Styles */
       .navbar {
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       }
@@ -66,156 +82,171 @@
     </style>
   </head>
   <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
-      <div class="container">
-        <a class="navbar-brand fw-bold" href="#">Do The Hoa</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#nav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="nav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="#about">About</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#skills">Skills</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#projects">Projects</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#contact">Contact</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Hero -->
-    <section class="hero" id="about">
-      <div class="container">
-        <h1>Do The Hoa</h1>
-        <p class="lead">Software Engineer Intern | Full-stack Web Developer</p>
-        <p>
-          Email:
-          <a href="mailto:dohoa00248@gmail.com" class="text-white"
-            >dohoa00248@gmail.com</a
+    <!-- Header -->
+    <header>
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+        <div class="container">
+          <a class="navbar-brand fw-bold" href="#">Do The Hoa</a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#nav"
           >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="#about">About</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#skills">Skills</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#projects">Projects</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#services">Services</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#contact">Contact</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <!-- Hero Section -->
+      <section class="hero" id="about">
+        <div class="container">
+          <h1>Do The Hoa</h1>
+          <p class="lead">
+            Software Engineer Intern | Full-stack Web Developer
+          </p>
+          <p>
+            Email:
+            <a href="mailto:dohoa00248@gmail.com" class="text-white"
+              >dohoa00248@gmail.com</a
+            >
+          </p>
+          <p>
+            GitHub:
+            <a
+              href="https://github.com/dohoa00248"
+              class="text-white"
+              target="_blank"
+              >github.com/dohoa00248</a
+            >
+          </p>
+        </div>
+      </section>
+
+      <!-- Skills Section -->
+      <section class="container" id="skills">
+        <h2 class="section-title">🛠 Technical Skills</h2>
+        <div class="row">
+          <div class="col-md-6">
+            <ul class="skill-list">
+              <li>HTML, CSS, JavaScript, jQuery, Bootstrap</li>
+              <li>Node.js, Express.js, EJS, JWT</li>
+              <li>RESTful APIs, MVC Architecture</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="skill-list">
+              <li>MySQL, SQL Server, MongoDB, MongoDB Atlas</li>
+              <li>Sequelize, Mongoose</li>
+              <li>Git, Postman, WebSocket, Render Deployment</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Projects Section -->
+      <section class="container" id="projects">
+        <h2 class="section-title">📁 Projects</h2>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="project-card h-100">
+              <h5>IoT Health Monitoring</h5>
+              <p><strong>Tech:</strong> Node.js, MongoDB, WebSocket</p>
+              <p>
+                Real-time health tracking system using ESP32. Dashboard for
+                caregivers.
+              </p>
+              <p>
+                <a
+                  href="https://iot-health-monitoring-for-the-elderly.onrender.com"
+                  target="_blank"
+                  >🌐 Live</a
+                >
+                |
+                <a
+                  href="https://github.com/dohoa00248/IoT-Health-Monitoring-for-the-Elderly"
+                  target="_blank"
+                  >GitHub</a
+                >
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="project-card h-100">
+              <h5>User Management App</h5>
+              <p><strong>Tech:</strong> Node.js, Sequelize, MongoDB</p>
+              <p>
+                CRUD user system with role-based access control and
+                authentication.
+              </p>
+              <p>
+                <a
+                  href="https://user-management-application-l4fh.onrender.com"
+                  target="_blank"
+                  >🌐 Live</a
+                >
+                |
+                <a
+                  href="https://github.com/dohoa00248/User-management-application"
+                  target="_blank"
+                  >GitHub</a
+                >
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="project-card h-100">
+              <h5>Weather App</h5>
+              <p><strong>Tech:</strong> Python, Flask, API</p>
+              <p>
+                Simple web app using real-time weather API to show forecasts.
+              </p>
+              <p>
+                <a
+                  href="https://weather-flask-c4xp.onrender.com"
+                  target="_blank"
+                  >🌐 Live</a
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact Section -->
+      <section class="container" id="contact">
+        <h2 class="section-title">📫 Contact</h2>
+        <p class="text-center">
+          📧 Email me at
+          <a href="mailto:dohoa00248@gmail.com">dohoa00248@gmail.com</a><br />
+          🔗 Or visit my
+          <a href="https://github.com/dohoa00248" target="_blank">GitHub</a>
         </p>
-        <p>
-          GitHub:
-          <a
-            href="https://github.com/dohoa00248"
-            class="text-white"
-            target="_blank"
-            >github.com/dohoa00248</a
-          >
-        </p>
-      </div>
-    </section>
-
-    <!-- Skills -->
-    <section class="container" id="skills">
-      <h2 class="section-title">🛠 Technical Skills</h2>
-      <div class="row">
-        <div class="col-md-6">
-          <ul class="skill-list">
-            <li>HTML, CSS, JavaScript, jQuery, Bootstrap</li>
-            <li>Node.js, Express.js, EJS, JWT</li>
-            <li>RESTful APIs, MVC Architecture</li>
-          </ul>
-        </div>
-        <div class="col-md-6">
-          <ul class="skill-list">
-            <li>MySQL, SQL Server, MongoDB, MongoDB Atlas</li>
-            <li>Sequelize, Mongoose</li>
-            <li>Git, Postman, WebSocket, Render Deployment</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- Projects -->
-    <section class="container" id="projects">
-      <h2 class="section-title">📁 Projects</h2>
-      <div class="row g-4">
-        <div class="col-md-4">
-          <div class="project-card h-100">
-            <h5>IoT Health Monitoring</h5>
-            <p><strong>Tech:</strong> Node.js, MongoDB, WebSocket</p>
-            <p>
-              Real-time health tracking system using ESP32. Dashboard for
-              caregivers.
-            </p>
-            <p>
-              <a
-                href="https://iot-health-monitoring-for-the-elderly.onrender.com"
-                target="_blank"
-                >🌐 Live</a
-              >
-              |
-              <a
-                href="https://github.com/dohoa00248/IoT-Health-Monitoring-for-the-Elderly"
-                target="_blank"
-                >GitHub</a
-              >
-            </p>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="project-card h-100">
-            <h5>User Management App</h5>
-            <p><strong>Tech:</strong> Node.js, Sequelize, MongoDB</p>
-            <p>
-              CRUD user system with role-based access control and
-              authentication.
-            </p>
-            <p>
-              <a
-                href="https://user-management-application-l4fh.onrender.com"
-                target="_blank"
-                >🌐 Live</a
-              >
-              |
-              <a
-                href="https://github.com/dohoa00248/User-management-application"
-                target="_blank"
-                >GitHub</a
-              >
-            </p>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="project-card h-100">
-            <h5>Weather App</h5>
-            <p><strong>Tech:</strong> Python, Flask, API</p>
-            <p>Simple web app using real-time weather API to show forecasts.</p>
-            <p>
-              <a href="https://weather-flask-c4xp.onrender.com" target="_blank"
-                >🌐 Live</a
-              >
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Contact -->
-    <section class="container" id="contact">
-      <h2 class="section-title">📫 Contact</h2>
-      <p class="text-center">
-        📧 Email me at
-        <a href="mailto:dohoa00248@gmail.com">dohoa00248@gmail.com</a><br />
-        🔗 Or visit my
-        <a href="https://github.com/dohoa00248" target="_blank">GitHub</a>
-      </p>
-    </section>
+      </section>
+    </main>
 
     <!-- Footer -->
     <footer>
