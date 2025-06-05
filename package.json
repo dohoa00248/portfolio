@@ -7,8 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node build",
     "start": "node ./src/server.js",
-    "dev": "nodemon ./src/server.js",
-    "test1": "jest --coverage"
+    "dev": "nodemon ./src/server.js"
   },
   "author": "Do The Hoa",
   "license": "ISC",
@@ -16,7 +15,10 @@
   "dependencies": {
     "dotenv": "^16.5.0",
     "ejs": "^3.1.10",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "mongodb": "^6.16.0",
+    "mongoose": "^8.15.0",
+    "mysql2": "^3.14.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
