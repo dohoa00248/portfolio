@@ -1,10 +1,10 @@
 import express from 'express';
-import HomeController from '../controllers/homeController.js';
-
+// import HomeController from '../controllers/homeController.js';
+import homeController from '../controllers/homeController.js';
 const router = express.Router();
 
-router.get('/', HomeController.getHomePage);
-router.get('/test', HomeController.getTestPage);
-router.get('/dictionary', HomeController.getDictionaryPage);
+router.get('/', homeController.getHomePage);
+router.get('/test', homeController.getTestPage);
+router.get('/dictionary', homeController.getDictionaryPage);
 
 export default router;
