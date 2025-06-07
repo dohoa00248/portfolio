@@ -9,6 +9,14 @@ const projectSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  live: {
+    type: String,
+    required: true,
+  },
+  github: {
+    type: String,
+    required: true,
+  },
 });
 
 const Project = mongoose.model('Project', projectSchema);

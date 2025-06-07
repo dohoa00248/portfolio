@@ -1,4 +1,4 @@
-import express, { response } from 'express';
+import express from 'express';
 import Project from '../models/Project.js';
 // import HomeController from '../controllers/HomeController.js';
 
@@ -40,30 +40,25 @@ router.get('/', (req, res) => {
 
 router.get('/projects', async (req, res) => {
   try {
-    const projects = await Project.find({}); // hoặc lấy từ DB
-    res.render('test', {
-      title: 'Danh sách người dùng',
-      projects,
-    });
+    const dataList = await Project.find({});
+    console.log('Data list:', dataList);
+    res.status(200).render('test.ejs', { dataList }); // render 'projects.ejs'
   } catch (error) {
-    console.error('Lỗi khi tải danh sách project', error);
-    res.status(500).render('error', {
-      title: 'Lỗi server',
-      message: 'Không thể hiển thị danh sách người dùng.',
-    });
+    console.error('Error:', error);
+    res.status(500).render('error', { message: 'Internal server error' });
   }
 });
 
-router.get('/projects', async (req, res) => {
-  try {
-    const dataList = await Project.find({});
-    console.log('Data list:', dataList);
-    res.status(200).json({ dataList: dataList });
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(400).json({ error: 'Internal server error' });
-  }
-});
+// router.get('/projects', async (req, res) => {
+//   try {
+//     const dataList = await Project.find({});
+//     console.log('Data list:', dataList);
+//     res.status(200).json({ dataList: dataList });
+//   } catch (error) {
+//     console.error('Error:', error);
+//     res.status(400).json({ error: 'Internal server error' });
+//   }
+// });
 
 router.get('/projects/:id', async (req, res) => {
   try {
@@ -79,7 +74,7 @@ router.get('/projects/:id', async (req, res) => {
   }
 });
 
-router.post('/project', async (req, res) => {
+router.post('/projects', async (req, res) => {
   try {
     const data = req.body;
     console.log('Data:', data);
@@ -94,7 +89,7 @@ router.post('/project', async (req, res) => {
   }
 });
 
-router.put('/project/:id', async (req, res) => {
+router.put('/projects/:id', async (req, res) => {
   try {
     const { id } = req.params;
     console.log('Id:', id);
@@ -106,6 +101,24 @@ router.put('/project/:id', async (req, res) => {
     console.log('Data save:', data);
 
     res.status(201).json({ data: newProject });
+  } catch (error) {
+    res.status(400).json({ error: 'message' });
+  }
+});
+
+router.delete('/projects/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log('Id:', id);
+    // const data = req.body;
+    // console.log('Data:', data);
+    const results = await Project.deleteOne({ _id: id });
+    console.log('Results: ', results);
+    // const newProject = new Project(data);
+    // await newProject.save();
+    // console.log('Data save:', data);
+
+    res.status(201).json({ data: results });
   } catch (error) {
     res.status(400).json({ error: 'message' });
   }
