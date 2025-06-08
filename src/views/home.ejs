@@ -141,94 +141,19 @@
       <section class="container" id="projects">
         <h2 class="section-title">📁 Projects</h2>
         <div class="row g-4">
+          <% dataList.forEach(project => { %>
           <div class="col-md-4">
             <div class="project-card h-100">
-              <h5>IoT Health Monitoring</h5>
-              <p><strong>Tech:</strong> Node.js, MongoDB, WebSocket</p>
+              <h5><%= project.title %></h5>
+              <p><strong>Tech:</strong> <%= project.tech %></p>
+              <p><%= project.description %></p>
               <p>
-                Real-time health tracking system using ESP32. Dashboard for
-                caregivers.
-              </p>
-              <p>
-                <a
-                  href="https://iot-health-monitoring-for-the-elderly.onrender.com"
-                  target="_blank"
-                  >🌐 Live</a
-                >
-                |
-                <a
-                  href="https://github.com/dohoa00248/IoT-Health-Monitoring-for-the-Elderly"
-                  target="_blank"
-                  >GitHub</a
-                >
+                <a href="<%= project.live %>" target="_blank">🌐 Live</a> |
+                <a href="<%= project.github %>" target="_blank">GitHub</a>
               </p>
             </div>
           </div>
-          <div class="col-md-4">
-            <div class="project-card h-100">
-              <h5>User Management App</h5>
-              <p><strong>Tech:</strong> Node.js, Sequelize, MongoDB</p>
-              <p>
-                CRUD user system with role-based access control and
-                authentication.
-              </p>
-              <p>
-                <a
-                  href="https://user-management-application-l4fh.onrender.com"
-                  target="_blank"
-                  >🌐 Live</a
-                >
-                |
-                <a
-                  href="https://github.com/dohoa00248/User-management-application"
-                  target="_blank"
-                  >GitHub</a
-                >
-              </p>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="project-card h-100">
-              <h5>Weather App</h5>
-              <p><strong>Tech:</strong> Python, Flask, API</p>
-              <p>
-                Simple web app using real-time weather API to show forecasts.
-              </p>
-              <p>
-                <a
-                  href="https://weather-flask-c4xp.onrender.com"
-                  target="_blank"
-                  >🌐 Live</a
-                >
-                |
-                <a
-                  href="https://github.com/dohoa00248/weather-flask"
-                  target="_blank"
-                  >GitHub</a
-                >
-              </p>
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <div class="project-card h-100">
-              <h5>Dictionary Management</h5>
-              <p><strong>Tech:</strong> Java, JDBC, Apache Tommcat, MySQL</p>
-              <p>
-                The dictionary application helps users add, edit, delete and
-                look up vocabulary easily.
-              </p>
-              <p>
-                <a href="#" target="_blank">🌐 Live</a>
-                |
-                <a
-                  href="https://github.com/dohoa00248/dictionary-jdbc"
-                  target="_blank"
-                  >GitHub</a
-                >
-              </p>
-            </div>
-          </div>
+          <% }) %>
         </div>
       </section>
 

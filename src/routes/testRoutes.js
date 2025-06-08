@@ -1,5 +1,6 @@
 import express from 'express';
 import Project from '../models/Project.js';
+import mongoose from 'mongoose';
 // import HomeController from '../controllers/HomeController.js';
 
 const router = express.Router();
@@ -92,17 +93,25 @@ router.post('/projects', async (req, res) => {
 router.put('/projects/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    console.log('Id:', id);
     const data = req.body;
-    console.log('Data:', data);
 
-    const newProject = new Project(data);
-    await newProject.save();
-    console.log('Data save:', data);
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid project ID' });
+    }
 
-    res.status(201).json({ data: newProject });
+    const updatedProject = await Project.findByIdAndUpdate(id, data, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedProject) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    res.status(200).json({ data: updatedProject });
   } catch (error) {
-    res.status(400).json({ error: 'message' });
+    console.error('Error updating project:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -110,15 +119,9 @@ router.delete('/projects/:id', async (req, res) => {
   try {
     const { id } = req.params;
     console.log('Id:', id);
-    // const data = req.body;
-    // console.log('Data:', data);
     const results = await Project.deleteOne({ _id: id });
     console.log('Results: ', results);
-    // const newProject = new Project(data);
-    // await newProject.save();
-    // console.log('Data save:', data);
-
-    res.status(201).json({ data: results });
+    res.status(200).json({ data: results });
   } catch (error) {
     res.status(400).json({ error: 'message' });
   }

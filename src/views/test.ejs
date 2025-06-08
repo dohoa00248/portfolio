@@ -7,10 +7,19 @@
   </head>
   <body>
     hello test
-    <ul>
+    <br />
+    <!-- <ul>
       <% dataList.forEach(project => { %>
       <li><%= project.title %> - <%= project.description %></li>
       <% }); %>
+    </ul> -->
+    <ul>
+      <% dataList.forEach(project => { %>
+      <li>
+        <%= project.title %> - <%= project.description %> - <%= project.live %>
+        - <%= project.github %>
+      </li>
+      <%})%>
     </ul>
   </body>
 </html>
