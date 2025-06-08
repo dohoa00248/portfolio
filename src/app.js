@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import testRouter from './routes/testRoutes.js';
+import testRouter from './test/routes/homeRoutes.test.js';
 import homeRouter from './routes/homeRoutes.js';
 import userRouter from './routes/userRoutes.js';
 
