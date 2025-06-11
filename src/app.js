@@ -4,10 +4,10 @@ import { fileURLToPath } from 'url';
 import session from 'express-session';
 
 //TEST
-// import adminRouter from './test/routes/adminRoutes.test.js';
-// import testRouter from './test/routes/homeRoutes.test.js';
-// import testUserRouter from './test/routes/userRoutes.test.js';
 // import authRouter from './test/routes/authRoutes.test.js';
+// import adminRouter from './test/routes/adminRoutes.test.js';
+import testRouter from './test/routes/homeRoutes.test.js';
+import testUserRouter from './test/routes/userRoutes.test.js';
 
 //
 import authRouter from './routes/authRoutes.js';

@@ -3,11 +3,16 @@ import mongoose from 'mongoose';
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
-    require: true,
+    required: true,
   },
   password: {
     type: String,
-    require: true,
+    required: true,
+  },
+  role: {
+    type: Number,
+    enum: [1, 2, 3],
+    required: false,
   },
 });
 
