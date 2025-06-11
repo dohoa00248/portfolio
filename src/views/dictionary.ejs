@@ -7,5 +7,81 @@
   </head>
   <body>
     <p>hello dictionary</p>
+    <input type="file" id="excelFile" />
+    <!-- Thêm nút gửi -->
+    <button id="uploadBtn">Upload to MongoDB</button>
+    <table id="excelTable" border="1"></table>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+      document
+        .getElementById('excelFile')
+        .addEventListener('change', function (e) {
+          const file = e.target.files[0];
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+
+            const sheetName = workbook.SheetNames[0]; // chọn sheet đầu tiên
+            const worksheet = workbook.Sheets[sheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+            renderTable(jsonData);
+          };
+
+          reader.readAsArrayBuffer(file);
+        });
+
+      function renderTable(data) {
+        const table = document.getElementById('excelTable');
+        table.innerHTML = '';
+        data.forEach((row) => {
+          const tr = document.createElement('tr');
+          row.forEach((cell) => {
+            const td = document.createElement('td');
+            td.textContent = cell;
+            tr.appendChild(td);
+          });
+          table.appendChild(tr);
+        });
+      }
+    </script>
+    <script>
+      let globalExcelData = [];
+
+      function renderTable(data) {
+        globalExcelData = data; // lưu lại để gửi sau
+        const table = document.getElementById('excelTable');
+        table.innerHTML = '';
+        data.forEach((row) => {
+          const tr = document.createElement('tr');
+          row.forEach((cell) => {
+            const td = document.createElement('td');
+            td.textContent = cell;
+            tr.appendChild(td);
+          });
+          table.appendChild(tr);
+        });
+      }
+
+      document.getElementById('uploadBtn').addEventListener('click', () => {
+        fetch('/api/v1/test-user/upload-excel', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ data: globalExcelData }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            alert('Uploaded to MongoDB!');
+          })
+          .catch((err) => {
+            console.error(err);
+            alert('Upload failed.');
+          });
+      });
+    </script>
   </body>
 </html>
