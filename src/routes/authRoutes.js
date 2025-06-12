@@ -1,5 +1,4 @@
 import express from 'express';
-import session from 'express-session';
 import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
 const router = express.Router();
@@ -18,7 +17,6 @@ router.post('/signin', async (req, res) => {
       });
     }
 
-    // Find user by username
     const user = await User.findOne({ username });
 
     if (!user) {
@@ -27,7 +25,6 @@ router.post('/signin', async (req, res) => {
       });
     }
 
-    // Compare entered password with the hashed password in the database
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
@@ -36,8 +33,9 @@ router.post('/signin', async (req, res) => {
       });
     }
 
-    // Store user in session
+    console.log(req.session);
     req.session.user = user;
+    console.log(req.session);
 
     return res.redirect('/api/v1/admin/dictionary');
   } catch (err) {
