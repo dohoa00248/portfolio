@@ -8,11 +8,11 @@ import { fileURLToPath } from 'url';
 // import adminRouter from './test/routes/adminRoutes.test.js';
 // import testRouter from './test/routes/homeRoutes.test.js';
 // import testUserRouter from './test/routes/userRoutes.test.js';
-// import applyRoutes from './test/routes/index.js';
+import applyRoutes from './test/routes/index.js';
 
 //
 import applyMiddleware from './middlewares/index.js';
-import applyRoutes from './routes/index.js';
+// import applyRoutes from './routes/index.js';
 import setupViewEngine from './config/viewEngine.js';
 import setupStaticFiles from './config/staticFiles.js';
 

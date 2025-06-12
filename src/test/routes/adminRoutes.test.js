@@ -5,7 +5,7 @@ import User from '../models/User.test.js';
 const router = express.Router();
 
 router.get('/dashboard', auth.authSignin, (req, res) => {
-  res.render('dashboard.ejs');
+  res.render('dashboard.ejs', { user: req.session.user });
 });
 
 router.get('/dictionary', auth.authSignin, (req, res) => {
@@ -40,17 +40,20 @@ router.post('/users', async (req, res) => {
     });
   }
 });
-router.post('/users/update', async (req, res) => {
+
+router.post('/users/:id', async (req, res) => {
   try {
+    const userId = req.params.id;
+    console.log(req.params);
     const { username, newPassword, newRole } = req.body;
 
-    if (!username) {
-      return res.status(400).render('update-user.ejs', {
-        error: 'Username is required to update user.',
-      });
-    }
+    console.log(req.body);
 
     const updateData = {};
+
+    if (username) {
+      updateData.username = username;
+    }
 
     if (newPassword) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -61,12 +64,12 @@ router.post('/users/update', async (req, res) => {
       updateData.role = parseInt(newRole);
     }
 
-    const updatedUser = await User.findOneAndUpdate({ username }, updateData, {
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
       new: true,
     });
 
     if (!updatedUser) {
-      return res.status(404).render('update-user.ejs', {
+      return res.status(404).render('signin.ejs', {
         error: 'User not found.',
       });
     }
@@ -74,9 +77,10 @@ router.post('/users/update', async (req, res) => {
     return res.redirect('/api/v1/auth/signin');
   } catch (error) {
     console.error(error);
-    return res.status(500).render('update-user.ejs', {
+    return res.status(500).render('signin.ejs', {
       error: 'Server error. Please try again.',
     });
   }
 });
+
 export default router;
