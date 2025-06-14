@@ -57,9 +57,6 @@
       <span class="navbar-brand">Admin Panel</span>
 
       <div class="d-flex align-items-center ms-auto gap-2">
-        <span class="text-white"
-          >Welcome, <%= user?.username || "Admin" %></span
-        >
         <a
           href="/api/v1/admin/users/profile"
           class="btn btn-outline-light btn-sm"
@@ -116,6 +113,12 @@
               <% if (userList.length === 0) { %>
               <p class="text-muted">No users found.</p>
               <% } else { %>
+              <a
+                href="/api/v1/admin/users/create"
+                class="btn btn-success btn-sm"
+              >
+                ➕ Add New User
+              </a>
               <div class="table-responsive">
                 <table class="table table-bordered table-hover">
                   <thead class="table-dark">
@@ -145,7 +148,7 @@
                         >
                         <form
                           action="/api/v1/admin/users/<%= u._id %>?_method=DELETE"
-                          method="POST"
+                          method="post"
                           style="display: inline"
                         >
                           <button

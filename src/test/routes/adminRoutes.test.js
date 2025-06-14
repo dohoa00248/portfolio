@@ -2,23 +2,93 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import auth from '../../test/middlewares/auth.test.js';
 import User from '../models/User.test.js';
+
 const router = express.Router();
 
-router.get('/dashboard', auth.authSignin, (req, res) => {
-  res.render('dashboard.ejs', { user: req.session.user });
+/**
+ * DASHBOARD ROUTES
+ */
+router.get('/dashboard', auth.authSignin, async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.render('dashboard.ejs', {
+      user: req.session.user,
+      userList: users,
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).send('Server error');
+  }
 });
 
 router.get('/dictionary', auth.authSignin, (req, res) => {
   res.render('dictionary.ejs');
 });
 
-router.post('/users', async (req, res) => {
+/**
+ * USER PROFILE ROUTES
+ */
+router.get('/users/profile', auth.authSignin, async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const user = await User.findById(req.session.user._id);
+    if (!user) return res.status(404).send('User not found');
+    res.render('update-profile', { user });
+  } catch (err) {
+    console.error('Error fetching user:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+router.post('/users/profile', auth.authSignin, async (req, res) => {
+  try {
+    const { username, email } = req.body;
+    const updatedUser = await User.findByIdAndUpdate(
+      req.session.user._id,
+      { username, email },
+      { new: true }
+    );
+    req.session.user = updatedUser;
+    res.redirect('/api/v1/admin/dashboard');
+  } catch (err) {
+    console.error('Error updating profile:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+/**
+ * USER MANAGEMENT ROUTES (ADMIN)
+ */
+router.get('/users', auth.authSignin, async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.render('users.ejs', {
+      user: req.session.user,
+      userList: users,
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+router.get('/users/create', auth.authSignin, (req, res) => {
+  res.render('create-user.ejs');
+});
+
+router.post('/users', auth.authSignin, async (req, res) => {
+  try {
+    const { username, password, email, role } = req.body;
 
     if (!username || !password) {
-      return res.status(400).render('signin.ejs', {
-        error: 'Username and password are required.',
+      return res.status(400).render('create-user.ejs', {
+        error: 'All fields are required.',
+      });
+    }
+
+    const existing = await User.findOne({ username });
+    if (existing) {
+      return res.status(400).render('create-user.ejs', {
+        error: 'Username already exists.',
       });
     }
 
@@ -26,59 +96,124 @@ router.post('/users', async (req, res) => {
 
     const newUser = new User({
       username,
+      email,
       password: hashedPassword,
-      // role: 1,
+      role: role || 2,
     });
 
     await newUser.save();
-
-    return res.redirect('/api/v1/auth/signin');
+    res.redirect('/api/v1/admin/users');
   } catch (error) {
     console.error(error);
-    return res.status(500).render('signin.ejs', {
+    res.status(500).render('create-user.ejs', {
       error: 'Server error. Please try again.',
     });
   }
 });
 
-router.post('/users/:id', async (req, res) => {
+router.get('/users/:id', auth.authSignin, async (req, res) => {
   try {
-    const userId = req.params.id;
-    console.log(req.params);
-    const { username, newPassword, newRole } = req.body;
+    const { id } = req.params;
+    const userById = await User.findById(id);
 
-    console.log(req.body);
-
-    const updateData = {};
-
-    if (username) {
-      updateData.username = username;
-    }
-
-    if (newPassword) {
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      updateData.password = hashedPassword;
-    }
-
-    if (newRole) {
-      updateData.role = parseInt(newRole);
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
-      new: true,
-    });
-
-    if (!updatedUser) {
-      return res.status(404).render('signin.ejs', {
-        error: 'User not found.',
+    if (!userById) {
+      return res.status(404).render('user-detail', {
+        error: 'User not found',
       });
     }
 
-    return res.redirect('/api/v1/auth/signin');
+    res.render('user-detail', {
+      user: req.session.user,
+      userById,
+    });
+  } catch (error) {
+    console.error('Error fetching user details:', error.message);
+    res.status(500).render('user-detail', {
+      error: 'Internal server error',
+    });
+  }
+});
+
+router.put('/users/:id', auth.authSignin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { username, email } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { username, email },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).render('users', {
+        error: 'User not found',
+        user: req.session.user,
+        userList: await User.find(),
+      });
+    }
+
+    const userList = await User.find();
+    res.status(200).render('users', {
+      user: req.session.user,
+      userList,
+      success: 'User updated successfully!',
+    });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).render('users', {
+      error: 'Internal server error',
+      user: req.session.user,
+      userList: await User.find(),
+    });
+  }
+});
+
+// router.post('/users/:id', auth.authSignin, async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { username, newPassword, newRole } = req.body;
+
+//     const updateData = {};
+//     if (username) updateData.username = username;
+//     if (newPassword) updateData.password = await bcrypt.hash(newPassword, 10);
+//     if (newRole) updateData.role = parseInt(newRole);
+
+//     const updatedUser = await User.findByIdAndUpdate(id, updateData, {
+//       new: true,
+//     });
+
+//     if (!updatedUser) {
+//       return res.status(404).render('signin.ejs', {
+//         error: 'User not found.',
+//       });
+//     }
+
+//     res.redirect('/api/v1/auth/signin');
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).render('signin.ejs', {
+//       error: 'Server error. Please try again.',
+//     });
+//   }
+// });
+
+router.delete('/users/:id', auth.authSignin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    await User.findByIdAndDelete(id);
+    const userList = await User.find();
+
+    res.status(200).render('users', {
+      user: req.session.user,
+      userList,
+    });
   } catch (error) {
     console.error(error);
-    return res.status(500).render('signin.ejs', {
-      error: 'Server error. Please try again.',
+    res.status(500).render('users', {
+      error: 'Server error.',
+      user: req.session.user,
+      userList: await User.find(),
     });
   }
 });

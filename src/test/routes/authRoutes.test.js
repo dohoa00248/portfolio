@@ -43,12 +43,14 @@ router.post('/signin', async (req, res) => {
   try {
     const { username, password } = req.body;
 
+    // 1. Validate input
     if (!username || !password) {
       return res.status(400).render('signin.ejs', {
         error: 'Username and password are required.',
       });
     }
 
+    // 2. Find user by username
     const user = await User.findOne({ username });
 
     if (!user) {
@@ -57,6 +59,7 @@ router.post('/signin', async (req, res) => {
       });
     }
 
+    // 3. Compare provided password with hashed password
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
@@ -65,21 +68,27 @@ router.post('/signin', async (req, res) => {
       });
     }
 
-    console.log(req.session);
-    req.session.user = user;
+    // 4. Store user info in session
+    // req.session.user = user;
+    req.session.user = {
+      _id: user._id,
+      username: user.username,
+      role: user.role,
+      email: user.email,
+    };
     console.log(req.session);
 
+    // 5. Redirect to admin dashboard
     return res.redirect('/api/v1/admin/dashboard');
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error('Error during signin:', error);
     return res.status(500).render('signin.ejs', {
-      error: 'Server error. Please try again.',
+      error: 'Internal server error. Please try again.',
     });
   }
 });
 
 router.get('/dictionary-test', auth.authSignin, (req, res) => {
-  // Đây là handler chính sau khi đã xác thực
   res.render('dictionary.ejs');
 });
 
