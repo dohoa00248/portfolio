@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import methodOverride from 'method-override';
+
 //TEST
 // import applyMiddleware from './test/middlewares/index.js';
 // import authRouter from './test/routes/authRoutes.test.js';
@@ -27,7 +27,7 @@ setupViewEngine(app, __dirname);
 
 // 2. Middlewares
 applyMiddleware(app);
-app.use(methodOverride('_method'));
+
 // 3. Static files
 setupStaticFiles(app, __dirname);
 
