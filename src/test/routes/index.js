@@ -5,6 +5,7 @@ import authRouter from '../../test/routes/authRoutes.test.js';
 import adminRouter from '../../test/routes/adminRoutes.test.js';
 import homeRouter from '../../test/routes/homeRoutes.test.js';
 import userRouter from '../../test/routes/userRoutes.test.js';
+
 const applyRoutes = (app) => {
   app.use('/', homeRouter);
   app.use('/api/v1/test', testRouter);

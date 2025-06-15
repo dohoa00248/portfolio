@@ -1,6 +1,6 @@
 import express from 'express';
 import ProjectTest from '../models/Project.test.js';
-import Vocabulary from '../models/Vocabulary.test.js';
+// import Vocabulary from '../models/Vocabulary.test.js';
 const router = express.Router();
 
 // router.get('/projects', async (req, res) => {
@@ -105,40 +105,5 @@ router.get('/mylogger', myLogger, (req, res) => {
 router.get('/admin', (req, res) => {
   res.render('dashboard.ejs');
 });
-
-// API upload
-// router.post('/upload-excel', async (req, res) => {
-//   try {
-//     const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
-//     const sheetName = workbook.SheetNames[0];
-//     const sheet = workbook.Sheets[sheetName];
-//     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
-//     const validEntries = [];
-
-//     for (let i = 1; i < rows.length; i++) {
-//       const row = rows[i];
-
-//       const [no, vocabulary, pronunciation, partOfSpeech, meaning] = row;
-
-//       if (vocabulary && meaning) {
-//         validEntries.push({
-//           no: typeof no === 'number' ? no : i,
-//           vocabulary: String(vocabulary || '').trim(),
-//           pronunciation: String(pronunciation || '').trim(),
-//           partOfSpeech: String(partOfSpeech || '').trim(),
-//           meaning: String(meaning || '').trim(),
-//           raw: row,
-//         });
-//       }
-//     }
-
-//     await Vocabulary.insertMany(validEntries);
-//     res.json({ message: 'Import thành công', count: validEntries.length });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: 'Lỗi xử lý file Excel' });
-//   }
-// });
 
 export default router;

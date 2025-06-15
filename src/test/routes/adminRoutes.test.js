@@ -169,6 +169,73 @@ router.put('/users/:id', auth.authSignin, async (req, res) => {
   }
 });
 
+router.get('/users/:id/change-password', auth.authSignin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userById = await User.findById(id);
+    if (!userById) {
+      return res.status(404).send('User not found');
+    }
+
+    res.render('change-password', {
+      user: req.session.user,
+      userById,
+      error: null,
+      success: null,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+router.post('/users/:id/change-password', auth.authSignin, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const { id } = req.params;
+
+    const userById = await User.findById(id);
+    if (!userById) {
+      return res.status(404).render('change-password', {
+        error: 'User not found',
+        success: null,
+        user: req.session.user,
+        userById: null,
+      });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, userById.password);
+    if (!isMatch) {
+      return res.status(400).render('change-password', {
+        error: 'Current password is incorrect',
+        success: null,
+        user: req.session.user,
+        userById,
+      });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    userById.password = hashedNewPassword;
+    await userById.save();
+
+    res.render('users', {
+      user: req.session.user,
+      success: 'Password changed successfully!',
+      error: null,
+      userById: null,
+      userList: await User.find(),
+    });
+  } catch (error) {
+    console.error('Error changing password:', error);
+    res.status(500).render('change-password', {
+      error: 'Internal server error',
+      success: null,
+      user: req.session.user,
+      userById: null,
+    });
+  }
+});
+
 // router.post('/users/:id', auth.authSignin, async (req, res) => {
 //   try {
 //     const { id } = req.params;

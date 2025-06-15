@@ -39,17 +39,4 @@ router.get('/test', homeController.getTestPage);
 
 router.get('/dictionary', homeController.getDictionaryPage);
 
-// router.get(
-//   '/dictionary-test',
-//   (req, res, next) => {
-//     if (req.session.user) {
-//       return next(); // Cho phép đi tiếp
-//     }
-//     return res.redirect('/api/v1/auth/signin'); // Chưa đăng nhập
-//   },
-//   (req, res) => {
-//     // Đây là handler chính sau khi đã xác thực
-//     res.render('dictionary.ejs');
-//   }
-// );
 export default router;

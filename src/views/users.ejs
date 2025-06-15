@@ -146,6 +146,12 @@
                           class="btn btn-sm btn-primary me-1"
                           >Edit</a
                         >
+                        <a
+                          href="/api/v1/admin/users/<%= u._id %>/change-password"
+                          class="btn btn-sm btn-primary me-1"
+                          >Change Password</a
+                        >
+
                         <form
                           action="/api/v1/admin/users/<%= u._id %>?_method=DELETE"
                           method="post"

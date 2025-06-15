@@ -24,10 +24,8 @@ router.get('/signout', (req, res) => {
       return res.status(500).send('Logout failed.');
     }
 
-    // Xoá cookie nếu cần (tuỳ config)
     res.clearCookie('connect.sid');
 
-    // Chuyển hướng về trang login hoặc home
     res.redirect('/api/v1/auth/signin');
   });
 });
@@ -91,17 +89,5 @@ router.post('/signin', async (req, res) => {
 router.get('/dictionary-test', auth.authSignin, (req, res) => {
   res.render('dictionary.ejs');
 });
-
-// router.post('/signin', (req, res) => {
-//   try {
-//     const token = req.headers;
-//     console.log('Token:', token);
-//     const { username, password } = req.body;
-//     console.log('username:', username + ' and ' + 'password:', password);
-//     res.status(200).json({ data: username, password });
-//   } catch (error) {
-//     res.status(500).json({ error: 'message' });
-//   }
-// });
 
 export default router;
