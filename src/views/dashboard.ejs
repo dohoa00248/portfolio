@@ -124,6 +124,8 @@
                       <th>Username</th>
                       <th>password</th>
                       <th>Email</th>
+                      <th>createdAt</th>
+                      <th>updatedAt</th>
                       <th>Role</th>
                       <th>Actions</th>
                     </tr>
@@ -133,8 +135,24 @@
                     <tr>
                       <td><%= index + 1 %></td>
                       <td><%= u.username %></td>
-                      <td><%= u.password %></td>
+                      <td>
+                        <span
+                          class="d-inline-block text-truncate"
+                          style="max-width: 120px"
+                          title="<%= u.password %>"
+                        >
+                          <%= u.password.slice(0, 5) + '...' %>
+                        </span>
+                      </td>
                       <td><%= u.email %></td>
+                      <td>
+                        <%= new Date(u.createdAt).toLocaleString('vi-VN', {
+                        hour12: false }) %>
+                      </td>
+                      <td>
+                        <%= new Date(u.updatedAt).toLocaleString('vi-VN', {
+                        hour12: false }) %>
+                      </td>
                       <td><%= u.role || u.role_id?.name || 'user' %></td>
                       <td>
                         <!-- Action buttons -->
