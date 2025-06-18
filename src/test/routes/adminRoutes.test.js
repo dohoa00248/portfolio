@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import auth from '../../test/middlewares/auth.test.js';
 import User from '../models/User.test.js';
+import Vocabulary from '../models/Vocabulary.test.js';
 
 const router = express.Router();
 
@@ -21,10 +22,56 @@ router.get('/dashboard', auth.authSignin, async (req, res) => {
   }
 });
 
-router.get('/dictionary', auth.authSignin, (req, res) => {
-  res.render('dictionary.ejs');
+router.get('/dictionary', auth.authSignin, async (req, res) => {
+  try {
+    const vocabulary = await Vocabulary.find({});
+    console.log(vocabulary);
+    res.render('dictionary', {
+      user: req.session.user,
+      vocabularies: vocabulary,
+    });
+  } catch (error) {
+    console.error('Error', error);
+    res.render('signin');
+  }
 });
+// router.get('/dictionary/create', auth.authSignin, async (req, res) => {
+//   try {
+//     res.render('create-vocabulary');
+//   } catch (error) {
+//     console.error('Error', error);
+//     res.render('signin');
+//   }
+// });
+router.post('/dictionary', async (req, res) => {
+  try {
+    console.log(req.body);
+    const { word, pronunciation, partOfSpeech, meaning, examples } = req.body;
+    const vocabulary = await Vocabulary.find({});
+    const newVocabulary = new Vocabulary({
+      word,
+      pronunciation,
+      partOfSpeech,
+      meaning,
+      examples,
+    });
+    await newVocabulary.save();
 
+    res.status(200).render('dictionary', {
+      data: newVocabulary,
+      user: req.session.user,
+      vocabularies: vocabulary,
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).render('error', {
+      success: false,
+      message: 'Server error',
+      // vocabularies: vocabulary,
+      error: null,
+    });
+  }
+});
 /**
  * USER PROFILE ROUTES
  */
@@ -171,11 +218,11 @@ router.get('/users/:id', auth.authSignin, async (req, res) => {
 router.put('/users/:id', auth.authSignin, async (req, res) => {
   try {
     const { id } = req.params;
-    const { username, email } = req.body;
+    const { username, email, firstName, lastName } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      { username, email },
+      { username, email, firstName, lastName },
       { new: true }
     );
 

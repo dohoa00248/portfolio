@@ -144,6 +144,8 @@
                       <th>Username</th>
                       <th>password</th>
                       <th>Email</th>
+                      <th>First name</th>
+                      <th>Last name</th>
                       <th>createdAt</th>
                       <th>updatedAt</th>
                       <th>Role</th>
@@ -165,6 +167,8 @@
                         </span>
                       </td>
                       <td><%= u.email %></td>
+                      <td><%= u.firstName %></td>
+                      <td><%= u.lastName %></td>
                       <td>
                         <%= new Date(u.createdAt).toLocaleString('vi-VN', {
                         hour12: false }) %>
