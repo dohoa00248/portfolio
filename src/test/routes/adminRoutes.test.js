@@ -72,6 +72,39 @@ router.post('/dictionary', async (req, res) => {
     });
   }
 });
+router.get('/dictionary/search', auth.authSignin, async (req, res) => {
+  try {
+    const { query } = req.query;
+
+    if (!query) {
+      return res.status(400).render('dictionary', {
+        error: 'Please enter a search term.',
+        user: req.session.user,
+        vocabularies: await Vocabulary.find(),
+      });
+    }
+
+    const vocabularies = await Vocabulary.find({
+      $or: [
+        { word: { $regex: query, $options: 'i' } },
+        // { email: { $regex: query, $options: 'i' } },
+      ],
+    });
+
+    res.render('dictionary', {
+      user: req.session.user,
+      vocabularies: vocabularies,
+      success: `Found ${vocabularies.length} vocabularies(s) matching "${query}"`,
+    });
+  } catch (error) {
+    console.error('Error searching dictionary:', error);
+    res.status(500).render('dictionary', {
+      error: 'Internal server error',
+      user: req.session.user,
+      vocabularies: await Vocabulary.find(),
+    });
+  }
+});
 /**
  * USER PROFILE ROUTES
  */

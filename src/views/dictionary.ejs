@@ -133,7 +133,21 @@
             </div>
           </form>
         </div>
-
+        <!-- FORM SEARCH -->
+        <form
+          action="/api/v1/admin/dictionary/search"
+          method="get"
+          class="d-flex mb-3"
+        >
+          <input
+            type="text"
+            name="query"
+            class="form-control me-2"
+            placeholder="Search Vocabulary"
+            required
+          />
+          <button type="submit" class="btn btn-primary">🔍 Search</button>
+        </form>
         <!-- Word List -->
         <div class="content-placeholder">
           <h5 class="mb-3">Vocabulary List</h5>
