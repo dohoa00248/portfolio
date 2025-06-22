@@ -94,7 +94,7 @@ router.get('/dictionary/search', auth.authSignin, async (req, res) => {
     res.render('dictionary', {
       user: req.session.user,
       vocabularies: vocabularies,
-      success: `Found ${vocabularies.length} vocabularies(s) matching "${query}"`,
+      // success: `Found ${vocabularies.length} vocabularies(s) matching "${query}"`,
     });
   } catch (error) {
     console.error('Error searching dictionary:', error);
