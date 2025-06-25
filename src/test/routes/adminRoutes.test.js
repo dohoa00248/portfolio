@@ -464,4 +464,25 @@ router.put('/dictionary/:id', auth.authSignin, async (req, res) => {
   }
 });
 
+router.delete('/dictionary/:id', auth.authSignin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Vocabulary.findByIdAndDelete(id);
+    const vocabularyList = await Vocabulary.find();
+
+    res.status(200).render('dictionary', {
+      user: req.session.user,
+      vocabularyList,
+    });
+  } catch (error) {
+    console.error(error);
+    const vocabularyList = await Vocabulary.find();
+
+    res.status(500).render('dictionary', {
+      error: 'Server error.',
+      user: req.session.user,
+      vocabularyList,
+    });
+  }
+});
 export default router;
