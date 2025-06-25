@@ -28,7 +28,7 @@ router.get('/dictionary', auth.authSignin, async (req, res) => {
     console.log(vocabulary);
     res.render('dictionary', {
       user: req.session.user,
-      vocabularies: vocabulary,
+      vocabularyList: vocabulary,
     });
   } catch (error) {
     console.error('Error', error);
@@ -60,7 +60,7 @@ router.post('/dictionary', async (req, res) => {
     res.status(200).render('dictionary', {
       data: newVocabulary,
       user: req.session.user,
-      vocabularies: vocabulary,
+      vocabularyList: vocabulary,
     });
   } catch (error) {
     console.error('Error:', error);
@@ -80,20 +80,17 @@ router.get('/dictionary/search', auth.authSignin, async (req, res) => {
       return res.status(400).render('dictionary', {
         error: 'Please enter a search term.',
         user: req.session.user,
-        vocabularies: await Vocabulary.find(),
+        vocabularyList: await Vocabulary.find(),
       });
     }
 
     const vocabularies = await Vocabulary.find({
-      $or: [
-        { word: { $regex: query, $options: 'i' } },
-        // { email: { $regex: query, $options: 'i' } },
-      ],
+      $or: [{ word: { $regex: query, $options: 'i' } }],
     });
 
     res.render('dictionary', {
       user: req.session.user,
-      vocabularies: vocabularies,
+      vocabularyList: vocabularies,
       // success: `Found ${vocabularies.length} vocabularies(s) matching "${query}"`,
     });
   } catch (error) {
@@ -101,7 +98,7 @@ router.get('/dictionary/search', auth.authSignin, async (req, res) => {
     res.status(500).render('dictionary', {
       error: 'Internal server error',
       user: req.session.user,
-      vocabularies: await Vocabulary.find(),
+      vocabularyList: await Vocabulary.find(),
     });
   }
 });
@@ -395,6 +392,74 @@ router.delete('/users/:id', auth.authSignin, async (req, res) => {
       error: 'Server error.',
       user: req.session.user,
       userList: await User.find(),
+    });
+  }
+});
+
+// dictionary
+router.get('/dictionary/:id', auth.authSignin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const vocabulary = await Vocabulary.findById(id);
+
+    if (!vocabulary) {
+      return res.status(404).render('vocabulary-detail', {
+        error: 'Vocabulary not found',
+      });
+    }
+
+    res.render('vocabulary-detail', {
+      user: req.session.user,
+      vocabulary,
+    });
+  } catch (error) {
+    console.error('Error fetching vocabulary details:', error.message);
+    res.status(500).render('vocabulary-detail', {
+      error: 'Internal server error',
+    });
+  }
+});
+
+router.put('/dictionary/:id', auth.authSignin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { word, pronunciation, partOfSpeech, meaning, examples } = req.body;
+
+    const updated = await Vocabulary.findByIdAndUpdate(
+      id,
+      {
+        word,
+        pronunciation,
+        partOfSpeech,
+        meaning,
+        examples: examples
+          .split('\n')
+          .map((e) => e.trim())
+          .filter((e) => e),
+      },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).render('dictionary', {
+        error: 'Vocabulary not found',
+        user: req.session.user,
+        vocabularyList: await Vocabulary.find(),
+      });
+    }
+
+    const vocabularyList = await Vocabulary.find();
+    res.status(200).render('dictionary', {
+      user: req.session.user,
+      vocabularyList,
+      success: 'Vocabulary updated successfully!',
+    });
+  } catch (error) {
+    console.error('Error updating vocabulary:', error);
+    res.status(500).render('dictionary', {
+      error: 'Internal server error',
+      user: req.session.user,
+      vocabularyList: await Vocabulary.find(),
     });
   }
 });
