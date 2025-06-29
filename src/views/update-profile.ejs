@@ -19,7 +19,7 @@
           class="form-control"
           id="username"
           name="username"
-          value="<%= user.username %>"
+          value="<%= currentUser.username %>"
           required
         />
       </div>
@@ -31,7 +31,7 @@
           class="form-control"
           id="email"
           name="email"
-          value="<%= user.email %>"
+          value="<%= currentUser.email %>"
           required
         />
       </div>
@@ -43,7 +43,7 @@
           type="text"
           class="form-control"
           id="role"
-          value="<%= user.role === 1 ? 'Admin' : 'User' %>"
+          value="<%= currentUser.role === 1 ? 'Admin' : 'User' %>"
           disabled
         />
       </div> -->

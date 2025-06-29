@@ -10,10 +10,16 @@
     />
   </head>
   <body class="bg-light">
-    <div class="container mt-5">
-      <h2 class="mb-4">Create New User</h2>
+    <div class="container py-5">
+      <h2 class="mb-4 text-center text-primary">➕ Create New User</h2>
 
-      <form action="/api/v1/admin/users" method="POST">
+      <form
+        action="/api/v1/admin/users"
+        method="POST"
+        class="border p-4 rounded bg-white shadow-sm mx-auto"
+        style="max-width: 600px"
+      >
+        <!-- Username -->
         <div class="mb-3">
           <label for="username" class="form-label">Username</label>
           <input
@@ -25,11 +31,13 @@
           />
         </div>
 
+        <!-- Email -->
         <div class="mb-3">
           <label for="email" class="form-label">Email</label>
           <input type="email" class="form-control" id="email" name="email" />
         </div>
 
+        <!-- Password -->
         <div class="mb-3">
           <label for="password" class="form-label">Password</label>
           <input
@@ -41,22 +49,38 @@
           />
         </div>
 
-        <% if (user && (user.role === 1 || user.role === 0)) { %>
+        <!-- Role -->
+        <% if (currentUser && currentUser.role === 0) { %>
+        <!-- SuperAdmin: can create all roles -->
         <div class="mb-3">
           <label for="role" class="form-label">Role</label>
           <select class="form-select" id="role" name="role">
             <option value="0">Super Admin</option>
             <option value="1">Admin</option>
             <option value="2" selected>User</option>
-            <option value="3" selected>Guest</option>
+            <option value="3">Guest</option>
+          </select>
+        </div>
+        <% } else if (currentUser && currentUser.role === 1) { %>
+        <!-- Admin: cannot create SuperAdmin -->
+        <div class="mb-3">
+          <label for="role" class="form-label">Role</label>
+          <select class="form-select" id="role" name="role">
+            <option value="1">Admin</option>
+            <option value="2" selected>User</option>
+            <option value="3">Guest</option>
           </select>
         </div>
         <% } else { %>
+        <!-- Other: hidden input default User -->
         <input type="hidden" name="role" value="2" />
         <% } %>
 
-        <button type="submit" class="btn btn-primary">Create</button>
-        <a href="/api/v1/admin/users" class="btn btn-secondary ms-2">Back</a>
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between">
+          <a href="/api/v1/admin/users" class="btn btn-secondary">⬅️ Back</a>
+          <button type="submit" class="btn btn-primary">💾 Create User</button>
+        </div>
       </form>
     </div>
 

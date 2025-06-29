@@ -161,16 +161,16 @@ router.post('/users', auth.authSignin, async (req, res) => {
     const currentUser = req.session.user;
     const { username, password, email } = req.body;
 
-    let role = req.body.role || 2;
-
-    if (req.session.user.role !== 1) {
-      role = 2;
+    if (currentUser.role > 1) {
+      return res.status(403).render('error', {
+        message: 'You do not have permission to create users.',
+      });
     }
 
     if (!username || !password) {
       return res.status(400).render('create-user.ejs', {
         error: 'All fields are required.',
-        user: req.session.user,
+        currentUser,
       });
     }
 
@@ -180,6 +180,15 @@ router.post('/users', auth.authSignin, async (req, res) => {
         error: 'Username already exists.',
         currentUser,
       });
+    }
+
+    let role = 2; // default User
+    if (currentUser.role === 0) {
+      role = req.body.role;
+    } else if (currentUser.role === 1) {
+      if (req.body.role == 1 || req.body.role == 2 || req.body.role == 3) {
+        role = req.body.role;
+      }
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -386,7 +395,7 @@ router.post('/users/:id/change-password', auth.authSignin, async (req, res) => {
     if (!userById) {
       return res.status(404).render('change-password', {
         error: 'User not found',
-        user: currentUser,
+        currentUser,
         userById: null,
       });
     }
@@ -396,7 +405,7 @@ router.post('/users/:id/change-password', auth.authSignin, async (req, res) => {
       if (userById.role === 0 || userById.role === 1) {
         return res.status(403).render('change-password', {
           error: 'You do not have permission to change password for this user',
-          user: currentUser,
+          currentUser,
           userById,
         });
       }
@@ -404,7 +413,7 @@ router.post('/users/:id/change-password', auth.authSignin, async (req, res) => {
       if (currentUser._id.toString() !== id) {
         return res.status(403).render('change-password', {
           error: 'You do not have permission to change password for this user',
-          user: currentUser,
+          currentUser,
           userById,
         });
       }
@@ -417,7 +426,7 @@ router.post('/users/:id/change-password', auth.authSignin, async (req, res) => {
       if (!isMatch) {
         return res.status(400).render('change-password', {
           error: 'Current password is incorrect',
-          user: currentUser,
+          currentUser,
           userById,
         });
       }
@@ -430,16 +439,16 @@ router.post('/users/:id/change-password', auth.authSignin, async (req, res) => {
     const users = await User.find();
 
     res.render('users', {
-      user: currentUser,
+      currentUser,
       users,
       message: 'Password changed successfully',
       error: null,
     });
   } catch (error) {
     console.error('Error changing password:', error);
-    res.status(500).render('change-password', {
-      error: 'Internal server error',
-      user: req.session.user,
+    res.status(500).render('error', {
+      message: 'Internal server error',
+      error,
     });
   }
 });
@@ -495,7 +504,7 @@ router.delete('/users/:id', auth.authSignin, async (req, res) => {
         await userToDelete.deleteOne();
       } else {
         return res.status(403).render('users', {
-          user: currentUser,
+          currentUser,
           users: await User.find(),
           error: 'You do not have permission to delete this user.',
         });
