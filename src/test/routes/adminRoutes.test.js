@@ -282,44 +282,66 @@ router.get('/users/:id', auth.authSignin, async (req, res) => {
 
 router.put('/users/:id', auth.authSignin, async (req, res) => {
   try {
+    const currentUser = req.session.user;
     const { id } = req.params;
     const { username, email, firstName, lastName, password, role } = req.body;
 
-    const updateData = {
-      username,
-      email,
-      firstName,
-      lastName,
-    };
-
-    // Nếu nhập password mới thì hash trước khi update
-    if (password && password.trim() !== '') {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      updateData.password = hashedPassword;
-    }
-
-    // Nếu user đăng nhập là admin thì mới cho phép update role
-    if (req.session.user.role === 1 || req.session.user.role === 0) {
-      updateData.role = role;
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
-
-    if (!updatedUser) {
+    const userToUpdate = await User.findById(id);
+    if (!userToUpdate) {
       return res.status(404).render('users', {
-        user: req.session.user,
+        user: currentUser,
         users: await User.find(),
         error: 'User not found',
       });
     }
 
+    // 🔒 Check quyền
+
+    if (currentUser.role === 0) {
+      // Super Admin: full quyền, không check gì
+    } else if (currentUser.role === 1) {
+      // Admin: không được cập nhật Super Admin hoặc Admin khác
+      if (userToUpdate.role === 0 || userToUpdate.role === 1) {
+        return res.status(403).render('users', {
+          user: currentUser,
+          users: await User.find(),
+          error: 'You do not have permission to update this user',
+        });
+      }
+    } else {
+      // User hoặc Guest: không được cập nhật ai hết
+      return res.status(403).render('users', {
+        user: currentUser,
+        users: await User.find(),
+        error: 'You do not have permission to update users',
+      });
+    }
+
+    const updateData = { username, email, firstName, lastName };
+
+    if (password && password.trim() !== '') {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateData.password = hashedPassword;
+    }
+
+    // Chỉ Super Admin mới được update role, hoặc Admin nếu target là user/guest
+    if (currentUser.role === 0) {
+      updateData.role = role;
+    } else if (
+      currentUser.role === 1 &&
+      (userToUpdate.role === 2 || userToUpdate.role === 3)
+    ) {
+      updateData.role = role;
+    }
+
+    await User.findByIdAndUpdate(id, updateData, { new: true });
+
     const users = await User.find();
     res.status(200).render('users', {
-      user: req.session.user,
+      user: currentUser,
       users,
-      success: 'User updated successfully',
+      message: 'User updated successfully',
+      error: null,
     });
   } catch (error) {
     console.error('Error updating user:', error);
@@ -351,6 +373,7 @@ router.get('/users/:id/change-password', auth.authSignin, async (req, res) => {
 
 router.post('/users/:id/change-password', auth.authSignin, async (req, res) => {
   try {
+    const currentUser = req.session.user;
     const { currentPassword, newPassword } = req.body;
     const { id } = req.params;
 
@@ -359,25 +382,54 @@ router.post('/users/:id/change-password', auth.authSignin, async (req, res) => {
     if (!userById) {
       return res.status(404).render('change-password', {
         error: 'User not found',
-        user: req.session.user,
+        user: currentUser,
+        userById: null,
       });
     }
 
-    const isMatch = await bcrypt.compare(currentPassword, userById.password);
-    if (!isMatch) {
-      return res.status(400).render('change-password', {
-        error: 'Current password is incorrect',
-        user: req.session.user,
-      });
+    if (currentUser.role === 0) {
+    } else if (currentUser.role === 1) {
+      if (userById.role === 0 || userById.role === 1) {
+        return res.status(403).render('change-password', {
+          error: 'You do not have permission to change password for this user',
+          user: currentUser,
+          userById,
+        });
+      }
+    } else {
+      if (currentUser._id.toString() !== id) {
+        return res.status(403).render('change-password', {
+          error: 'You do not have permission to change password for this user',
+          user: currentUser,
+          userById,
+        });
+      }
+    }
+
+    let isMatch = true;
+    if (currentUser.role === 0 || currentUser.role === 1) {
+    } else {
+      isMatch = await bcrypt.compare(currentPassword, userById.password);
+      if (!isMatch) {
+        return res.status(400).render('change-password', {
+          error: 'Current password is incorrect',
+          user: currentUser,
+          userById,
+        });
+      }
     }
 
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
     userById.password = hashedNewPassword;
     await userById.save();
 
+    const users = await User.find();
+
     res.render('users', {
-      user: req.session.user,
-      users: await User.find(),
+      user: currentUser,
+      users,
+      message: 'Password changed successfully',
+      error: null,
     });
   } catch (error) {
     console.error('Error changing password:', error);
@@ -419,16 +471,49 @@ router.post('/users/:id/change-password', auth.authSignin, async (req, res) => {
 
 router.delete('/users/:id', auth.authSignin, async (req, res) => {
   try {
+    const currentUser = req.session.user;
     const { id } = req.params;
-    await User.findByIdAndDelete(id);
+
+    const userToDelete = await User.findById(id);
+
+    if (!userToDelete) {
+      return res.status(404).render('users', {
+        user: currentUser,
+        users: await User.find(),
+        error: 'User not found.',
+      });
+    }
+
+    if (currentUser.role === 0) {
+      await userToDelete.deleteOne();
+    } else if (currentUser.role === 1) {
+      if (userToDelete.role >= 2) {
+        await userToDelete.deleteOne();
+      } else {
+        return res.status(403).render('users', {
+          user: currentUser,
+          users: await User.find(),
+          error: 'You do not have permission to delete this user.',
+        });
+      }
+    } else {
+      return res.status(403).render('users', {
+        user: currentUser,
+        users: await User.find(),
+        error: 'You do not have permission to delete users.',
+      });
+    }
+
     const users = await User.find();
 
     res.status(200).render('users', {
-      user: req.session.user,
+      user: currentUser,
       users,
+      message: 'User deleted successfully.',
     });
   } catch (error) {
     console.error(error);
+
     res.status(500).render('users', {
       error: 'Server error.',
       user: req.session.user,
