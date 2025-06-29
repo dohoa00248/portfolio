@@ -57,7 +57,7 @@
       <span class="navbar-brand">Admin Panel</span>
       <div class="d-flex align-items-center ms-auto gap-2">
         <span class="text-white"
-          >Welcome, <%= user?.username || 'Admin' %></span
+          >Welcome, <%= currentUser?.username || 'Admin' %></span
         >
         <a href="/api/v1/auth/signout" class="btn btn-outline-light btn-sm"
           >Sign Out</a

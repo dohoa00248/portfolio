@@ -11,13 +11,15 @@
   </head>
   <body class="bg-light">
     <div class="container py-5">
-      <h2 class="mb-4">📝 Edit User Information</h2>
+      <h2 class="mb-4 text-center text-primary">📝 Edit User Information</h2>
 
       <form
         action="/api/v1/admin/users/<%= userById._id %>?_method=PUT"
         method="POST"
-        class="border p-4 rounded bg-white shadow-sm"
+        class="border p-4 rounded bg-white shadow-sm mx-auto"
+        style="max-width: 600px;"
       >
+        <!-- Username -->
         <div class="mb-3">
           <label class="form-label">Username</label>
           <input
@@ -29,6 +31,7 @@
           />
         </div>
 
+        <!-- Email -->
         <div class="mb-3">
           <label class="form-label">Email</label>
           <input
@@ -38,28 +41,33 @@
             value="<%= userById.email %>"
             required
           />
-        </div><div class="mb-3">
-    <label class="form-label">First Name</label>
-    <input
-      type="text"
-      name="firstName"
-      class="form-control"
-      value="<%= userById.firstName %>"
-      required
-    />
-  </div>
+        </div>
 
-  <div class="mb-3">
-    <label class="form-label">Last Name</label>
-    <input
-      type="text"
-      name="lastName"
-      class="form-control"
-      value="<%= userById.lastName %>"
-      required
-    />
-  </div>
+        <!-- First Name -->
+        <div class="mb-3">
+          <label class="form-label">First Name</label>
+          <input
+            type="text"
+            name="firstName"
+            class="form-control"
+            value="<%= userById.firstName %>"
+            required
+          />
+        </div>
 
+        <!-- Last Name -->
+        <div class="mb-3">
+          <label class="form-label">Last Name</label>
+          <input
+            type="text"
+            name="lastName"
+            class="form-control"
+            value="<%= userById.lastName %>"
+            required
+          />
+        </div>
+
+        <!-- Password (hidden) -->
         <div class="mb-3" hidden>
           <label class="form-label">Password</label>
           <input
@@ -70,16 +78,23 @@
           />
         </div>
 
+        <!-- Role: show only for SuperAdmin and Admin -->
+        <% if (currentUser.role === 0 || currentUser.role === 1) { %>
         <div class="mb-3">
           <label class="form-label">Role</label>
           <select name="role" class="form-select">
+            <% if (currentUser.role === 0) { %>
+            <!-- SuperAdmin sees all -->
             <option value="0" <%= userById.role === 0 ? 'selected' : '' %>>Super Admin</option>
+            <% } %>
             <option value="1" <%= userById.role === 1 ? 'selected' : '' %>>Admin</option>
             <option value="2" <%= userById.role === 2 ? 'selected' : '' %>>User</option>
             <option value="3" <%= userById.role === 3 ? 'selected' : '' %>>Guest</option>
           </select>
         </div>
+        <% } %>
 
+        <!-- Buttons -->
         <div class="d-flex justify-content-between">
           <a href="/api/v1/admin/users" class="btn btn-secondary">⬅️ Back</a>
           <button type="submit" class="btn btn-primary">💾 Update User</button>

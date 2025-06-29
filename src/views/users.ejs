@@ -63,7 +63,7 @@
       <span class="navbar-brand">Admin Panel</span>
       <div class="d-flex align-items-center ms-auto gap-2">
         <span class="text-white"
-          >Welcome, <%= user?.username || "Admin" %></span
+          >Welcome, <%= currentUser?.username || "Admin" %></span
         >
         <a
           href="/api/v1/admin/users/profile"
@@ -161,38 +161,38 @@
                 </tr>
               </thead>
               <tbody>
-                <% users.forEach((userItem, index) => { %>
+                <% users.forEach((user, index) => { %>
                 <tr>
                   <td><%= index + 1 %></td>
-                  <td><%= userItem.username %></td>
+                  <td><%= user.username %></td>
                   <td>
                     <span
                       class="d-inline-block text-truncate"
                       style="max-width: 120px"
-                      title="<%= userItem.password %>"
+                      title="<%= user.password %>"
                     >
-                      <%= userItem.password.slice(0, 5) + '...' %>
+                      <%= user.password.slice(0, 5) + '...' %>
                     </span>
                   </td>
-                  <td><%= userItem.email %></td>
-                  <td><%= userItem.firstName %></td>
-                  <td><%= userItem.lastName %></td>
+                  <td><%= user.email %></td>
+                  <td><%= user.firstName %></td>
+                  <td><%= user.lastName %></td>
                   <td>
-                    <%= new Date(userItem.createdAt).toLocaleString('vi-VN', {
+                    <%= new Date(user.createdAt).toLocaleString('vi-VN', {
                     hour12: false }) %>
                   </td>
                   <td>
-                    <%= new Date(userItem.updatedAt).toLocaleString('vi-VN', {
+                    <%= new Date(user.updatedAt).toLocaleString('vi-VN', {
                     hour12: false }) %>
                   </td>
                   <td>
-                    <% if (userItem.role === 0) { %>
+                    <% if (user.role === 0) { %>
                     <span class="badge bg-danger">Super Admin</span>
-                    <% } else if (userItem.role === 1) { %>
+                    <% } else if (user.role === 1) { %>
                     <span class="badge bg-primary">Admin</span>
-                    <% } else if (userItem.role === 2) { %>
+                    <% } else if (user.role === 2) { %>
                     <span class="badge bg-success">User</span>
-                    <% } else if (userItem.role === 3) { %>
+                    <% } else if (user.role === 3) { %>
                     <span class="badge bg-secondary">Guest</span>
                     <% } else { %>
                     <span class="badge bg-dark">Unknown</span>
@@ -202,21 +202,21 @@
                     <div class="btn-group" role="group">
                       <!-- Edit: visible for all -->
                       <a
-                        href="/api/v1/admin/users/<%= userItem._id %>"
+                        href="/api/v1/admin/users/<%= user._id %>"
                         class="btn btn-sm btn-primary"
                         title="Edit"
                       >
                         ✏️ Edit
                       </a>
                       <a
-                        href="/api/v1/admin/users/<%= userItem._id %>/change-password"
+                        href="/api/v1/admin/users/<%= user._id %>/change-password"
                         class="btn btn-sm btn-warning"
                         title="Change Password"
                       >
                         🔑 Pass
                       </a>
                       <form
-                        action="/api/v1/admin/users/<%= userItem._id %>?_method=DELETE"
+                        action="/api/v1/admin/users/<%= user._id %>?_method=DELETE"
                         method="post"
                         style="display: inline"
                         onsubmit="return confirm('Are you sure to delete this user?');"

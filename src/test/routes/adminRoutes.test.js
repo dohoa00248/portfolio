@@ -11,13 +11,14 @@ const router = express.Router();
  */
 router.get('/dashboard', auth.authSignin, async (req, res) => {
   try {
+    const currentUser = req.session.user;
     const users = await User.find({});
     const totalUsers = await User.countDocuments();
     const totalVocabulary = await Vocabulary.countDocuments();
     // console.log('Total Users:', totalUsers);
     // console.log('Total Vocabulary:', totalVocabulary);
     return res.render('dashboard.ejs', {
-      user: req.session.user,
+      currentUser,
       users,
       totalUsers,
       totalVocabulary,
@@ -35,9 +36,10 @@ router.get('/dashboard', auth.authSignin, async (req, res) => {
 router.get('/dictionary', auth.authSignin, async (req, res) => {
   try {
     // throw new Error('Test error dashboard');
+    const currentUser = req.session.user;
     const vocabularies = await Vocabulary.find({});
     res.render('dictionary', {
-      user: req.session.user,
+      currentUser,
       vocabularies,
     });
   } catch (error) {
@@ -51,10 +53,11 @@ router.get('/dictionary', auth.authSignin, async (req, res) => {
 
 router.get('/statistics', auth.authSignin, async (req, res) => {
   try {
+    const currentUser = req.session.user;
     const totalUsers = await User.countDocuments();
     const totalVocabulary = await Vocabulary.countDocuments();
     res.render('statistics', {
-      user: req.session.user,
+      currentUser,
       totalUsers,
       totalVocabulary,
     });
@@ -67,8 +70,9 @@ router.get('/statistics', auth.authSignin, async (req, res) => {
   }
 });
 
-router.post('/dictionary', async (req, res) => {
+router.post('/dictionary', auth.authSignin, async (req, res) => {
   try {
+    const currentUser = req.session.user;
     console.log(req.body);
     const { word, pronunciation, partOfSpeech, meaning, examples } = req.body;
 
@@ -85,7 +89,7 @@ router.post('/dictionary', async (req, res) => {
 
     res.status(200).render('dictionary', {
       data: newVocabulary,
-      user: req.session.user,
+      currentUser,
       vocabularies,
     });
   } catch (error) {
@@ -102,9 +106,10 @@ router.post('/dictionary', async (req, res) => {
  */
 router.get('/users/profile', auth.authSignin, async (req, res) => {
   try {
+    const currentUser = req.session.user;
     const user = await User.findById(req.session.user._id);
     if (!user) return res.status(404).send('User not found');
-    res.render('update-profile', { user });
+    res.render('update-profile', { currentUser });
   } catch (err) {
     console.error('Error fetching user:', err);
     res.status(500).send('Server error');
@@ -132,10 +137,11 @@ router.post('/users/profile', auth.authSignin, async (req, res) => {
  */
 router.get('/users', auth.authSignin, async (req, res) => {
   try {
+    const currentUser = req.session.user;
     const users = await User.find({});
     const totalUsers = await User.countDocuments();
     res.render('users.ejs', {
-      user: req.session.user,
+      currentUser,
       users,
       totalUsers,
     });
@@ -145,12 +151,14 @@ router.get('/users', auth.authSignin, async (req, res) => {
   }
 });
 
-router.get('/users/create', (req, res) => {
-  res.render('create-user.ejs', { user: req.session.user });
+router.get('/users/create', auth.authSignin, (req, res) => {
+  const currentUser = req.session.user;
+  res.render('create-user.ejs', { currentUser });
 });
 
 router.post('/users', auth.authSignin, async (req, res) => {
   try {
+    const currentUser = req.session.user;
     const { username, password, email } = req.body;
 
     let role = req.body.role || 2;
@@ -170,7 +178,7 @@ router.post('/users', auth.authSignin, async (req, res) => {
     if (existing) {
       return res.status(400).render('create-user.ejs', {
         error: 'Username already exists.',
-        user: req.session.user,
+        currentUser,
       });
     }
 
@@ -187,15 +195,16 @@ router.post('/users', auth.authSignin, async (req, res) => {
     res.redirect('/api/v1/admin/users');
   } catch (error) {
     console.error(error);
-    res.status(500).render('create-user.ejs', {
-      error: 'Server error. Please try again.',
-      user: req.session.user,
+    res.status(500).render('error', {
+      message: 'Server error. Please try again.',
+      error,
     });
   }
 });
 
 router.get('/users/search', auth.authSignin, async (req, res) => {
   try {
+    const currentUser = req.session.user;
     const { query } = req.query;
 
     if (!query) {
@@ -213,7 +222,7 @@ router.get('/users/search', auth.authSignin, async (req, res) => {
     }).sort({ createdAt: -1 });
 
     return res.render('users', {
-      user: req.session.user,
+      currentUser,
       users,
     });
   } catch (error) {
@@ -227,6 +236,7 @@ router.get('/users/search', auth.authSignin, async (req, res) => {
 
 router.get('/dictionary/search', auth.authSignin, async (req, res) => {
   try {
+    const currentUser = req.session.user;
     const { query } = req.query;
 
     if (!query) {
@@ -244,13 +254,12 @@ router.get('/dictionary/search', auth.authSignin, async (req, res) => {
     });
 
     res.render('dictionary', {
-      user: req.session.user,
+      currentUser,
       vocabularies,
     });
   } catch (error) {
     console.error('Error searching dictionary:', error);
     res.status(500).render('error', {
-      user: req.session.user,
       message: 'Internal server error when searching dictionary.',
       error,
     });
@@ -259,6 +268,7 @@ router.get('/dictionary/search', auth.authSignin, async (req, res) => {
 
 router.get('/users/:id', auth.authSignin, async (req, res) => {
   try {
+    const currentUser = req.session.user;
     const { id } = req.params;
     const userById = await User.findById(id);
 
@@ -269,7 +279,7 @@ router.get('/users/:id', auth.authSignin, async (req, res) => {
     }
 
     res.render('user-detail', {
-      user: req.session.user,
+      currentUser,
       userById,
     });
   } catch (error) {
@@ -289,29 +299,24 @@ router.put('/users/:id', auth.authSignin, async (req, res) => {
     const userToUpdate = await User.findById(id);
     if (!userToUpdate) {
       return res.status(404).render('users', {
-        user: currentUser,
+        currentUser,
         users: await User.find(),
         error: 'User not found',
       });
     }
 
-    // 🔒 Check quyền
-
     if (currentUser.role === 0) {
-      // Super Admin: full quyền, không check gì
     } else if (currentUser.role === 1) {
-      // Admin: không được cập nhật Super Admin hoặc Admin khác
       if (userToUpdate.role === 0 || userToUpdate.role === 1) {
         return res.status(403).render('users', {
-          user: currentUser,
+          currentUser,
           users: await User.find(),
           error: 'You do not have permission to update this user',
         });
       }
     } else {
-      // User hoặc Guest: không được cập nhật ai hết
       return res.status(403).render('users', {
-        user: currentUser,
+        currentUser,
         users: await User.find(),
         error: 'You do not have permission to update users',
       });
@@ -324,7 +329,6 @@ router.put('/users/:id', auth.authSignin, async (req, res) => {
       updateData.password = hashedPassword;
     }
 
-    // Chỉ Super Admin mới được update role, hoặc Admin nếu target là user/guest
     if (currentUser.role === 0) {
       updateData.role = role;
     } else if (
@@ -338,23 +342,23 @@ router.put('/users/:id', auth.authSignin, async (req, res) => {
 
     const users = await User.find();
     res.status(200).render('users', {
-      user: currentUser,
+      currentUser,
       users,
       message: 'User updated successfully',
       error: null,
     });
   } catch (error) {
     console.error('Error updating user:', error);
-    res.status(500).render('users', {
-      error: 'Internal server error',
-      user: req.session.user,
-      users: await User.find(),
+    res.status(500).render('error', {
+      message: 'Internal server error',
+      error,
     });
   }
 });
 
 router.get('/users/:id/change-password', auth.authSignin, async (req, res) => {
   try {
+    const currentUser = req.session.user;
     const { id } = req.params;
     const userById = await User.findById(id);
     if (!userById) {
@@ -362,7 +366,7 @@ router.get('/users/:id/change-password', auth.authSignin, async (req, res) => {
     }
 
     res.render('change-password', {
-      user: req.session.user,
+      currentUser,
       userById,
     });
   } catch (err) {
@@ -478,7 +482,7 @@ router.delete('/users/:id', auth.authSignin, async (req, res) => {
 
     if (!userToDelete) {
       return res.status(404).render('users', {
-        user: currentUser,
+        currentUser,
         users: await User.find(),
         error: 'User not found.',
       });
@@ -498,7 +502,7 @@ router.delete('/users/:id', auth.authSignin, async (req, res) => {
       }
     } else {
       return res.status(403).render('users', {
-        user: currentUser,
+        currentUser,
         users: await User.find(),
         error: 'You do not have permission to delete users.',
       });
@@ -507,7 +511,7 @@ router.delete('/users/:id', auth.authSignin, async (req, res) => {
     const users = await User.find();
 
     res.status(200).render('users', {
-      user: currentUser,
+      currentUser,
       users,
       message: 'User deleted successfully.',
     });
@@ -516,7 +520,7 @@ router.delete('/users/:id', auth.authSignin, async (req, res) => {
 
     res.status(500).render('users', {
       error: 'Server error.',
-      user: req.session.user,
+      currentUser,
       users: await User.find(),
     });
   }
@@ -525,6 +529,7 @@ router.delete('/users/:id', auth.authSignin, async (req, res) => {
 // dictionary
 router.get('/dictionary/:id', auth.authSignin, async (req, res) => {
   try {
+    const currentUser = req.session.user;
     const { id } = req.params;
     const vocabulary = await Vocabulary.findById(id);
 
@@ -535,7 +540,7 @@ router.get('/dictionary/:id', auth.authSignin, async (req, res) => {
     }
 
     res.render('vocabulary-detail', {
-      user: req.session.user,
+      currentUser,
       vocabulary,
     });
   } catch (error) {
@@ -548,6 +553,7 @@ router.get('/dictionary/:id', auth.authSignin, async (req, res) => {
 
 router.put('/dictionary/:id', auth.authSignin, async (req, res) => {
   try {
+    const currentUser = req.session.user;
     const { id } = req.params;
     const { word, pronunciation, partOfSpeech, meaning, examples } = req.body;
 
@@ -578,35 +584,35 @@ router.put('/dictionary/:id', auth.authSignin, async (req, res) => {
     const vocabularies = await Vocabulary.find();
 
     return res.status(200).render('dictionary', {
-      user: req.session.user,
+      currentUser,
       vocabularies,
     });
   } catch (error) {
     console.error('Error updating vocabulary:', error);
     return res.status(500).render('error', {
-      error: 'Internal server error',
-      user: req.session.user,
+      message: 'Internal server error',
+      error,
     });
   }
 });
 
 router.delete('/dictionary/:id', auth.authSignin, async (req, res) => {
   try {
+    const currentUser = req.session.user;
     const { id } = req.params;
     await Vocabulary.findByIdAndDelete(id);
 
     const vocabularies = await Vocabulary.find();
 
     res.render('dictionary', {
-      user: req.session.user,
+      currentUser,
       vocabularies,
     });
   } catch (error) {
     console.error('Error deleting vocabulary:', error.message);
-    const vocabularies = await Vocabulary.find();
     res.status(500).render('dictionary', {
-      user: req.session.user,
-      vocabularies,
+      message: 'Internal server error',
+      error,
     });
   }
 });
