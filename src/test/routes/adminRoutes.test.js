@@ -11,13 +11,16 @@ const router = express.Router();
  */
 router.get('/dashboard', auth.authSignin, async (req, res) => {
   try {
-    // throw new Error('Test error dashboard');
-
     const users = await User.find({});
-
+    const totalUsers = await User.countDocuments();
+    const totalVocabulary = await Vocabulary.countDocuments();
+    // console.log('Total Users:', totalUsers);
+    // console.log('Total Vocabulary:', totalVocabulary);
     return res.render('dashboard.ejs', {
       user: req.session.user,
       users,
+      totalUsers,
+      totalVocabulary,
     });
   } catch (error) {
     console.error('Error loading dashboard:', error);
@@ -36,6 +39,24 @@ router.get('/dictionary', auth.authSignin, async (req, res) => {
     res.render('dictionary', {
       user: req.session.user,
       vocabularies,
+    });
+  } catch (error) {
+    console.error('Error', error);
+    return res.status(500).render('error.ejs', {
+      message: 'Server error while loading.',
+      error,
+    });
+  }
+});
+
+router.get('/statistics', auth.authSignin, async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const totalVocabulary = await Vocabulary.countDocuments();
+    res.render('statistics', {
+      user: req.session.user,
+      totalUsers,
+      totalVocabulary,
     });
   } catch (error) {
     console.error('Error', error);
@@ -75,29 +96,7 @@ router.post('/dictionary', async (req, res) => {
     });
   }
 });
-router.get('/dictionary/search', auth.authSignin, async (req, res) => {
-  try {
-    const vocabularies = await Vocabulary.find();
 
-    res.render('dictionary', {
-      title: 'Dictionary',
-      user: req.session.user,
-      vocabularies,
-      message: 'Loaded successfully',
-      error: null,
-    });
-  } catch (error) {
-    console.error('Error loading dictionary:', error);
-
-    res.status(500).render('dictionary', {
-      title: 'Dictionary',
-      user: req.session.user,
-      vocabularies: [],
-      message: null,
-      error: 'Internal server error',
-    });
-  }
-});
 /**
  * USER PROFILE ROUTES
  */
@@ -134,9 +133,11 @@ router.post('/users/profile', auth.authSignin, async (req, res) => {
 router.get('/users', auth.authSignin, async (req, res) => {
   try {
     const users = await User.find({});
+    const totalUsers = await User.countDocuments();
     res.render('users.ejs', {
       user: req.session.user,
       users,
+      totalUsers,
     });
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -194,6 +195,37 @@ router.post('/users', auth.authSignin, async (req, res) => {
 });
 
 router.get('/users/search', auth.authSignin, async (req, res) => {
+  try {
+    const { query } = req.query;
+
+    if (!query) {
+      return res.render('users', {
+        user: req.session.user,
+        error,
+      });
+    }
+
+    const users = await User.find({
+      $or: [
+        { username: { $regex: query, $options: 'i' } },
+        // { email: { $regex: query, $options: 'i' } },
+      ],
+    }).sort({ createdAt: -1 });
+
+    return res.render('users', {
+      user: req.session.user,
+      users,
+    });
+  } catch (error) {
+    console.error('Error searching users:', error);
+    return res.status(500).render('error', {
+      message: 'Internal server error',
+      error,
+    });
+  }
+});
+
+router.get('/dictionary/search', auth.authSignin, async (req, res) => {
   try {
     const { query } = req.query;
 
@@ -310,8 +342,6 @@ router.get('/users/:id/change-password', auth.authSignin, async (req, res) => {
     res.render('change-password', {
       user: req.session.user,
       userById,
-      error: null,
-      success: null,
     });
   } catch (err) {
     console.error(err);
@@ -325,12 +355,11 @@ router.post('/users/:id/change-password', auth.authSignin, async (req, res) => {
     const { id } = req.params;
 
     const userById = await User.findById(id);
+
     if (!userById) {
       return res.status(404).render('change-password', {
         error: 'User not found',
-        success: null,
         user: req.session.user,
-        userById: null,
       });
     }
 
@@ -338,9 +367,7 @@ router.post('/users/:id/change-password', auth.authSignin, async (req, res) => {
     if (!isMatch) {
       return res.status(400).render('change-password', {
         error: 'Current password is incorrect',
-        success: null,
         user: req.session.user,
-        userById,
       });
     }
 
@@ -350,18 +377,13 @@ router.post('/users/:id/change-password', auth.authSignin, async (req, res) => {
 
     res.render('users', {
       user: req.session.user,
-      success: 'Password changed successfully!',
-      error: null,
-      userById: null,
       users: await User.find(),
     });
   } catch (error) {
     console.error('Error changing password:', error);
     res.status(500).render('change-password', {
       error: 'Internal server error',
-      success: null,
       user: req.session.user,
-      userById: null,
     });
   }
 });

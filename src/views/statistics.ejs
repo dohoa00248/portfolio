@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard</title>
+    <title>Admin Statistics</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -56,7 +56,7 @@
   </head>
 
   <body>
-    <!-- Top Navbar -->
+    <!-- Navbar -->
     <nav class="navbar navbar-dark bg-dark px-3">
       <span class="navbar-brand">Admin Panel</span>
       <div class="d-flex align-items-center ms-auto gap-2">
@@ -82,15 +82,15 @@
       <a href="/api/v1/admin/dashboard">🏠 Dashboard</a>
       <a href="/api/v1/admin/users">👥 User Management</a>
       <a href="/api/v1/admin/dictionary">📚 Dictionary</a>
-      <a href="/api/v1/admin/statistics">📈 Statistics</a>
+      <a href="/api/v1/admin/stats">📈 Statistics</a>
     </div>
 
     <!-- Main Content -->
     <div class="main">
       <div class="container-fluid">
-        <h2 class="mb-4">Dashboard Overview</h2>
+        <h2 class="mb-4">Statistics Overview</h2>
 
-        <!-- Stats cards -->
+        <!-- Cards -->
         <div class="row">
           <div class="col-md-4 mb-4">
             <div class="content-placeholder text-center">
@@ -106,57 +106,12 @@
               </p>
             </div>
           </div>
-          <div class="col-md-4 mb-4">
-            <div class="content-placeholder text-center">
-              <h5>Daily Visits</h5>
-              <p class="fs-4 fw-bold text-warning">789</p>
-            </div>
-          </div>
         </div>
 
         <!-- Chart -->
         <div class="content-placeholder mb-4">
-          <h5 class="mb-3">Statistics Chart</h5>
+          <h5 class="mb-3">Users & Vocabulary Statistics</h5>
           <canvas id="statsChart" height="100"></canvas>
-        </div>
-
-        <!-- User Table -->
-        <div class="content-placeholder">
-          <h5 class="mb-3">User List</h5>
-          <% if (users.length === 0) { %>
-          <p class="text-muted">No users found.</p>
-          <% } else { %>
-          <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-              <thead class="table-dark">
-                <tr>
-                  <th>#</th>
-                  <th>Username</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Created At</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% users.forEach((user, index) => { %>
-                <tr>
-                  <td><%= index + 1 %></td>
-                  <td><%= user.username %></td>
-                  <td><%= user.email %></td>
-                  <td>
-                    <%= user.role === 0 ? 'Super Admin' : user.role === 1 ?
-                    'Admin' : 'User' %>
-                  </td>
-                  <td>
-                    <%= new Date(user.createdAt).toLocaleString('vi-VN', {
-                    hour12: false }) %>
-                  </td>
-                </tr>
-                <% }) %>
-              </tbody>
-            </table>
-          </div>
-          <% } %>
         </div>
       </div>
     </div>
@@ -167,18 +122,16 @@
       const statsChart = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['Users', 'Vocabulary', 'Visits'],
+          labels: ['Total Users', 'Total Vocabulary', 'Daily Visits'],
           datasets: [{
             label: 'Statistics',
-            data: [<%= totalUsers || 0 %>, <%= totalVocabulary || 0 %>, 789],
+            data: [<%= totalUsers || 0 %>, <%= totalVocabulary || 0 %>],
             backgroundColor: ['#007bff', '#28a745', '#ffc107']
           }]
         },
         options: {
           responsive: true,
-          plugins: {
-            legend: { display: false }
-          }
+          plugins: { legend: { display: false } }
         }
       });
     </script>
@@ -188,7 +141,6 @@
       const toggleButton = document.getElementById('toggleMode');
       const body = document.body;
       const sidebar = document.querySelector('.sidebar');
-
       toggleButton.addEventListener('click', () => {
         body.classList.toggle('bg-light');
         body.classList.toggle('bg-dark');

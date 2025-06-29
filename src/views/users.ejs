@@ -60,14 +60,11 @@
   <body class="bg-light">
     <!-- Top Navbar -->
     <nav class="navbar navbar-dark bg-dark px-3">
-      <span class="navbar-brand">
-        <a
-          href="/api/v1/admin/dashboard"
-          class="text-white text-decoration-none"
-          >Admin Panel</a
-        >
-      </span>
+      <span class="navbar-brand">Admin Panel</span>
       <div class="d-flex align-items-center ms-auto gap-2">
+        <span class="text-white"
+          >Welcome, <%= user?.username || "Admin" %></span
+        >
         <a
           href="/api/v1/admin/users/profile"
           class="btn btn-outline-light btn-sm"
@@ -81,13 +78,12 @@
         </button>
       </div>
     </nav>
-
     <!-- Sidebar -->
     <div class="sidebar">
       <a href="/api/v1/admin/dashboard">🏠 Dashboard</a>
       <a href="/api/v1/admin/users">👥 User Management</a>
       <a href="/api/v1/admin/dictionary">📚 Dictionary</a>
-      <a href="/api/v1/admin/stats">📈 Statistics</a>
+      <a href="/api/v1/admin/statistics">📈 Statistics</a>
     </div>
 
     <!-- Main Content -->
