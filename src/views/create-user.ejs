@@ -41,13 +41,19 @@
           />
         </div>
 
+        <% if (user && (user.role === 1 || user.role === 0)) { %>
         <div class="mb-3">
           <label for="role" class="form-label">Role</label>
           <select class="form-select" id="role" name="role">
+            <option value="0">Super Admin</option>
             <option value="1">Admin</option>
             <option value="2" selected>User</option>
+            <option value="3" selected>Guest</option>
           </select>
         </div>
+        <% } else { %>
+        <input type="hidden" name="role" value="2" />
+        <% } %>
 
         <button type="submit" class="btn btn-primary">Create</button>
         <a href="/api/v1/admin/users" class="btn btn-secondary ms-2">Back</a>

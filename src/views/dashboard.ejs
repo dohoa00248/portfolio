@@ -113,7 +113,7 @@
             <div class="content-placeholder">
               <h5 class="mb-3">User List</h5>
 
-              <% if (userList.length === 0) { %>
+              <% if (users.length === 0) { %>
               <p class="text-muted">No users found.</p>
               <% } else { %>
               <div class="table-responsive">
@@ -131,38 +131,38 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <% userList.forEach((u, index) => { %>
+                    <% users.forEach((user, index) => { %>
                     <tr>
                       <td><%= index + 1 %></td>
-                      <td><%= u.username %></td>
+                      <td><%= user.username %></td>
                       <td>
                         <span
                           class="d-inline-block text-truncate"
                           style="max-width: 120px"
-                          title="<%= u.password %>"
+                          title="<%= user.password %>"
                         >
-                          <%= u.password.slice(0, 5) + '...' %>
+                          <%= user.password.slice(0, 5) + '...' %>
                         </span>
                       </td>
-                      <td><%= u.email %></td>
+                      <td><%= user.email %></td>
                       <td>
-                        <%= new Date(u.createdAt).toLocaleString('vi-VN', {
+                        <%= new Date(user.createdAt).toLocaleString('vi-VN', {
                         hour12: false }) %>
                       </td>
                       <td>
-                        <%= new Date(u.updatedAt).toLocaleString('vi-VN', {
+                        <%= new Date(user.updatedAt).toLocaleString('vi-VN', {
                         hour12: false }) %>
                       </td>
-                      <td><%= u.role || u.role_id?.name || 'user' %></td>
+                      <td><%= user.role || user.role_id?.name || 'user' %></td>
                       <td>
                         <!-- Action buttons -->
                         <a
-                          href="/api/v1/admin/users/<%= u._id %>"
+                          href="/api/v1/admin/users/<%= user._id %>"
                           class="btn btn-sm btn-primary me-1"
                           >Edit</a
                         >
                         <form
-                          action="/api/v1/admin/users/<%= u._id %>?_method=DELETE"
+                          action="/api/v1/admin/users/<%= user._id %>?_method=DELETE"
                           method="POST"
                           style="display: inline"
                         >

@@ -11,43 +11,46 @@ const router = express.Router();
  */
 router.get('/dashboard', auth.authSignin, async (req, res) => {
   try {
+    // throw new Error('Test error dashboard');
+
     const users = await User.find({});
-    res.render('dashboard.ejs', {
+
+    return res.render('dashboard.ejs', {
       user: req.session.user,
-      userList: users,
+      users,
     });
   } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).send('Server error');
+    console.error('Error loading dashboard:', error);
+
+    return res.status(500).render('error.ejs', {
+      message: 'Server error while loading dashboard.',
+      error,
+    });
   }
 });
 
 router.get('/dictionary', auth.authSignin, async (req, res) => {
   try {
-    const vocabulary = await Vocabulary.find({});
-    console.log(vocabulary);
+    // throw new Error('Test error dashboard');
+    const vocabularies = await Vocabulary.find({});
     res.render('dictionary', {
       user: req.session.user,
-      vocabularyList: vocabulary,
+      vocabularies,
     });
   } catch (error) {
     console.error('Error', error);
-    res.render('signin');
+    return res.status(500).render('error.ejs', {
+      message: 'Server error while loading.',
+      error,
+    });
   }
 });
-// router.get('/dictionary/create', auth.authSignin, async (req, res) => {
-//   try {
-//     res.render('create-vocabulary');
-//   } catch (error) {
-//     console.error('Error', error);
-//     res.render('signin');
-//   }
-// });
+
 router.post('/dictionary', async (req, res) => {
   try {
     console.log(req.body);
     const { word, pronunciation, partOfSpeech, meaning, examples } = req.body;
-    const vocabulary = await Vocabulary.find({});
+
     const newVocabulary = new Vocabulary({
       word,
       pronunciation,
@@ -57,48 +60,41 @@ router.post('/dictionary', async (req, res) => {
     });
     await newVocabulary.save();
 
+    const vocabularies = await Vocabulary.find({});
+
     res.status(200).render('dictionary', {
       data: newVocabulary,
       user: req.session.user,
-      vocabularyList: vocabulary,
+      vocabularies,
     });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).render('error', {
       success: false,
       message: 'Server error',
-      // vocabularies: vocabulary,
-      error: null,
     });
   }
 });
 router.get('/dictionary/search', auth.authSignin, async (req, res) => {
   try {
-    const { query } = req.query;
-
-    if (!query) {
-      return res.status(400).render('dictionary', {
-        error: 'Please enter a search term.',
-        user: req.session.user,
-        vocabularyList: await Vocabulary.find(),
-      });
-    }
-
-    const vocabularies = await Vocabulary.find({
-      $or: [{ word: { $regex: query, $options: 'i' } }],
-    });
+    const vocabularies = await Vocabulary.find();
 
     res.render('dictionary', {
+      title: 'Dictionary',
       user: req.session.user,
-      vocabularyList: vocabularies,
-      // success: `Found ${vocabularies.length} vocabularies(s) matching "${query}"`,
+      vocabularies,
+      message: 'Loaded successfully',
+      error: null,
     });
   } catch (error) {
-    console.error('Error searching dictionary:', error);
+    console.error('Error loading dictionary:', error);
+
     res.status(500).render('dictionary', {
-      error: 'Internal server error',
+      title: 'Dictionary',
       user: req.session.user,
-      vocabularyList: await Vocabulary.find(),
+      vocabularies: [],
+      message: null,
+      error: 'Internal server error',
     });
   }
 });
@@ -140,7 +136,7 @@ router.get('/users', auth.authSignin, async (req, res) => {
     const users = await User.find({});
     res.render('users.ejs', {
       user: req.session.user,
-      userList: users,
+      users,
     });
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -148,17 +144,24 @@ router.get('/users', auth.authSignin, async (req, res) => {
   }
 });
 
-router.get('/users/create', auth.authSignin, (req, res) => {
-  res.render('create-user.ejs');
+router.get('/users/create', (req, res) => {
+  res.render('create-user.ejs', { user: req.session.user });
 });
 
 router.post('/users', auth.authSignin, async (req, res) => {
   try {
-    const { username, password, email, role } = req.body;
+    const { username, password, email } = req.body;
+
+    let role = req.body.role || 2;
+
+    if (req.session.user.role !== 1) {
+      role = 2;
+    }
 
     if (!username || !password) {
       return res.status(400).render('create-user.ejs', {
         error: 'All fields are required.',
+        user: req.session.user,
       });
     }
 
@@ -166,6 +169,7 @@ router.post('/users', auth.authSignin, async (req, res) => {
     if (existing) {
       return res.status(400).render('create-user.ejs', {
         error: 'Username already exists.',
+        user: req.session.user,
       });
     }
 
@@ -175,7 +179,7 @@ router.post('/users', auth.authSignin, async (req, res) => {
       username,
       email,
       password: hashedPassword,
-      role: role || 2,
+      role,
     });
 
     await newUser.save();
@@ -184,6 +188,7 @@ router.post('/users', auth.authSignin, async (req, res) => {
     console.error(error);
     res.status(500).render('create-user.ejs', {
       error: 'Server error. Please try again.',
+      user: req.session.user,
     });
   }
 });
@@ -193,31 +198,29 @@ router.get('/users/search', auth.authSignin, async (req, res) => {
     const { query } = req.query;
 
     if (!query) {
-      return res.status(400).render('users', {
-        error: 'Please enter a search term.',
+      const vocabularies = await Vocabulary.find();
+
+      return res.status(400).render('dictionary', {
         user: req.session.user,
-        userList: await User.find(),
+        vocabularies,
+        error: 'Please enter a search term.',
       });
     }
 
-    const users = await User.find({
-      $or: [
-        { username: { $regex: query, $options: 'i' } },
-        { email: { $regex: query, $options: 'i' } },
-      ],
+    const vocabularies = await Vocabulary.find({
+      word: { $regex: query, $options: 'i' },
     });
 
-    res.render('users', {
+    res.render('dictionary', {
       user: req.session.user,
-      userList: users,
-      success: `Found ${users.length} user(s) matching "${query}"`,
+      vocabularies,
     });
   } catch (error) {
-    console.error('Error searching users:', error);
-    res.status(500).render('users', {
-      error: 'Internal server error',
+    console.error('Error searching dictionary:', error);
+    res.status(500).render('error', {
       user: req.session.user,
-      userList: await User.find(),
+      message: 'Internal server error when searching dictionary.',
+      error,
     });
   }
 });
@@ -248,34 +251,50 @@ router.get('/users/:id', auth.authSignin, async (req, res) => {
 router.put('/users/:id', auth.authSignin, async (req, res) => {
   try {
     const { id } = req.params;
-    const { username, email, firstName, lastName } = req.body;
+    const { username, email, firstName, lastName, password, role } = req.body;
 
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      { username, email, firstName, lastName },
-      { new: true }
-    );
+    const updateData = {
+      username,
+      email,
+      firstName,
+      lastName,
+    };
+
+    // Nếu nhập password mới thì hash trước khi update
+    if (password && password.trim() !== '') {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateData.password = hashedPassword;
+    }
+
+    // Nếu user đăng nhập là admin thì mới cho phép update role
+    if (req.session.user.role === 1 || req.session.user.role === 0) {
+      updateData.role = role;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
 
     if (!updatedUser) {
       return res.status(404).render('users', {
-        error: 'User not found',
         user: req.session.user,
-        userList: await User.find(),
+        users: await User.find(),
+        error: 'User not found',
       });
     }
 
-    const userList = await User.find();
+    const users = await User.find();
     res.status(200).render('users', {
       user: req.session.user,
-      userList,
-      success: 'User updated successfully!',
+      users,
+      success: 'User updated successfully',
     });
   } catch (error) {
     console.error('Error updating user:', error);
     res.status(500).render('users', {
       error: 'Internal server error',
       user: req.session.user,
-      userList: await User.find(),
+      users: await User.find(),
     });
   }
 });
@@ -334,7 +353,7 @@ router.post('/users/:id/change-password', auth.authSignin, async (req, res) => {
       success: 'Password changed successfully!',
       error: null,
       userById: null,
-      userList: await User.find(),
+      users: await User.find(),
     });
   } catch (error) {
     console.error('Error changing password:', error);
@@ -380,18 +399,18 @@ router.delete('/users/:id', auth.authSignin, async (req, res) => {
   try {
     const { id } = req.params;
     await User.findByIdAndDelete(id);
-    const userList = await User.find();
+    const users = await User.find();
 
     res.status(200).render('users', {
       user: req.session.user,
-      userList,
+      users,
     });
   } catch (error) {
     console.error(error);
     res.status(500).render('users', {
       error: 'Server error.',
       user: req.session.user,
-      userList: await User.find(),
+      users: await User.find(),
     });
   }
 });
@@ -444,22 +463,22 @@ router.put('/dictionary/:id', auth.authSignin, async (req, res) => {
       return res.status(404).render('dictionary', {
         error: 'Vocabulary not found',
         user: req.session.user,
-        vocabularyList: await Vocabulary.find(),
+        vocabularies: await Vocabulary.find(),
       });
     }
+    console.log('Update by:', req.session.user);
 
-    const vocabularyList = await Vocabulary.find();
-    res.status(200).render('dictionary', {
+    const vocabularies = await Vocabulary.find();
+
+    return res.status(200).render('dictionary', {
       user: req.session.user,
-      vocabularyList,
-      success: 'Vocabulary updated successfully!',
+      vocabularies,
     });
   } catch (error) {
     console.error('Error updating vocabulary:', error);
-    res.status(500).render('dictionary', {
+    return res.status(500).render('error', {
       error: 'Internal server error',
       user: req.session.user,
-      vocabularyList: await Vocabulary.find(),
     });
   }
 });
@@ -468,21 +487,21 @@ router.delete('/dictionary/:id', auth.authSignin, async (req, res) => {
   try {
     const { id } = req.params;
     await Vocabulary.findByIdAndDelete(id);
-    const vocabularyList = await Vocabulary.find();
 
-    res.status(200).render('dictionary', {
+    const vocabularies = await Vocabulary.find();
+
+    res.render('dictionary', {
       user: req.session.user,
-      vocabularyList,
+      vocabularies,
     });
   } catch (error) {
-    console.error(error);
-    const vocabularyList = await Vocabulary.find();
-
+    console.error('Error deleting vocabulary:', error.message);
+    const vocabularies = await Vocabulary.find();
     res.status(500).render('dictionary', {
-      error: 'Server error.',
       user: req.session.user,
-      vocabularyList,
+      vocabularies,
     });
   }
 });
+
 export default router;
