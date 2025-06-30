@@ -491,22 +491,34 @@ router.delete('/users/:id', auth.authSignin, async (req, res) => {
 });
 
 // project
+router.post(
+  '/projects',
+  auth.authSignin,
+  auth.checkSuperAdmin,
+  async (req, res) => {
+    try {
+      const { title, tech, description, live, github } = req.body;
 
-router.post('/projects', auth.authSignin, async (req, res) => {
-  try {
-    const { title, tech, description, live, github } = req.body;
+      const newProject = new Project({
+        title,
+        tech,
+        description,
+        live,
+        github,
+      });
+      await newProject.save();
 
-    const newProject = new Project({ title, tech, description, live, github });
-    await newProject.save();
-
-    res.redirect('/api/v1/admin/projects');
-  } catch (error) {
-    console.error('Error creating project:', error);
-    res
-      .status(500)
-      .render('error', { message: 'Internal Server Error', error });
+      res.redirect('/api/v1/admin/projects');
+    } catch (error) {
+      console.error('Error creating project:', error);
+      res.status(500).render('error', {
+        message: 'Internal Server Error',
+        error,
+      });
+    }
   }
-});
+);
+
 router.get('/projects/:id', auth.authSignin, async (req, res) => {
   try {
     const currentUser = req.session.user;
@@ -525,40 +537,55 @@ router.get('/projects/:id', auth.authSignin, async (req, res) => {
       .render('error', { message: 'Internal Server Error', error });
   }
 });
-router.put('/projects/:id', auth.authSignin, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { title, tech, description, live, github } = req.body;
+router.put(
+  '/projects/:id',
+  auth.authSignin,
+  auth.checkSuperAdmin,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { title, tech, description, live, github } = req.body;
 
-    const updatedProject = await Project.findByIdAndUpdate(
-      id,
-      { title, tech, description, live, github },
-      { new: true }
-    );
+      const updatedProject = await Project.findByIdAndUpdate(
+        id,
+        { title, tech, description, live, github },
+        { new: true }
+      );
 
-    if (!updatedProject) {
-      return res.status(404).render('error', { message: 'Project not found' });
+      if (!updatedProject) {
+        return res
+          .status(404)
+          .render('error', { message: 'Project not found.' });
+      }
+
+      res.redirect('/api/v1/admin/projects');
+    } catch (error) {
+      console.error('Error updating project:', error);
+      res.status(500).render('error', {
+        message: 'Internal Server Error',
+        error,
+      });
     }
+  }
+);
 
-    res.redirect('/api/v1/admin/projects');
-  } catch (error) {
-    console.error('Error updating project:', error);
-    res
-      .status(500)
-      .render('error', { message: 'Internal Server Error', error });
+router.delete(
+  '/projects/:id',
+  auth.authSignin,
+  auth.checkSuperAdmin,
+  async (req, res) => {
+    try {
+      await Project.findByIdAndDelete(req.params.id);
+      res.redirect('/api/v1/admin/projects');
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      res.status(500).render('error', {
+        message: 'Internal Server Error',
+        error,
+      });
+    }
   }
-});
-router.delete('/projects/:id', auth.authSignin, async (req, res) => {
-  try {
-    await Project.findByIdAndDelete(req.params.id);
-    res.redirect('/api/v1/admin/projects');
-  } catch (error) {
-    console.error('Error deleting project:', error);
-    res
-      .status(500)
-      .render('error', { message: 'Internal Server Error', error });
-  }
-});
+);
 // dictionary
 router.post('/dictionary', auth.authSignin, async (req, res) => {
   try {
