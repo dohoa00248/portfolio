@@ -11,7 +11,7 @@
   <body class="container mt-5">
     <h1 class="mb-4">Update Profile</h1>
 
-    <form action="/api/v1/admin/users/profile" method="POST">
+    <form action="/api/v1/admin/users/profile?_method=PUT" method="post">
       <div class="mb-3">
         <label for="username" class="form-label">Username</label>
         <input
@@ -36,17 +36,27 @@
         />
       </div>
 
-      <!-- Optional: display role, but keep it disabled -->
-      <!-- <div class="mb-3">
-        <label for="role" class="form-label">Role</label>
+      <div class="mb-3">
+        <label for="firstName" class="form-label">First Name</label>
         <input
           type="text"
           class="form-control"
-          id="role"
-          value="<%= currentUser.role === 1 ? 'Admin' : 'User' %>"
-          disabled
+          id="firstName"
+          name="firstName"
+          value="<%= currentUser.firstName || '' %>"
         />
-      </div> -->
+      </div>
+
+      <div class="mb-3">
+        <label for="lastName" class="form-label">Last Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="lastName"
+          name="lastName"
+          value="<%= currentUser.lastName || '' %>"
+        />
+      </div>
 
       <button type="submit" class="btn btn-primary">Update</button>
     </form>

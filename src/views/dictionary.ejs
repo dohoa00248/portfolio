@@ -52,12 +52,17 @@
     </style>
   </head>
   <body class="bg-light">
-    <!-- Navbar -->
+    <!-- Top Navbar -->
     <nav class="navbar navbar-dark bg-dark px-3">
       <span class="navbar-brand">Admin Panel</span>
       <div class="d-flex align-items-center ms-auto gap-2">
         <span class="text-white"
-          >Welcome, <%= currentUser?.username || 'Admin' %></span
+          >Welcome, <%= currentUser.username || "Admin" %></span
+        >
+        <a
+          href="/api/v1/admin/users/profile"
+          class="btn btn-outline-light btn-sm"
+          >Update Info</a
         >
         <a href="/api/v1/auth/signout" class="btn btn-outline-light btn-sm"
           >Sign Out</a
@@ -80,6 +85,7 @@
     <div class="main">
       <div class="container-fluid">
         <h2 class="mb-4">📚 Dictionary Manager</h2>
+
         <!-- Add New Word -->
         <div class="content-placeholder mb-4">
           <h5 class="mb-3">Add New Word</h5>
@@ -103,12 +109,18 @@
                 />
               </div>
               <div class="col-md-4">
-                <input
-                  type="text"
-                  class="form-control"
-                  name="partOfSpeech"
-                  placeholder="Part of Speech"
-                />
+                <select class="form-select" name="partOfSpeech" required>
+                  <option value="">Select Part of Speech</option>
+                  <option value="noun">Noun</option>
+                  <option value="verb">Verb</option>
+                  <option value="adjective">Adjective</option>
+                  <option value="adverb">Adverb</option>
+                  <option value="preposition">Preposition</option>
+                  <option value="conjunction">Conjunction</option>
+                  <option value="interjection">Interjection</option>
+                  <option value="pronoun">Pronoun</option>
+                  <option value="determiner">Determiner</option>
+                </select>
               </div>
               <div class="col-md-6">
                 <input
@@ -128,11 +140,14 @@
                 />
               </div>
               <div class="col-12 text-end">
-                <button class="btn btn-primary">➕ Add Word</button>
+                <button type="submit" class="btn btn-primary">
+                  ➕ Add Word
+                </button>
               </div>
             </div>
           </form>
         </div>
+
         <!-- FORM SEARCH -->
         <form
           action="/api/v1/admin/dictionary/search"
@@ -148,6 +163,7 @@
           />
           <button type="submit" class="btn btn-primary">🔍 Search</button>
         </form>
+
         <!-- Word List -->
         <div class="content-placeholder">
           <h5 class="mb-3">Vocabulary List</h5>
