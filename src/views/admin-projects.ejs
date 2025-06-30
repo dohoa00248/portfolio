@@ -3,16 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dictionary Manager</title>
+    <title>Project Management</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
       body {
         min-height: 100vh;
         display: flex;
         flex-direction: column;
+        background-color: #f8f9fa;
       }
       .sidebar {
         height: 100vh;
@@ -35,11 +37,12 @@
       }
       .main {
         margin-left: 220px;
-        padding: 20px;
+        padding: 80px 20px 20px 20px;
         flex: 1;
       }
       .navbar {
         position: fixed;
+        top: 0;
         width: 100%;
         z-index: 1000;
       }
@@ -49,9 +52,13 @@
         padding: 20px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
       }
+      table th,
+      table td {
+        vertical-align: middle;
+      }
     </style>
   </head>
-  <body class="bg-light">
+  <body>
     <!-- Top Navbar -->
     <nav class="navbar navbar-dark bg-dark px-3">
       <span class="navbar-brand">Admin Panel</span>
@@ -85,165 +92,155 @@
     <!-- Main Content -->
     <div class="main">
       <div class="container-fluid">
-        <h2 class="mb-4">📚 Dictionary Manager</h2>
+        <h2 class="mb-4">Project Management</h2>
 
-        <!-- Add New Word -->
+        <!-- Summary -->
+        <div class="row">
+          <div class="col-md-4 mb-4">
+            <div class="content-placeholder text-center">
+              <h5>Total Projects</h5>
+              <p class="fs-4 fw-bold text-info"><%= totalProjects %></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Project Form -->
         <div class="content-placeholder mb-4">
-          <h5 class="mb-3">Add New Word</h5>
-          <form action="/api/v1/admin/dictionary" method="POST">
+          <h5 class="mb-3">Add New Project</h5>
+          <form action="/api/v1/admin/projects" method="post">
             <div class="row g-3">
               <div class="col-md-4">
                 <input
                   type="text"
+                  name="title"
                   class="form-control"
-                  name="word"
-                  placeholder="Word"
+                  placeholder="Title"
+                  required
+                />
+              </div>
+              <div class="col-md-3">
+                <input
+                  type="text"
+                  name="tech"
+                  class="form-control"
+                  placeholder="Tech Stack"
+                  required
+                />
+              </div>
+              <div class="col-md-5">
+                <input
+                  type="text"
+                  name="description"
+                  class="form-control"
+                  placeholder="Description"
                   required
                 />
               </div>
               <div class="col-md-4">
                 <input
-                  type="text"
+                  type="url"
+                  name="live"
                   class="form-control"
-                  name="pronunciation"
-                  placeholder="Pronunciation"
-                />
-              </div>
-              <div class="col-md-4">
-                <select class="form-select" name="partOfSpeech" required>
-                  <option value="">Select Part of Speech</option>
-                  <option value="noun">Noun</option>
-                  <option value="verb">Verb</option>
-                  <option value="adjective">Adjective</option>
-                  <option value="adverb">Adverb</option>
-                  <option value="preposition">Preposition</option>
-                  <option value="conjunction">Conjunction</option>
-                  <option value="interjection">Interjection</option>
-                  <option value="pronoun">Pronoun</option>
-                  <option value="determiner">Determiner</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <input
-                  type="text"
-                  class="form-control"
-                  name="meaning"
-                  placeholder="Meaning"
+                  placeholder="Live URL"
                   required
                 />
               </div>
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <input
-                  type="text"
+                  type="url"
+                  name="github"
                   class="form-control"
-                  name="examples"
-                  placeholder="Examples (comma separated)"
+                  placeholder="Github URL"
+                  required
                 />
               </div>
-              <div class="col-12 text-end">
+              <div class="col-md-4 d-grid">
                 <button type="submit" class="btn btn-primary">
-                  ➕ Add Word
+                  ➕ Add Project
                 </button>
               </div>
             </div>
           </form>
         </div>
 
-        <!-- FORM SEARCH -->
-        <form
-          action="/api/v1/admin/dictionary/search"
-          method="get"
-          class="d-flex mb-3"
-        >
-          <input
-            type="text"
-            name="query"
-            class="form-control me-2"
-            placeholder="Search Vocabulary"
-            required
-          />
-          <button type="submit" class="btn btn-primary">🔍 Search</button>
-        </form>
-
-        <!-- Word List -->
+        <!-- Projects Table -->
         <div class="content-placeholder">
-          <h5 class="mb-3">Vocabulary List</h5>
-          <% if (vocabularies.length === 0) { %>
-          <p class="text-muted">No entries found.</p>
+          <h5 class="mb-3">Project List</h5>
+
+          <% if (projects.length === 0) { %>
+          <p class="text-muted">No projects found.</p>
           <% } else { %>
           <div class="table-responsive">
             <table class="table table-bordered table-hover align-middle">
               <thead class="table-dark">
                 <tr>
                   <th>#</th>
-                  <th>Word</th>
-                  <th>Pronunciation</th>
-                  <th>Part of Speech</th>
-                  <th>Meaning</th>
-                  <th>Examples</th>
-                  <th>Created</th>
-                  <th>Updated</th>
+                  <th>Title</th>
+                  <th>Tech Stack</th>
+                  <th>Description</th>
+                  <th>Live</th>
+                  <th>Github</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                <% vocabularies.forEach((vocab, index) => { %>
+                <% projects.forEach((project, index) => { %>
                 <tr>
                   <td><%= index + 1 %></td>
-                  <td><%= vocab.word %></td>
-                  <td><%= vocab.pronunciation %></td>
-                  <td><%= vocab.partOfSpeech %></td>
-                  <td><%= vocab.meaning %></td>
+                  <td><%= project.title %></td>
+                  <td><%= project.tech %></td>
                   <td>
-                    <% if (Array.isArray(vocab.examples)) { %>
-                    <ul class="mb-0 ps-3">
-                      <% vocab.examples.forEach(ex => { %>
-                      <li><%= ex %></li>
-                      <% }) %>
-                    </ul>
-                    <% } else { %> <%= vocab.examples %> <% } %>
-                  </td>
-                  <td>
-                    <%= new Date(vocab.createdAt).toLocaleString('vi-VN', {
-                    hour12: false }) %>
-                  </td>
-                  <td>
-                    <%= new Date(vocab.updatedAt).toLocaleString('vi-VN', {
-                    hour12: false }) %>
-                  </td>
-                  <td>
-                    <!-- Action buttons -->
-                    <a
-                      href="/api/v1/admin/dictionary/<%= vocab._id %>"
-                      class="btn btn-sm btn-primary me-1"
-                      >Edit</a
+                    <span
+                      class="d-inline-block text-truncate"
+                      style="max-width: 200px"
+                      title="<%= project.description %>"
                     >
-                    <form
-                      action="/api/v1/admin/dictionary/<%= vocab._id %>?_method=DELETE"
-                      method="post"
-                      style="display: inline"
+                      <%= project.description.slice(0, 60) + '...' %>
+                    </span>
+                  </td>
+                  <td>
+                    <a href="<%= project.live %>" target="_blank">🔗 Live</a>
+                  </td>
+                  <td>
+                    <a href="<%= project.github %>" target="_blank"
+                      >📁 Github</a
                     >
-                      <button
-                        type="submit"
-                        class="btn btn-sm btn-danger"
-                        onclick="return confirm('Are you sure?')"
+                  </td>
+                  <td>
+                    <div class="btn-group" role="group">
+                      <a
+                        href="/api/v1/admin/projects/<%= project._id %>"
+                        class="btn btn-sm btn-primary"
+                        title="Edit"
+                        >✏️ Edit</a
                       >
-                        Delete
-                      </button>
-                    </form>
+                      <form
+                        action="/api/v1/admin/projects/<%= project._id %>?_method=DELETE"
+                        method="post"
+                        onsubmit="return confirm('Are you sure to delete this project?');"
+                        style="display: inline"
+                      >
+                        <button
+                          type="submit"
+                          class="btn btn-sm btn-danger"
+                          title="Delete"
+                        >
+                          🗑️ Delete
+                        </button>
+                      </form>
+                    </div>
                   </td>
                 </tr>
                 <% }) %>
               </tbody>
             </table>
           </div>
+
           <% } %>
         </div>
       </div>
     </div>
 
-    <!-- Script -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       const toggleButton = document.getElementById('toggleMode');
       const body = document.body;
@@ -256,12 +253,9 @@
         sidebar.classList.toggle('bg-dark');
         sidebar.classList.toggle('bg-light');
         sidebar.classList.toggle('text-dark');
-
-        if (toggleButton.textContent.includes('Dark')) {
-          toggleButton.innerHTML = '☀️ Light';
-        } else {
-          toggleButton.innerHTML = '🌙 Dark';
-        }
+        toggleButton.innerHTML = toggleButton.textContent.includes('Dark')
+          ? '☀️ Light'
+          : '🌙 Dark';
       });
     </script>
   </body>

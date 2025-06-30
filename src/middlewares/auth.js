@@ -1,6 +1,6 @@
 const authSignin = (req, res, next) => {
   if (!req.session.user) {
-    return res.redirect('/api/v1/auth/signin');
+    return res.status(302).redirect('/api/v1/auth/signin');
   }
   next();
 };

@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import auth from '../../test/middlewares/auth.test.js';
 import User from '../models/User.test.js';
 import Vocabulary from '../models/Vocabulary.test.js';
+import Project from '../../models/Project.js';
 
 const router = express.Router();
 
@@ -32,7 +33,39 @@ router.get('/dashboard', auth.authSignin, async (req, res) => {
     });
   }
 });
-
+router.get('/users', auth.authSignin, async (req, res) => {
+  try {
+    const currentUser = req.session.user;
+    const users = await User.find({});
+    const totalUsers = await User.countDocuments();
+    res.render('admin-users.ejs', {
+      currentUser,
+      users,
+      totalUsers,
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).send('Server error');
+  }
+});
+router.get('/projects', auth.authSignin, async (req, res) => {
+  try {
+    const currentUser = req.session.user;
+    const projects = await Project.find({});
+    const totalProjects = await Project.countDocuments();
+    return res.status(200).render('admin-projects', {
+      projects,
+      currentUser,
+      totalProjects,
+    });
+  } catch (error) {
+    console.error('error load projects');
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
+      error,
+    });
+  }
+});
 router.get('/dictionary', auth.authSignin, async (req, res) => {
   try {
     // throw new Error('Test error dashboard');
@@ -50,7 +83,6 @@ router.get('/dictionary', auth.authSignin, async (req, res) => {
     });
   }
 });
-
 router.get('/statistics', auth.authSignin, async (req, res) => {
   try {
     const currentUser = req.session.user;
@@ -106,22 +138,6 @@ router.put('/users/profile', auth.authSignin, async (req, res) => {
 /**
  * USER MANAGEMENT ROUTES (ADMIN)
  */
-router.get('/users', auth.authSignin, async (req, res) => {
-  try {
-    const currentUser = req.session.user;
-    const users = await User.find({});
-    const totalUsers = await User.countDocuments();
-    res.render('admin-users.ejs', {
-      currentUser,
-      users,
-      totalUsers,
-    });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).send('Server error');
-  }
-});
-
 router.get('/users/create', auth.authSignin, (req, res) => {
   const currentUser = req.session.user;
   res.render('create-user.ejs', { currentUser });
@@ -474,6 +490,75 @@ router.delete('/users/:id', auth.authSignin, async (req, res) => {
   }
 });
 
+// project
+
+router.post('/projects', auth.authSignin, async (req, res) => {
+  try {
+    const { title, tech, description, live, github } = req.body;
+
+    const newProject = new Project({ title, tech, description, live, github });
+    await newProject.save();
+
+    res.redirect('/api/v1/admin/projects');
+  } catch (error) {
+    console.error('Error creating project:', error);
+    res
+      .status(500)
+      .render('error', { message: 'Internal Server Error', error });
+  }
+});
+router.get('/projects/:id', auth.authSignin, async (req, res) => {
+  try {
+    const currentUser = req.session.user;
+    const { id } = req.params;
+
+    const project = await Project.findById(id);
+    if (!project) {
+      return res.status(404).render('error', { message: 'Project not found' });
+    }
+
+    res.render('project-detail', { project, currentUser });
+  } catch (error) {
+    console.error('Error loading project edit:', error);
+    res
+      .status(500)
+      .render('error', { message: 'Internal Server Error', error });
+  }
+});
+router.put('/projects/:id', auth.authSignin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, tech, description, live, github } = req.body;
+
+    const updatedProject = await Project.findByIdAndUpdate(
+      id,
+      { title, tech, description, live, github },
+      { new: true }
+    );
+
+    if (!updatedProject) {
+      return res.status(404).render('error', { message: 'Project not found' });
+    }
+
+    res.redirect('/api/v1/admin/projects');
+  } catch (error) {
+    console.error('Error updating project:', error);
+    res
+      .status(500)
+      .render('error', { message: 'Internal Server Error', error });
+  }
+});
+router.delete('/projects/:id', auth.authSignin, async (req, res) => {
+  try {
+    await Project.findByIdAndDelete(req.params.id);
+    res.redirect('/api/v1/admin/projects');
+  } catch (error) {
+    console.error('Error deleting project:', error);
+    res
+      .status(500)
+      .render('error', { message: 'Internal Server Error', error });
+  }
+});
 // dictionary
 router.post('/dictionary', auth.authSignin, async (req, res) => {
   try {
