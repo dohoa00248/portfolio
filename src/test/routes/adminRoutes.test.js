@@ -17,7 +17,7 @@ router.get('/dashboard', auth.authSignin, async (req, res) => {
     const totalVocabulary = await Vocabulary.countDocuments();
     // console.log('Total Users:', totalUsers);
     // console.log('Total Vocabulary:', totalVocabulary);
-    return res.render('dashboard.ejs', {
+    return res.render('admin-dashboard.ejs', {
       currentUser,
       users,
       totalUsers,
@@ -38,7 +38,7 @@ router.get('/dictionary', auth.authSignin, async (req, res) => {
     // throw new Error('Test error dashboard');
     const currentUser = req.session.user;
     const vocabularies = await Vocabulary.find({});
-    res.render('dictionary', {
+    res.render('admin-dictionary', {
       currentUser,
       vocabularies,
     });
@@ -56,7 +56,7 @@ router.get('/statistics', auth.authSignin, async (req, res) => {
     const currentUser = req.session.user;
     const totalUsers = await User.countDocuments();
     const totalVocabulary = await Vocabulary.countDocuments();
-    res.render('statistics', {
+    res.render('admin-statistics', {
       currentUser,
       totalUsers,
       totalVocabulary,
@@ -111,7 +111,7 @@ router.get('/users', auth.authSignin, async (req, res) => {
     const currentUser = req.session.user;
     const users = await User.find({});
     const totalUsers = await User.countDocuments();
-    res.render('users.ejs', {
+    res.render('admin-users.ejs', {
       currentUser,
       users,
       totalUsers,
@@ -201,7 +201,7 @@ router.get('/users/search', auth.authSignin, async (req, res) => {
       ],
     }).sort({ createdAt: -1 });
 
-    return res.render('users', {
+    return res.render('admin-users', {
       currentUser,
       users,
     });
@@ -246,7 +246,7 @@ router.put('/users/:id', auth.authSignin, async (req, res) => {
 
     const userToUpdate = await User.findById(id);
     if (!userToUpdate) {
-      return res.status(404).render('users', {
+      return res.status(404).render('admin-users', {
         currentUser,
         users: await User.find(),
         error: 'User not found',
@@ -256,14 +256,14 @@ router.put('/users/:id', auth.authSignin, async (req, res) => {
     if (currentUser.role === 0) {
     } else if (currentUser.role === 1) {
       if (userToUpdate.role === 0 || userToUpdate.role === 1) {
-        return res.status(403).render('users', {
+        return res.status(403).render('admin-users', {
           currentUser,
           users: await User.find(),
           error: 'You do not have permission to update this user',
         });
       }
     } else {
-      return res.status(403).render('users', {
+      return res.status(403).render('admin-users', {
         currentUser,
         users: await User.find(),
         error: 'You do not have permission to update users',
@@ -289,7 +289,7 @@ router.put('/users/:id', auth.authSignin, async (req, res) => {
     await User.findByIdAndUpdate(id, updateData, { new: true });
 
     const users = await User.find();
-    res.status(200).render('users', {
+    res.status(200).render('admin-users', {
       currentUser,
       users,
       message: 'User updated successfully',
@@ -429,7 +429,7 @@ router.delete('/users/:id', auth.authSignin, async (req, res) => {
     const userToDelete = await User.findById(id);
 
     if (!userToDelete) {
-      return res.status(404).render('users', {
+      return res.status(404).render('admin-users', {
         currentUser,
         users: await User.find(),
         error: 'User not found.',
@@ -442,14 +442,14 @@ router.delete('/users/:id', auth.authSignin, async (req, res) => {
       if (userToDelete.role >= 2) {
         await userToDelete.deleteOne();
       } else {
-        return res.status(403).render('users', {
+        return res.status(403).render('admin-users', {
           currentUser,
           users: await User.find(),
           error: 'You do not have permission to delete this user.',
         });
       }
     } else {
-      return res.status(403).render('users', {
+      return res.status(403).render('admin-users', {
         currentUser,
         users: await User.find(),
         error: 'You do not have permission to delete users.',
@@ -458,7 +458,7 @@ router.delete('/users/:id', auth.authSignin, async (req, res) => {
 
     const users = await User.find();
 
-    res.status(200).render('users', {
+    res.status(200).render('admin-users', {
       currentUser,
       users,
       message: 'User deleted successfully.',
@@ -466,7 +466,7 @@ router.delete('/users/:id', auth.authSignin, async (req, res) => {
   } catch (error) {
     console.error(error);
 
-    res.status(500).render('users', {
+    res.status(500).render('admin-users', {
       error: 'Server error.',
       currentUser,
       users: await User.find(),
@@ -499,7 +499,7 @@ router.post('/dictionary', auth.authSignin, async (req, res) => {
 
     const vocabularies = await Vocabulary.find({});
 
-    res.status(200).render('dictionary', {
+    res.status(200).render('admin-dictionary', {
       data: newVocabulary,
       currentUser,
       vocabularies,
@@ -520,7 +520,7 @@ router.get('/dictionary/search', auth.authSignin, async (req, res) => {
     if (!query) {
       const vocabularies = await Vocabulary.find();
 
-      return res.status(400).render('dictionary', {
+      return res.status(400).render('admin-dictionary', {
         currentUser,
         vocabularies,
       });
@@ -530,7 +530,7 @@ router.get('/dictionary/search', auth.authSignin, async (req, res) => {
       word: { $regex: query, $options: 'i' },
     });
 
-    res.render('dictionary', {
+    res.render('admin-dictionary', {
       currentUser,
       vocabularies,
     });
@@ -587,7 +587,7 @@ router.put('/dictionary/:id', auth.authSignin, async (req, res) => {
     );
 
     if (!updated) {
-      return res.status(404).render('dictionary', {
+      return res.status(404).render('admin-dictionary', {
         error: 'Vocabulary not found',
         user: req.session.user,
         vocabularies: await Vocabulary.find(),
@@ -597,7 +597,7 @@ router.put('/dictionary/:id', auth.authSignin, async (req, res) => {
 
     const vocabularies = await Vocabulary.find();
 
-    return res.status(200).render('dictionary', {
+    return res.status(200).render('admin-dictionary', {
       currentUser,
       vocabularies,
     });
@@ -617,13 +617,13 @@ router.delete('/dictionary/:id', auth.authSignin, async (req, res) => {
 
     const vocabularies = await Vocabulary.find();
 
-    res.render('dictionary', {
+    res.render('admin-dictionary', {
       currentUser,
       vocabularies,
     });
   } catch (error) {
     console.error('Error deleting vocabulary:', error.message);
-    res.status(500).render('dictionary', {
+    res.status(500).render('error', {
       message: 'Internal server error',
       error,
     });
