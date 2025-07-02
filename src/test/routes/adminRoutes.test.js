@@ -4,7 +4,10 @@ import auth from '../../test/middlewares/auth.test.js';
 import User from '../models/User.test.js';
 import Vocabulary from '../models/Vocabulary.test.js';
 import Project from '../../models/Project.js';
-
+import upload from '../middlewares/upload.test.js';
+import path from 'path';
+import xlsx from 'xlsx';
+import fs from 'fs';
 const router = express.Router();
 
 /**
@@ -592,7 +595,7 @@ router.delete(
 router.post('/dictionary', auth.authSignin, async (req, res) => {
   try {
     const currentUser = req.session.user;
-    console.log(currentUser);
+    // console.log(currentUser);
     const { word, pronunciation, partOfSpeech, meaning, examples } = req.body;
 
     const newVocabulary = new Vocabulary({
@@ -604,12 +607,12 @@ router.post('/dictionary', auth.authSignin, async (req, res) => {
     });
     await newVocabulary.save();
 
-    console.log(
-      'Vocabulary is created by',
-      currentUser.username,
-      ':',
-      newVocabulary
-    );
+    // console.log(
+    //   'Vocabulary is created by',
+    //   currentUser.username,
+    //   ':',
+    //   newVocabulary
+    // );
 
     const vocabularies = await Vocabulary.find({});
 
@@ -679,69 +682,134 @@ router.get('/dictionary/:id', auth.authSignin, async (req, res) => {
     });
   }
 });
-router.put('/dictionary/:id', auth.authSignin, async (req, res) => {
-  try {
-    const currentUser = req.session.user;
-    const { id } = req.params;
-    const { word, pronunciation, partOfSpeech, meaning, examples } = req.body;
+router.put(
+  '/dictionary/:id',
+  auth.authSignin,
+  auth.checkSuperAdmin,
+  async (req, res) => {
+    try {
+      const currentUser = req.session.user;
+      const { id } = req.params;
+      const { word, pronunciation, partOfSpeech, meaning, examples } = req.body;
 
-    const updated = await Vocabulary.findByIdAndUpdate(
-      id,
-      {
-        word,
-        pronunciation,
-        partOfSpeech,
-        meaning,
-        examples: examples
-          .split('\n')
-          .map((e) => e.trim())
-          .filter((e) => e),
-      },
-      { new: true }
-    );
+      const updated = await Vocabulary.findByIdAndUpdate(
+        id,
+        {
+          word,
+          pronunciation,
+          partOfSpeech,
+          meaning,
+          examples: examples
+            .split('\n')
+            .map((e) => e.trim())
+            .filter((e) => e),
+        },
+        { new: true }
+      );
 
-    if (!updated) {
-      return res.status(404).render('admin-dictionary', {
-        error: 'Vocabulary not found',
-        user: req.session.user,
-        vocabularies: await Vocabulary.find(),
+      if (!updated) {
+        return res.status(404).render('admin-dictionary', {
+          error: 'Vocabulary not found',
+          user: req.session.user,
+          vocabularies: await Vocabulary.find(),
+        });
+      }
+      console.log('Update by:', req.session.user);
+
+      const vocabularies = await Vocabulary.find();
+
+      return res.status(200).render('admin-dictionary', {
+        currentUser,
+        vocabularies,
+      });
+    } catch (error) {
+      console.error('Error updating vocabulary:', error);
+      return res.status(500).render('error', {
+        message: 'Internal server error',
+        error,
       });
     }
-    console.log('Update by:', req.session.user);
-
-    const vocabularies = await Vocabulary.find();
-
-    return res.status(200).render('admin-dictionary', {
-      currentUser,
-      vocabularies,
-    });
-  } catch (error) {
-    console.error('Error updating vocabulary:', error);
-    return res.status(500).render('error', {
-      message: 'Internal server error',
-      error,
-    });
   }
-});
-router.delete('/dictionary/:id', auth.authSignin, async (req, res) => {
-  try {
-    const currentUser = req.session.user;
-    const { id } = req.params;
-    await Vocabulary.findByIdAndDelete(id);
+);
+router.delete(
+  '/dictionary/:id',
+  auth.authSignin,
+  auth.checkSuperAdmin,
+  async (req, res) => {
+    try {
+      const currentUser = req.session.user;
+      const { id } = req.params;
+      await Vocabulary.findByIdAndDelete(id);
 
-    const vocabularies = await Vocabulary.find();
+      const vocabularies = await Vocabulary.find();
 
-    res.render('admin-dictionary', {
-      currentUser,
-      vocabularies,
-    });
-  } catch (error) {
-    console.error('Error deleting vocabulary:', error.message);
-    res.status(500).render('error', {
-      message: 'Internal server error',
-      error,
-    });
+      res.render('admin-dictionary', {
+        currentUser,
+        vocabularies,
+      });
+    } catch (error) {
+      console.error('Error deleting vocabulary:', error.message);
+      res.status(500).render('error', {
+        message: 'Internal server error',
+        error,
+      });
+    }
   }
-});
+);
 
+router.post(
+  '/dictionary/import-excel',
+  upload.single('file'),
+  auth.authSignin,
+  auth.checkSuperAdmin,
+  async (req, res) => {
+    try {
+      const file = req.file;
+      const filePath = path.join(file.destination, file.filename);
+
+      const workbook = xlsx.readFile(filePath);
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const data = xlsx.utils.sheet_to_json(sheet);
+
+      const posMap = {
+        n: 'noun',
+        v: 'verb',
+        adj: 'adjective',
+        adv: 'adverb',
+        prep: 'preposition',
+        conj: 'conjunction',
+        interj: 'interjection',
+        pron: 'pronoun',
+        det: 'determiner',
+      };
+
+      const formattedData = data.map((item) => {
+        const posRaw = item.partOfSpeech?.toLowerCase().trim();
+        return {
+          word: item.word?.toLowerCase().trim(),
+          pronunciation: item.pronunciation?.trim() || '',
+          partOfSpeech: posMap[posRaw] || posRaw,
+          meaning: item.meaning?.trim(),
+          examples: item.examples
+            ? item.examples.split(',').map((e) => e.trim())
+            : [],
+        };
+      });
+      console.log('Formatted data:', formattedData);
+      const inserted = await Vocabulary.insertMany(formattedData);
+
+      fs.unlinkSync(filePath);
+
+      // res.json({
+      //   msg: 'Upload, read, insert DB, and delete file success',
+      //   count: inserted.length,
+      // });
+      return res.status(303).redirect('/api/v1/admin/dictionary');
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server error' });
+    }
+  }
+);
 export default router;

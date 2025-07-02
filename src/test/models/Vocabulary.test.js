@@ -4,7 +4,7 @@ const vocabularySchema = new mongoose.Schema(
   {
     word: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
       lowercase: true,
     },
@@ -25,11 +25,11 @@ const vocabularySchema = new mongoose.Schema(
         'pronoun',
         'determiner',
       ],
-      required: true,
+      // required: true,
     },
     meaning: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
     },
     examples: {

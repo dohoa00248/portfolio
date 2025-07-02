@@ -101,6 +101,32 @@
           </form>
         </div>
 
+        <!-- Upload Excel File -->
+        <div class="content-placeholder mt-4">
+          <h5>Import Vocabulary from Excel</h5>
+          <form
+            action="/api/v1/admin/dictionary/import-excel"
+            method="POST"
+            enctype="multipart/form-data"
+            class="row g-3"
+          >
+            <div class="col-md-8">
+              <input
+                type="file"
+                name="file"
+                class="form-control"
+                accept=".xlsx,.xls"
+                required
+              />
+            </div>
+            <div class="col-md-4">
+              <button type="submit" class="btn btn-success w-100">
+                📤 Upload File
+              </button>
+            </div>
+          </form>
+        </div>
+
         <!-- Search -->
         <form
           action="/api/v1/admin/dictionary/search"

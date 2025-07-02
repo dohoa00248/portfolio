@@ -24,7 +24,9 @@
     "method-override": "^3.0.0",
     "mongodb": "^6.16.0",
     "mongoose": "^8.15.0",
-    "mysql2": "^3.14.1"
+    "multer": "^2.0.1",
+    "mysql2": "^3.14.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
