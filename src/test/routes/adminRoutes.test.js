@@ -16,13 +16,13 @@ router.get('/dashboard', auth.authSignin, async (req, res) => {
     const users = await User.find({});
     const totalUsers = await User.countDocuments();
     const totalVocabulary = await Vocabulary.countDocuments();
-    // console.log('Total Users:', totalUsers);
-    // console.log('Total Vocabulary:', totalVocabulary);
+    const totalProjects = await Project.countDocuments();
     return res.render('admin-dashboard.ejs', {
       currentUser,
       users,
       totalUsers,
       totalVocabulary,
+      totalProjects,
     });
   } catch (error) {
     console.error('Error loading dashboard:', error);
@@ -88,10 +88,12 @@ router.get('/statistics', auth.authSignin, async (req, res) => {
     const currentUser = req.session.user;
     const totalUsers = await User.countDocuments();
     const totalVocabulary = await Vocabulary.countDocuments();
+    const totalProjects = await Project.countDocuments();
     res.render('admin-statistics', {
       currentUser,
       totalUsers,
       totalVocabulary,
+      totalProjects,
     });
   } catch (error) {
     console.error('Error', error);
