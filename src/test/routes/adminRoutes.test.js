@@ -16,11 +16,16 @@ const router = express.Router();
 router.get('/dashboard', auth.authSignin, async (req, res) => {
   try {
     const currentUser = req.session.user;
-    const users = await User.find({});
-    const totalUsers = await User.countDocuments();
-    const totalVocabulary = await Vocabulary.countDocuments();
-    const totalProjects = await Project.countDocuments();
-    return res.render('admin-dashboard.ejs', {
+
+    const [users, totalUsers, totalVocabulary, totalProjects] =
+      await Promise.all([
+        User.find(),
+        User.countDocuments(),
+        Vocabulary.countDocuments(),
+        Project.countDocuments(),
+      ]);
+
+    return res.render('admin-dashboard', {
       currentUser,
       users,
       totalUsers,
@@ -28,80 +33,91 @@ router.get('/dashboard', auth.authSignin, async (req, res) => {
       totalProjects,
     });
   } catch (error) {
-    console.error('Error loading dashboard:', error);
+    console.error('Error loading dashboard:', error.message);
 
-    return res.status(500).render('error.ejs', {
-      message: 'Server error while loading dashboard.',
-      error,
-    });
-  }
-});
-router.get('/users', auth.authSignin, async (req, res) => {
-  try {
-    const currentUser = req.session.user;
-    const users = await User.find({});
-    const totalUsers = await User.countDocuments();
-    res.render('admin-users.ejs', {
-      currentUser,
-      users,
-      totalUsers,
-    });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).send('Server error');
-  }
-});
-router.get('/projects', auth.authSignin, async (req, res) => {
-  try {
-    const currentUser = req.session.user;
-    const projects = await Project.find({});
-    const totalProjects = await Project.countDocuments();
-    return res.status(200).render('admin-projects', {
-      projects,
-      currentUser,
-      totalProjects,
-    });
-  } catch (error) {
-    console.error('error load projects');
     return res.status(500).render('error', {
       message: 'Internal Server Error',
       error,
     });
   }
 });
-router.get('/dictionary', auth.authSignin, async (req, res) => {
+
+router.get('/users', auth.authSignin, async (req, res) => {
   try {
-    // throw new Error('Test error dashboard');
     const currentUser = req.session.user;
-    const vocabularies = await Vocabulary.find({});
-    res.render('admin-dictionary', {
+    const users = await User.find();
+    const totalUsers = await User.countDocuments();
+
+    return res.render('admin-users', {
       currentUser,
-      vocabularies,
+      users,
+      totalUsers,
     });
   } catch (error) {
-    console.error('Error', error);
-    return res.status(500).render('error.ejs', {
-      message: 'Server error while loading.',
+    console.error('Error fetching users:', error.message);
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
       error,
     });
   }
 });
+
+router.get('/projects', auth.authSignin, async (req, res) => {
+  try {
+    const currentUser = req.session.user;
+    const projects = await Project.find();
+    const totalProjects = await Project.countDocuments();
+
+    return res.status(200).render('admin-projects', {
+      currentUser,
+      projects,
+      totalProjects,
+    });
+  } catch (error) {
+    console.error('Error loading projects:', error.message);
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
+      error,
+    });
+  }
+});
+
+router.get('/dictionary', auth.authSignin, async (req, res) => {
+  try {
+    const currentUser = req.session.user;
+    const vocabularies = await Vocabulary.find();
+
+    return res.render('admin-dictionary', {
+      currentUser,
+      vocabularies,
+    });
+  } catch (error) {
+    console.error('Error fetching dictionary:', error.message);
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
+      error,
+    });
+  }
+});
+
 router.get('/statistics', auth.authSignin, async (req, res) => {
   try {
     const currentUser = req.session.user;
+
     const totalUsers = await User.countDocuments();
     const totalVocabulary = await Vocabulary.countDocuments();
     const totalProjects = await Project.countDocuments();
-    res.render('admin-statistics', {
+
+    return res.render('admin-statistics', {
       currentUser,
       totalUsers,
       totalVocabulary,
       totalProjects,
     });
   } catch (error) {
-    console.error('Error', error);
-    return res.status(500).render('error.ejs', {
-      message: 'Server error while loading.',
+    console.error('Error fetching statistics:', error.message);
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
       error,
     });
   }
@@ -113,45 +129,73 @@ router.get('/statistics', auth.authSignin, async (req, res) => {
 router.get('/users/profile', auth.authSignin, async (req, res) => {
   try {
     const currentUser = req.session.user;
+
     const user = await User.findById(currentUser._id);
-    if (!user) return res.status(404).send('User not found');
-    res.render('update-profile', { currentUser });
-  } catch (err) {
-    console.error('Error fetching user:', err);
-    res.status(500).send('Server error');
+    if (!user) {
+      console.error(`User ${currentUser._id} not found`);
+      return res.status(404).render('error', {
+        message: 'User not found',
+      });
+    }
+
+    return res.render('update-profile', { currentUser: user });
+  } catch (error) {
+    console.error('Error fetching user profile:', error.message);
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
+      error,
+    });
   }
 });
 
 router.put('/users/profile', auth.authSignin, async (req, res) => {
   try {
     const { username, email, firstName, lastName } = req.body;
-    // console.log(req.body);
+
     const updatedUser = await User.findByIdAndUpdate(
       req.session.user._id,
       { username, email, firstName, lastName },
       { new: true }
     );
-    // console.log(updatedUser);
+
+    // Cập nhật lại session user sau khi update
     req.session.user = updatedUser;
+
+    console.log(`Updated profile for user ${updatedUser.username}`);
+
     return res.redirect('/api/v1/auth/signin');
-  } catch (err) {
-    console.error('Error updating profile:', err);
-    res.status(500).send('Server error');
+  } catch (error) {
+    console.error('Error updating profile:', error.message);
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
+      error,
+    });
   }
 });
 
 /**
  * USER MANAGEMENT ROUTES (ADMIN)
  */
-router.get('/users/create', auth.authSignin, (req, res) => {
-  const currentUser = req.session.user;
-  res.render('create-user.ejs', { currentUser });
+router.get('/users/create', auth.authSignin, async (req, res) => {
+  try {
+    const currentUser = req.session.user;
+
+    return res.render('create-user.ejs', {
+      currentUser,
+    });
+  } catch (error) {
+    console.error('Error loading create user page:', error.message);
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
+      error,
+    });
+  }
 });
 
 router.post('/users', auth.authSignin, async (req, res) => {
   try {
     const currentUser = req.session.user;
-    const { username, password, email } = req.body;
+    const { username, password, email, role: roleInput } = req.body;
 
     if (currentUser.role > 1) {
       return res.status(403).render('error', {
@@ -161,7 +205,7 @@ router.post('/users', auth.authSignin, async (req, res) => {
 
     if (!username || !password) {
       return res.status(400).render('create-user.ejs', {
-        error: 'All fields are required.',
+        error: 'Username and password are required.',
         currentUser,
       });
     }
@@ -174,12 +218,12 @@ router.post('/users', auth.authSignin, async (req, res) => {
       });
     }
 
-    let role = 2; // default User
+    let role = 2;
     if (currentUser.role === 0) {
-      role = req.body.role;
+      role = roleInput;
     } else if (currentUser.role === 1) {
-      if (req.body.role == 1 || req.body.role == 2 || req.body.role == 3) {
-        role = req.body.role;
+      if ([1, 2, 3].includes(Number(roleInput))) {
+        role = roleInput;
       }
     }
 
@@ -193,11 +237,14 @@ router.post('/users', auth.authSignin, async (req, res) => {
     });
 
     await newUser.save();
-    res.redirect('/api/v1/admin/users');
+
+    console.log(`User ${username} created by ${currentUser.username}`);
+
+    return res.redirect('/api/v1/admin/users');
   } catch (error) {
-    console.error(error);
-    res.status(500).render('error', {
-      message: 'Server error. Please try again.',
+    console.error('Error creating user:', error);
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
       error,
     });
   }
@@ -209,17 +256,18 @@ router.get('/users/search', auth.authSignin, async (req, res) => {
     const { query } = req.query;
 
     if (!query) {
-      return res.render('users', {
-        user: req.session.user,
-        error,
+      const users = await User.find().sort({ createdAt: -1 });
+      return res.render('admin-users', {
+        currentUser,
+        users,
+        error: 'Please enter a search query.',
       });
     }
 
     const users = await User.find({
-      $or: [
-        { username: { $regex: query, $options: 'i' } },
-        // { email: { $regex: query, $options: 'i' } },
-      ],
+      username: { $regex: query, $options: 'i' },
+
+      // email: { $regex: query, $options: 'i' },
     }).sort({ createdAt: -1 });
 
     return res.render('admin-users', {
@@ -229,7 +277,7 @@ router.get('/users/search', auth.authSignin, async (req, res) => {
   } catch (error) {
     console.error('Error searching users:', error);
     return res.status(500).render('error', {
-      message: 'Internal server error',
+      message: 'Internal Server Error',
       error,
     });
   }
@@ -242,19 +290,20 @@ router.get('/users/:id', auth.authSignin, async (req, res) => {
     const userById = await User.findById(id);
 
     if (!userById) {
-      return res.status(404).render('user-detail', {
-        error: 'User not found',
+      return res.status(404).render('error', {
+        message: 'User not found.',
       });
     }
 
-    res.render('user-detail', {
+    return res.render('user-detail', {
       currentUser,
       userById,
     });
   } catch (error) {
     console.error('Error fetching user details:', error.message);
-    res.status(500).render('user-detail', {
-      error: 'Internal server error',
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
+      error,
     });
   }
 });
@@ -267,37 +316,32 @@ router.put('/users/:id', auth.authSignin, async (req, res) => {
 
     const userToUpdate = await User.findById(id);
     if (!userToUpdate) {
-      return res.status(404).render('admin-users', {
-        currentUser,
-        users: await User.find(),
-        error: 'User not found',
+      return res.status(404).render('error', {
+        message: 'User not found.',
       });
     }
 
-    if (currentUser.role === 0) {
-    } else if (currentUser.role === 1) {
+    // Permission check
+    if (currentUser.role === 1) {
       if (userToUpdate.role === 0 || userToUpdate.role === 1) {
-        return res.status(403).render('admin-users', {
-          currentUser,
-          users: await User.find(),
-          error: 'You do not have permission to update this user',
+        return res.status(403).render('error', {
+          message: 'You do not have permission to update this user.',
         });
       }
-    } else {
-      return res.status(403).render('admin-users', {
-        currentUser,
-        users: await User.find(),
-        error: 'You do not have permission to update users',
+    } else if (currentUser.role !== 0) {
+      return res.status(403).render('error', {
+        message: 'You do not have permission to update users.',
       });
     }
 
     const updateData = { username, email, firstName, lastName };
 
+    // Update password if provided
     if (password && password.trim() !== '') {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      updateData.password = hashedPassword;
+      updateData.password = await bcrypt.hash(password, 10);
     }
 
+    // Update role if permitted
     if (currentUser.role === 0) {
       updateData.role = role;
     } else if (
@@ -309,17 +353,13 @@ router.put('/users/:id', auth.authSignin, async (req, res) => {
 
     await User.findByIdAndUpdate(id, updateData, { new: true });
 
-    const users = await User.find();
-    res.status(200).render('admin-users', {
-      currentUser,
-      users,
-      message: 'User updated successfully',
-      error: null,
-    });
+    console.log(`Updated user ${id} by ${currentUser.username}`);
+
+    return res.redirect('/api/v1/admin/users');
   } catch (error) {
-    console.error('Error updating user:', error);
-    res.status(500).render('error', {
-      message: 'Internal server error',
+    console.error('Error updating user:', error.message);
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
       error,
     });
   }
@@ -327,170 +367,127 @@ router.put('/users/:id', auth.authSignin, async (req, res) => {
 
 router.get('/users/:id/change-password', auth.authSignin, async (req, res) => {
   try {
-    const currentUser = req.session.user;
     const { id } = req.params;
+    const currentUser = req.session.user;
+
     const userById = await User.findById(id);
+
     if (!userById) {
-      return res.status(404).send('User not found');
+      return res.status(404).render('error', {
+        message: 'User not found.',
+      });
     }
 
-    res.render('change-password', {
-      currentUser,
-      userById,
-    });
+    if (
+      currentUser.role === 0 ||
+      (currentUser.role === 1 && userById.role >= 2) ||
+      currentUser._id.toString() === id
+    ) {
+      return res.render('change-password', {
+        userById,
+        currentUser,
+      });
+    } else {
+      return res.status(403).render('error', {
+        message: "You do not have permission to change this user's password.",
+      });
+    }
   } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
+    console.error('Error loading change password page:', err.message);
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
+    });
   }
 });
 
 router.post('/users/:id/change-password', auth.authSignin, async (req, res) => {
   try {
-    const currentUser = req.session.user;
     const { currentPassword, newPassword } = req.body;
     const { id } = req.params;
 
     const userById = await User.findById(id);
-
     if (!userById) {
-      return res.status(404).render('change-password', {
-        error: 'User not found',
-        currentUser,
-        userById: null,
+      return res.status(404).render('error', {
+        message: 'User not found.',
       });
     }
 
-    if (currentUser.role === 0) {
-    } else if (currentUser.role === 1) {
+    const currentUser = req.session.user;
+
+    // Check role-based permission
+    if (currentUser.role === 1) {
       if (userById.role === 0 || userById.role === 1) {
-        return res.status(403).render('change-password', {
-          error: 'You do not have permission to change password for this user',
-          currentUser,
-          userById,
+        return res.status(403).render('error', {
+          message:
+            'You do not have permission to change password for this user.',
         });
       }
-    } else {
+    } else if (currentUser.role !== 0) {
       if (currentUser._id.toString() !== id) {
-        return res.status(403).render('change-password', {
-          error: 'You do not have permission to change password for this user',
-          currentUser,
-          userById,
+        return res.status(403).render('error', {
+          message:
+            'You do not have permission to change password for this user.',
         });
       }
     }
 
-    let isMatch = true;
-    if (currentUser.role === 0 || currentUser.role === 1) {
-    } else {
-      isMatch = await bcrypt.compare(currentPassword, userById.password);
+    if (currentUser.role !== 0 && currentUser.role !== 1) {
+      const isMatch = await bcrypt.compare(currentPassword, userById.password);
       if (!isMatch) {
         return res.status(400).render('change-password', {
           error: 'Current password is incorrect',
-          currentUser,
           userById,
         });
       }
     }
 
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-    userById.password = hashedNewPassword;
+    // Hash and update new password
+    userById.password = await bcrypt.hash(newPassword, 10);
     await userById.save();
 
-    const users = await User.find();
+    console.log(`Password of user ${id} changed by ${currentUser.username}`);
 
-    res.render('users', {
-      currentUser,
-      users,
-      message: 'Password changed successfully',
-      error: null,
-    });
+    return res.redirect('/api/v1/admin/users');
   } catch (error) {
-    console.error('Error changing password:', error);
-    res.status(500).render('error', {
-      message: 'Internal server error',
+    console.error('Error changing password:', error.message);
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
       error,
     });
   }
 });
 
-// router.post('/users/:id', auth.authSignin, async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const { username, newPassword, newRole } = req.body;
-
-//     const updateData = {};
-//     if (username) updateData.username = username;
-//     if (newPassword) updateData.password = await bcrypt.hash(newPassword, 10);
-//     if (newRole) updateData.role = parseInt(newRole);
-
-//     const updatedUser = await User.findByIdAndUpdate(id, updateData, {
-//       new: true,
-//     });
-
-//     if (!updatedUser) {
-//       return res.status(404).render('signin.ejs', {
-//         error: 'User not found.',
-//       });
-//     }
-
-//     res.redirect('/api/v1/auth/signin');
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).render('signin.ejs', {
-//       error: 'Server error. Please try again.',
-//     });
-//   }
-// });
-
 router.delete('/users/:id', auth.authSignin, async (req, res) => {
   try {
-    const currentUser = req.session.user;
     const { id } = req.params;
+    const currentUser = req.session.user;
 
     const userToDelete = await User.findById(id);
 
     if (!userToDelete) {
-      return res.status(404).render('admin-users', {
-        currentUser,
-        users: await User.find(),
-        error: 'User not found.',
+      return res.status(404).render('error', {
+        message: 'User not found.',
       });
     }
 
-    if (currentUser.role === 0) {
+    if (
+      currentUser.role === 0 ||
+      (currentUser.role === 1 && userToDelete.role >= 2)
+    ) {
       await userToDelete.deleteOne();
-    } else if (currentUser.role === 1) {
-      if (userToDelete.role >= 2) {
-        await userToDelete.deleteOne();
-      } else {
-        return res.status(403).render('admin-users', {
-          currentUser,
-          users: await User.find(),
-          error: 'You do not have permission to delete this user.',
-        });
-      }
+      console.log(`Deleted user ${id} by ${currentUser.username}`);
     } else {
-      return res.status(403).render('admin-users', {
-        currentUser,
-        users: await User.find(),
-        error: 'You do not have permission to delete users.',
+      return res.status(403).render('error', {
+        message: 'You do not have permission to delete this user.',
       });
     }
 
-    const users = await User.find();
-
-    res.status(200).render('admin-users', {
-      currentUser,
-      users,
-      message: 'User deleted successfully.',
-    });
+    return res.redirect('/api/v1/admin/users');
   } catch (error) {
-    console.error(error);
-
-    res.status(500).render('admin-users', {
-      error: 'Server error.',
-      currentUser,
-      users: await User.find(),
+    console.error('Error deleting user:', error.message);
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
+      error,
     });
   }
 });
@@ -511,12 +508,17 @@ router.post(
         live,
         github,
       });
+
       await newProject.save();
 
-      res.redirect('/api/v1/admin/projects');
+      console.log(
+        `Created new project "${title}" by ${req.session.user.username}`
+      );
+
+      return res.redirect('/api/v1/admin/projects');
     } catch (error) {
-      console.error('Error creating project:', error);
-      res.status(500).render('error', {
+      console.error('Error creating project:', error.message);
+      return res.status(500).render('error', {
         message: 'Internal Server Error',
         error,
       });
@@ -526,22 +528,31 @@ router.post(
 
 router.get('/projects/:id', auth.authSignin, async (req, res) => {
   try {
-    const currentUser = req.session.user;
     const { id } = req.params;
 
     const project = await Project.findById(id);
+
     if (!project) {
-      return res.status(404).render('error', { message: 'Project not found' });
+      return res.status(404).render('error', {
+        message: 'Project not found.',
+      });
     }
 
-    res.render('project-detail', { project, currentUser });
+    console.log(`Fetched project ${id} by ${req.session.user.username}`);
+
+    return res.render('project-detail', {
+      project,
+      currentUser: req.session.user,
+    });
   } catch (error) {
-    console.error('Error loading project edit:', error);
-    res
-      .status(500)
-      .render('error', { message: 'Internal Server Error', error });
+    console.error('Error loading project detail:', error.message);
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
+      error,
+    });
   }
 });
+
 router.put(
   '/projects/:id',
   auth.authSignin,
@@ -558,15 +569,17 @@ router.put(
       );
 
       if (!updatedProject) {
-        return res
-          .status(404)
-          .render('error', { message: 'Project not found.' });
+        return res.status(404).render('error', {
+          message: 'Project not found.',
+        });
       }
 
-      res.redirect('/api/v1/admin/projects');
+      console.log(`Updated project ${id} by ${req.session.user.username}`);
+
+      return res.redirect('/api/v1/admin/projects');
     } catch (error) {
-      console.error('Error updating project:', error);
-      res.status(500).render('error', {
+      console.error('Error updating project:', error.message);
+      return res.status(500).render('error', {
         message: 'Internal Server Error',
         error,
       });
@@ -580,22 +593,33 @@ router.delete(
   auth.checkSuperAdmin,
   async (req, res) => {
     try {
-      await Project.findByIdAndDelete(req.params.id);
-      res.redirect('/api/v1/admin/projects');
+      const { id } = req.params;
+
+      const deletedProject = await Project.findByIdAndDelete(id);
+
+      if (!deletedProject) {
+        return res.status(404).render('error', {
+          message: 'Project not found',
+          error: null,
+        });
+      }
+
+      console.log(`Deleted project ${id} by ${req.session.user.username}`);
+
+      return res.redirect('/api/v1/admin/projects');
     } catch (error) {
-      console.error('Error deleting project:', error);
-      res.status(500).render('error', {
+      console.error('Error deleting project:', error.message);
+      return res.status(500).render('error', {
         message: 'Internal Server Error',
         error,
       });
     }
   }
 );
+
 // dictionary
 router.post('/dictionary', auth.authSignin, async (req, res) => {
   try {
-    const currentUser = req.session.user;
-    // console.log(currentUser);
     const { word, pronunciation, partOfSpeech, meaning, examples } = req.body;
 
     const newVocabulary = new Vocabulary({
@@ -605,90 +629,93 @@ router.post('/dictionary', auth.authSignin, async (req, res) => {
       meaning,
       examples,
     });
+
     await newVocabulary.save();
 
-    // console.log(
-    //   'Vocabulary is created by',
-    //   currentUser.username,
-    //   ':',
-    //   newVocabulary
-    // );
+    console.log(
+      `Created new vocabulary "${word}" by ${req.session.user.username}`
+    );
 
-    const vocabularies = await Vocabulary.find({});
-
-    res.status(200).render('admin-dictionary', {
-      data: newVocabulary,
-      currentUser,
-      vocabularies,
-    });
+    return res.redirect('/api/v1/admin/dictionary');
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).render('error', {
-      success: false,
-      message: 'Server error',
-    });
-  }
-});
-router.get('/dictionary/search', auth.authSignin, async (req, res) => {
-  try {
-    const currentUser = req.session.user;
-    const { query } = req.query;
-
-    if (!query) {
-      const vocabularies = await Vocabulary.find();
-
-      return res.status(400).render('admin-dictionary', {
-        currentUser,
-        vocabularies,
-      });
-    }
-
-    const vocabularies = await Vocabulary.find({
-      word: { $regex: query, $options: 'i' },
-    });
-
-    res.render('admin-dictionary', {
-      currentUser,
-      vocabularies,
-    });
-  } catch (error) {
-    console.error('Error searching dictionary:', error);
-    res.status(500).render('error', {
-      message: 'Internal server error when searching dictionary.',
+    console.error('Error creating vocabulary:', error.message);
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
       error,
     });
   }
 });
-router.get('/dictionary/:id', auth.authSignin, async (req, res) => {
-  try {
-    const currentUser = req.session.user;
-    const { id } = req.params;
-    const vocabulary = await Vocabulary.findById(id);
 
-    if (!vocabulary) {
-      return res.status(404).render('vocabulary-detail', {
-        error: 'Vocabulary not found',
+router.get('/dictionary/search', auth.authSignin, async (req, res) => {
+  try {
+    const { query } = req.query;
+    let vocabularies;
+
+    if (!query) {
+      vocabularies = await Vocabulary.find();
+      console.log('No search query provided. Returning all vocabularies.');
+      return res.status(400).render('admin-dictionary', {
+        vocabularies,
+        currentUser: req.session.user,
       });
     }
 
-    res.render('vocabulary-detail', {
-      currentUser,
-      vocabulary,
+    vocabularies = await Vocabulary.find({
+      word: { $regex: query, $options: 'i' },
+    });
+
+    console.log(
+      `Searched vocabulary with query "${query}" by ${req.session.user.username}`
+    );
+
+    return res.render('admin-dictionary', {
+      vocabularies,
+      currentUser: req.session.user,
     });
   } catch (error) {
-    console.error('Error fetching vocabulary details:', error.message);
-    res.status(500).render('vocabulary-detail', {
-      error: 'Internal server error',
+    console.error('Error searching dictionary:', error.message);
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
+      error,
     });
   }
 });
+
+router.get('/dictionary/:id', auth.authSignin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const vocabulary = await Vocabulary.findById(id);
+
+    if (!vocabulary) {
+      return res.status(404).render('error', {
+        message: 'Vocabulary not found',
+        error: null,
+      });
+    }
+
+    console.log(`Fetched vocabulary ${id} by ${req.session.user.username}`);
+
+    return res.render('vocabulary-detail', {
+      vocabulary,
+      currentUser: req.session.user,
+    });
+  } catch (error) {
+    console.error('Error fetching vocabulary details:', error.message);
+
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
+      error,
+    });
+  }
+});
+
 router.put(
   '/dictionary/:id',
   auth.authSignin,
   auth.checkSuperAdmin,
   async (req, res) => {
     try {
-      const currentUser = req.session.user;
       const { id } = req.params;
       const { word, pronunciation, partOfSpeech, meaning, examples } = req.body;
 
@@ -708,49 +735,49 @@ router.put(
       );
 
       if (!updated) {
-        return res.status(404).render('admin-dictionary', {
-          error: 'Vocabulary not found',
-          user: req.session.user,
-          vocabularies: await Vocabulary.find(),
+        return res.status(404).render('error', {
+          message: 'Vocabulary not found',
+          error: null,
         });
       }
-      console.log('Update by:', req.session.user);
 
-      const vocabularies = await Vocabulary.find();
+      console.log(`Updated vocabulary ${id} by ${req.session.user.username}`);
 
-      return res.status(200).render('admin-dictionary', {
-        currentUser,
-        vocabularies,
-      });
+      return res.redirect('/api/v1/admin/dictionary');
     } catch (error) {
-      console.error('Error updating vocabulary:', error);
+      console.error('Error updating vocabulary:', error.message);
       return res.status(500).render('error', {
-        message: 'Internal server error',
+        message: 'Internal Server Error',
         error,
       });
     }
   }
 );
+
 router.delete(
   '/dictionary/:id',
   auth.authSignin,
   auth.checkSuperAdmin,
   async (req, res) => {
     try {
-      const currentUser = req.session.user;
-      const { id } = req.params;
-      await Vocabulary.findByIdAndDelete(id);
+      const deleted = await Vocabulary.findByIdAndDelete(req.params.id);
 
-      const vocabularies = await Vocabulary.find();
+      if (!deleted) {
+        return res.status(404).render('error', {
+          message: 'Vocabulary not found',
+          error: null,
+        });
+      }
 
-      res.render('admin-dictionary', {
-        currentUser,
-        vocabularies,
-      });
+      console.log(
+        `Deleted vocabulary ${req.params.id} by ${req.session.user.username}`
+      );
+
+      return res.redirect('/api/v1/admin/dictionary');
     } catch (error) {
       console.error('Error deleting vocabulary:', error.message);
-      res.status(500).render('error', {
-        message: 'Internal server error',
+      return res.status(500).render('error', {
+        message: 'Internal Server Error',
         error,
       });
     }
@@ -764,12 +791,10 @@ router.post(
   auth.checkSuperAdmin,
   async (req, res) => {
     try {
-      const file = req.file;
-      const filePath = path.join(file.destination, file.filename);
+      const filePath = path.join(req.file.destination, req.file.filename);
 
       const workbook = xlsx.readFile(filePath);
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
       const data = xlsx.utils.sheet_to_json(sheet);
 
       const posMap = {
@@ -784,32 +809,34 @@ router.post(
         det: 'determiner',
       };
 
-      const formattedData = data.map((item) => {
-        const posRaw = item.partOfSpeech?.toLowerCase().trim();
-        return {
-          word: item.word?.toLowerCase().trim(),
-          pronunciation: item.pronunciation?.trim() || '',
-          partOfSpeech: posMap[posRaw] || posRaw,
-          meaning: item.meaning?.trim(),
-          examples: item.examples
-            ? item.examples.split(',').map((e) => e.trim())
-            : [],
-        };
-      });
-      console.log('Formatted data:', formattedData);
-      const inserted = await Vocabulary.insertMany(formattedData);
+      const formattedData = data.map((item) => ({
+        word: item.word?.toLowerCase().trim(),
+        pronunciation: item.pronunciation?.trim() || '',
+        partOfSpeech:
+          posMap[item.partOfSpeech?.toLowerCase().trim()] ||
+          item.partOfSpeech?.toLowerCase().trim(),
+        meaning: item.meaning?.trim(),
+        examples: item.examples
+          ? item.examples.split(',').map((e) => e.trim())
+          : [],
+      }));
 
+      await Vocabulary.insertMany(formattedData);
       fs.unlinkSync(filePath);
 
-      // res.json({
-      //   msg: 'Upload, read, insert DB, and delete file success',
-      //   count: inserted.length,
-      // });
-      return res.status(303).redirect('/api/v1/admin/dictionary');
+      console.log(
+        `Imported ${formattedData.length} vocabulary items by ${req.session.user.username}`
+      );
+
+      return res.redirect('/api/v1/admin/dictionary');
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Server error' });
+      console.error('Error importing excel:', error.message);
+      return res.status(500).render('error', {
+        message: 'Internal Server Error',
+        error,
+      });
     }
   }
 );
+
 export default router;
