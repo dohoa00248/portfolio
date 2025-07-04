@@ -809,12 +809,21 @@ router.post(
         det: 'determiner',
       };
 
-      const formattedData = data.map((item) => ({
+      // 🔧 Normalize keys để tránh meaning undefined
+      const normalizedData = data.map((item) => {
+        const obj = {};
+        for (let key in item) {
+          obj[key.trim().toLowerCase()] = item[key];
+        }
+        return obj;
+      });
+
+      const formattedData = normalizedData.map((item) => ({
         word: item.word?.toLowerCase().trim(),
         pronunciation: item.pronunciation?.trim() || '',
         partOfSpeech:
-          posMap[item.partOfSpeech?.toLowerCase().trim()] ||
-          item.partOfSpeech?.toLowerCase().trim(),
+          posMap[item.partofspeech?.toLowerCase().trim()] ||
+          item.partofspeech?.toLowerCase().trim(),
         meaning: item.meaning?.trim(),
         examples: item.examples
           ? item.examples.split(',').map((e) => e.trim())
@@ -830,7 +839,7 @@ router.post(
 
       return res.redirect('/api/v1/admin/dictionary');
     } catch (error) {
-      console.error('Error importing excel:', error.message);
+      console.error('Error importing excel:', error);
       return res.status(500).render('error', {
         message: 'Internal Server Error',
         error,
