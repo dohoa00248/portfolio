@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dictionary Manager</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/admin.css" />
+  </head>
+  <body>
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-dark bg-dark px-3">
+      <span class="navbar-brand">Admin Panel</span>
+      <div class="d-flex align-items-center ms-auto gap-2">
+        <span class="text-white"
+          >Welcome, <%= currentUser.username || "Admin" %></span
+        >
+        <a
+          href="/api/v1/admin/users/profile"
+          class="btn btn-outline-light btn-sm"
+          >Update Info</a
+        >
+        <a href="/api/v1/auth/signout" class="btn btn-outline-light btn-sm"
+          >Sign Out</a
+        >
+      </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <a href="/api/v1/admin/dashboard">🏠 Dashboard</a>
+      <a href="/api/v1/admin/users">👥 User Management</a>
+      <a href="/api/v1/admin/projects">📁 Projects</a>
+      <a href="/api/v1/admin/dictionary">📚 Dictionary</a>
+      <a href="/api/v1/admin/statistics">📈 Statistics</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+      <div class="container-fluid">
+        <h2 class="mb-4">📚 Dictionary Manager</h2>
+
+        <!-- Add New Word -->
+        <div class="content-placeholder">
+          <h5>Add New Word</h5>
+          <form action="/api/v1/admin/dictionary" method="POST" class="row g-3">
+            <div class="col-md-4">
+              <input
+                type="text"
+                name="word"
+                class="form-control"
+                placeholder="Word"
+                required
+              />
+            </div>
+            <div class="col-md-4">
+              <input
+                type="text"
+                name="pronunciation"
+                class="form-control"
+                placeholder="Pronunciation"
+              />
+            </div>
+            <div class="col-md-4">
+              <select name="partOfSpeech" class="form-select" required>
+                <option value="">Select Part of Speech</option>
+                <option>noun</option>
+                <option>verb</option>
+                <option>adjective</option>
+                <option>adverb</option>
+                <option>preposition</option>
+                <option>conjunction</option>
+                <option>interjection</option>
+                <option>pronoun</option>
+                <option>determiner</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <input
+                type="text"
+                name="meaning"
+                class="form-control"
+                placeholder="Meaning"
+                required
+              />
+            </div>
+            <div class="col-md-6">
+              <input
+                type="text"
+                name="examples"
+                class="form-control"
+                placeholder="Examples (comma separated)"
+              />
+            </div>
+            <div class="col-12 text-end">
+              <button type="submit" class="btn btn-primary">➕ Add Word</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Upload Excel File -->
+        <div class="content-placeholder mt-4">
+          <h5>Import Vocabulary from Excel</h5>
+          <form
+            action="/api/v1/admin/dictionary/import-excel"
+            method="POST"
+            enctype="multipart/form-data"
+            class="row g-3"
+          >
+            <div class="col-md-8">
+              <input
+                type="file"
+                name="file"
+                class="form-control"
+                accept=".xlsx,.xls"
+                required
+              />
+            </div>
+            <div class="col-md-4">
+              <button type="submit" class="btn btn-success w-100">
+                📤 Upload File
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Search -->
+        <form
+          action="/api/v1/admin/dictionary/search"
+          method="get"
+          class="d-flex mb-4"
+        >
+          <input
+            type="text"
+            name="query"
+            class="form-control me-2"
+            placeholder="Search Vocabulary"
+            required
+          />
+          <button type="submit" class="btn btn-primary">🔍 Search</button>
+        </form>
+
+        <!-- Vocabulary List -->
+        <div class="content-placeholder">
+          <h5>Vocabulary List</h5>
+          <div class="text-end mb-2">
+            <a href="/api/v1/admin/dictionary" class="btn btn-secondary btn-sm">
+              🔄 Load Full List
+            </a>
+            <a
+              href="/api/v1/admin/dictionary/export-excel"
+              class="btn btn-success"
+            >
+              <i class="bi bi-download"></i> Download Template
+            </a>
+          </div>
+          <% if (vocabularies.length === 0) { %>
+          <p class="text-muted">No entries found.</p>
+          <% } else { %>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+              <thead class="table-dark">
+                <tr>
+                  <th>#</th>
+                  <th>Word</th>
+                  <th>Pronunciation</th>
+                  <th>Part of Speech</th>
+                  <th>Meaning</th>
+                  <th>Examples</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% vocabularies.forEach((vocab, index) => { %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td><%= vocab.word %></td>
+                  <td><%= vocab.pronunciation %></td>
+                  <td><%= vocab.partOfSpeech %></td>
+                  <td><%= vocab.meaning %></td>
+                  <td>
+                    <% if (Array.isArray(vocab.examples)) { %>
+                    <ul class="mb-0 ps-3">
+                      <% vocab.examples.forEach(ex => { %>
+                      <li><%= ex %></li>
+                      <% }) %>
+                    </ul>
+                    <% } else { %> <%= vocab.examples %> <% } %>
+                  </td>
+                  <td>
+                    <a
+                      href="/api/v1/admin/dictionary/<%= vocab._id %>"
+                      class="btn btn-sm btn-primary me-1"
+                      >Edit</a
+                    >
+                    <form
+                      action="/api/v1/admin/dictionary/<%= vocab._id %>?_method=DELETE"
+                      method="post"
+                      style="display: inline"
+                    >
+                      <button
+                        type="submit"
+                        class="btn btn-sm btn-danger"
+                        onclick="return confirm('Are you sure?')"
+                      >
+                        Delete
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

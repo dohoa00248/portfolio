@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Error</title>
+  </head>
+  <body>
+    <h1>Error</h1>
+
+    <% if (message) { %>
+    <p><%= message %></p>
+    <% } else { %>
+    <p>An unexpected error occurred.</p>
+    <% } %> <% if (error && error.message) { %>
+    <pre><%= error.message %></pre>
+    <% } %>
+
+    <a href="/api/v1/admin/dashboard">Back to Home</a>
+  </body>
+</html>

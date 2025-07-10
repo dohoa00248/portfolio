@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Do The Hoa – Portfolio</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/home.css" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  </head>
+
+  <body class="bg-light text-dark">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top shadow-sm">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="#">Do The Hoa</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#nav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#about">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#skills">Skills</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#projects">Projects</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#services">Services</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#contact">Contact</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/api/v1/admin/dashboard"
+                >My Dictionary</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/api/v1/auth/signin">Signin</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/files/CV.pdf" download
+                >📄 Download CV</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section
+      id="about"
+      class="py-5 text-center hero"
+      data-aos="fade-up"
+      data-aos-duration="1000"
+      style="position: relative"
+    >
+      <div class="container position-relative" style="z-index: 1">
+        <h1 class="display-4 fw-bold">Do The Hoa</h1>
+        <p class="mb-1">
+          <strong>Email:</strong>
+          <a href="mailto:dohoa00248@gmail.com" class="link-light"
+            >dohoa00248@gmail.com</a
+          >
+        </p>
+        <p class="mb-1">
+          <strong>GitHub:</strong>
+          <a
+            href="https://github.com/dohoa00248"
+            class="link-light"
+            target="_blank"
+          >
+            github.com/dohoa00248
+          </a>
+        </p>
+        <p>
+          <strong>LinkedIn:</strong>
+          <a
+            href="https://www.linkedin.com/in/do-hoa-35497b352/"
+            class="link-light"
+            target="_blank"
+          >
+            linkedin.com/in/do-hoa
+          </a>
+        </p>
+        <hr class="bg-light" />
+        <p class="lead">
+          Enthusiastic IT student with hands-on experience in web development
+          and database management. Built various applications through personal
+          projects. Highly motivated to learn and grow, seeking an opportunity
+          to develop skills and contribute effectively in a professional
+          environment.
+        </p>
+        <p>
+          <strong>Education:</strong> (2020–2025) – Information Technology,
+          Industrial University of Ho Chi Minh City
+        </p>
+      </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section
+      id="projects"
+      class="container py-5"
+      data-aos="fade-right"
+      data-aos-duration="1000"
+    >
+      <h2 class="section-title text-center mb-4">📁 Projects</h2>
+      <div class="row g-4">
+        <% dataList.forEach(project => { %>
+        <div class="col-md-4">
+          <div
+            class="card h-100 shadow-sm"
+            data-aos="zoom-in"
+            data-aos-duration="800"
+          >
+            <div class="card-body">
+              <h5 class="card-title"><%= project.title %></h5>
+              <p><strong>Tech:</strong> <%= project.tech %></p>
+              <p><%= project.description %></p>
+            </div>
+            <div class="card-footer bg-transparent border-top-0">
+              <a href="<%= project.live %>" target="_blank">🌐 Live</a> |
+              <a href="<%= project.github %>" target="_blank">GitHub</a>
+            </div>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section
+      id="skills"
+      class="container py-5"
+      data-aos="fade-left"
+      data-aos-duration="1000"
+    >
+      <h2 class="section-title text-center mb-4">🛠 Skills</h2>
+      <div class="row">
+        <div class="col-md-6">
+          <ul class="list-unstyled">
+            <li>
+              <strong>Programming:</strong> Java, JavaScript, Python, HTML, CSS,
+              C, PHP
+            </li>
+            <li>
+              <strong>Backend:</strong> Node.js, Express.js, JWT, Session/Cookie
+              Auth, EJS, WebSocket, JDBC, SOAP Web Service
+            </li>
+            <li><strong>Frontend:</strong> jQuery, Bootstrap</li>
+            <li><strong>Architecture:</strong> OOP, MVC, RESTful APIs</li>
+            <li>
+              <strong>Data Analysis: </strong>
+              NumPy, Pandas, Matplotlib, Scikit-learn
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <ul class="list-unstyled">
+            <li>
+              <strong>Databases:</strong> MySQL, SQL Server, MongoDB (Atlas)
+            </li>
+            <li><strong>ORM/ODM:</strong> Sequelize, Mongoose</li>
+            <li>
+              <strong>Tools & Others:</strong> GitHub, Postman, Jupyter Notebook
+            </li>
+            <li><strong>DevOps:</strong> Docker, CI/CD, Render</li>
+            <li><strong>Interests:</strong> Soccer, video games, music</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section
+      id="contact"
+      class="container py-5"
+      data-aos="zoom-in"
+      data-aos-duration="1000"
+    >
+      <h2 class="section-title text-center mb-4">📧 Contact</h2>
+      <p class="text-center">
+        📧 Email me at
+        <a href="mailto:dohoa00248@gmail.com">dohoa00248@gmail.com</a><br />
+        🔗 Or visit my
+        <a href="https://github.com/dohoa00248" target="_blank">GitHub</a>
+      </p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center py-3 border-top">
+      <p class="mb-0">&copy; 2025 Do The Hoa. All rights reserved.</p>
+    </footer>
+
+    <script>
+      AOS.init();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  scroll-behavior: smooth;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ✅ Portfolio Styles */
+body {
+  background-color: #f8fff4;
+  color: #1b4332;
+}
+.navbar {
+  background-color: #95d5b2 !important;
+}
+.navbar-brand,
+.nav-link {
+  color: #1b4332 !important;
+}
+.hero {
+  background: linear-gradient(135deg, #40916c, #95d5b2);
+  color: white;
+}
+.card {
+  background-color: #d8f3dc;
+  border-color: #b7e4c7;
+}
+.card-title {
+  color: #1b4332;
+}
+.section-title {
+  color: #2d6a4f;
+}
+a {
+  color: #2d6a4f;
+  text-decoration: none;
+}
+a:hover {
+  color: #1b4332;
+}
+footer {
+  background-color: #95d5b2;
+  color: #1b4332;
+}
