@@ -46,6 +46,19 @@ npm run dev
 
 Visit http://localhost:3000 in your browser.
 
+## 🔑 Test Account
+
+For testing purposes, you can use:
+
+- **Admin account**
+
+  - Username: admin
+  - Password: admin
+
+- **User account**
+  - Username: user
+  - Password: user
+
 ## ✨ Motivation
 
 I built this portfolio to:
