@@ -15,7 +15,6 @@ const projectSchema = new mongoose.Schema({
   },
   live: {
     type: String,
-    // required: true,
   },
   github: {
     type: String,
