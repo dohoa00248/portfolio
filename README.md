@@ -26,7 +26,7 @@ To run this project locally:
 
 1. **Clone the repository**
 
-git clone https://github.com/yourusername/portfolio.git
+git clone https://github.com/dohoa00248/portfolio.git
 cd portfolio
 
 2. **Install dependencies**
