@@ -6,8 +6,8 @@ This is my **personal portfolio website** built with Node.js, Express, MongoDB, 
 
 - ✅ About Me page
 - ✅ Projects listing page
-- ✅ [Optional] Personal Dictionary (CRUD)
-- ✅ [Optional] Admin dashboard for managing data
+- ✅ Personal Dictionary (CRUD)
+- ✅ Admin dashboard for managing data
 
 ## 🛠️ Tech Stack
 
@@ -35,10 +35,21 @@ npm install
 
 3. **Setup environment variables**
 
-Create a `.env` file in the root directory:
+- Copy `.env.example` to `.env`
+
+On Linux / Mac:
+
+cp .env.example .env
+
+On Windows:
+
+Manually copy `.env.example`, rename to `.env`.
+
+- Then fill in your actual values:
+
 PORT=3000
-SESSION_SECRET=yoursecretkey
-DB_MONGODB_URI=yourdburl
+SESSION_SECRET=your_session_secret
+DB_MONGODB_URI=your_mongodb_uri
 
 4. **Run the app**
 
@@ -82,5 +93,6 @@ This project is licensed under the MIT License.
 
 - [Node.js Documentation](https://nodejs.org/en/docs/)
 - [Express.js Guide](https://expressjs.com/)
+- [express-session Documentation](https://www.npmjs.com/package/express-session)
 - [MongoDB Documentation](https://www.mongodb.com/docs/)
 - [Bootstrap 5 Documentation](https://getbootstrap.com/docs/5.0/getting-started/introduction/)
