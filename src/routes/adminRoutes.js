@@ -9,120 +9,21 @@ import path from 'path';
 import xlsx from 'xlsx';
 import fs from 'fs';
 
+import adminController from '../controllers/adminController.js';
 const router = express.Router();
 
 /**
  * DASHBOARD ROUTES
  */
-router.get('/dashboard', auth.authSignin, async (req, res) => {
-  try {
-    const currentUser = req.session.user;
+router.get('/dashboard', auth.authSignin, adminController.getAdminDashboard);
 
-    const [users, totalUsers, totalVocabulary, totalProjects] =
-      await Promise.all([
-        User.find(),
-        User.countDocuments(),
-        Vocabulary.countDocuments(),
-        Project.countDocuments(),
-      ]);
+router.get('/users', auth.authSignin, adminController.getUsersPage);
 
-    return res.render('admin-dashboard', {
-      currentUser,
-      users,
-      totalUsers,
-      totalVocabulary,
-      totalProjects,
-    });
-  } catch (error) {
-    console.error('Error loading dashboard:', error.message);
+router.get('/projects', auth.authSignin, adminController.getProjectsPage);
 
-    return res.status(500).render('error', {
-      message: 'Internal Server Error',
-      error,
-    });
-  }
-});
+router.get('/dictionary', auth.authSignin, adminController.getDictionaryPage);
 
-router.get('/users', auth.authSignin, async (req, res) => {
-  try {
-    const currentUser = req.session.user;
-    const users = await User.find();
-    const totalUsers = await User.countDocuments();
-
-    return res.render('admin-users', {
-      currentUser,
-      users,
-      totalUsers,
-    });
-  } catch (error) {
-    console.error('Error fetching users:', error.message);
-    return res.status(500).render('error', {
-      message: 'Internal Server Error',
-      error,
-    });
-  }
-});
-
-router.get('/projects', auth.authSignin, async (req, res) => {
-  try {
-    const currentUser = req.session.user;
-    const projects = await Project.find();
-    const totalProjects = await Project.countDocuments();
-
-    return res.status(200).render('admin-projects', {
-      currentUser,
-      projects,
-      totalProjects,
-    });
-  } catch (error) {
-    console.error('Error loading projects:', error.message);
-    return res.status(500).render('error', {
-      message: 'Internal Server Error',
-      error,
-    });
-  }
-});
-
-router.get('/dictionary', auth.authSignin, async (req, res) => {
-  try {
-    const currentUser = req.session.user;
-    const vocabularies = await Vocabulary.find();
-
-    return res.render('admin-dictionary', {
-      currentUser,
-      vocabularies,
-    });
-  } catch (error) {
-    console.error('Error fetching dictionary:', error.message);
-    return res.status(500).render('error', {
-      message: 'Internal Server Error',
-      error,
-    });
-  }
-});
-
-router.get('/statistics', auth.authSignin, async (req, res) => {
-  try {
-    const currentUser = req.session.user;
-
-    const totalUsers = await User.countDocuments();
-    const totalVocabulary = await Vocabulary.countDocuments();
-    const totalProjects = await Project.countDocuments();
-
-    return res.render('admin-statistics', {
-      currentUser,
-      totalUsers,
-      totalVocabulary,
-      totalProjects,
-    });
-  } catch (error) {
-    console.error('Error fetching statistics:', error.message);
-    return res.status(500).render('error', {
-      message: 'Internal Server Error',
-      error,
-    });
-  }
-});
+router.get('/statistics', auth.authSignin, adminController.getStatisticsPage);
 
 /**
  * USER PROFILE ROUTES
