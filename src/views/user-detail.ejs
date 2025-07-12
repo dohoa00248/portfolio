@@ -67,17 +67,6 @@
           />
         </div>
 
-        <!-- Password (hidden) -->
-        <div class="mb-3" hidden>
-          <label class="form-label">Password</label>
-          <input
-            type="password"
-            name="password"
-            class="form-control"
-            placeholder="Leave blank to keep current password"
-          />
-        </div>
-
         <!-- Role: show only for SuperAdmin and Admin -->
         <% if (currentUser.role === 0 || currentUser.role === 1) { %>
         <div class="mb-3">

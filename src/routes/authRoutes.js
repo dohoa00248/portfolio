@@ -57,8 +57,14 @@ router.post('/signin', async (req, res) => {
     };
     console.log(req.session);
 
-    // 5. Redirect to admin dashboard
-    return res.redirect('/api/v1/admin/dashboard');
+    if (user.role === 0 || user.role === 1) {
+      return res.redirect('/api/v1/admin/dashboard');
+    } else {
+      return res.redirect('/api/v1/user/dashboard');
+    }
+
+    // // 5. Redirect to admin dashboard
+    // return res.redirect('/api/v1/admin/dashboard');
   } catch (error) {
     console.error('Error during signin:', error);
     return res.status(500).render('signin.ejs', {

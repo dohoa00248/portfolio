@@ -15,9 +15,9 @@
     <nav class="navbar navbar-dark bg-dark px-3">
       <span class="navbar-brand">Admin Panel</span>
       <div class="d-flex align-items-center ms-auto gap-2">
-        <span class="text-white"
-          >Welcome, <%= currentUser.username || "Admin" %></span
-        >
+        <span class="text-white">
+          Welcome, <%= currentUser.username || "Admin" %>
+        </span>
         <a
           href="/api/v1/admin/users/profile"
           class="btn btn-outline-light btn-sm"
@@ -129,37 +129,32 @@
 
         <!-- Search -->
         <form
-          action="/api/v1/admin/dictionary/search"
+          action="/api/v1/admin/dictionary"
           method="get"
-          class="d-flex mb-4"
+          class="d-flex my-4"
         >
           <input
             type="text"
-            name="query"
+            name="search"
             class="form-control me-2"
-            placeholder="Search Vocabulary"
-            required
+            placeholder="Search vocabulary"
+            value="<%= search %>"
           />
           <button type="submit" class="btn btn-primary">🔍 Search</button>
         </form>
-
+        <div class="text-end mt-3">
+          <a href="/api/v1/admin/dictionary" class="btn btn-secondary">
+            🔄 Reload List
+          </a>
+        </div>
         <!-- Vocabulary List -->
         <div class="content-placeholder">
-          <h5>Vocabulary List</h5>
-          <div class="text-end mb-2">
-            <a href="/api/v1/admin/dictionary" class="btn btn-secondary btn-sm">
-              🔄 Load Full List
-            </a>
-            <a
-              href="/api/v1/admin/dictionary/export-excel"
-              class="btn btn-success"
-            >
-              <i class="bi bi-download"></i> Download Template
-            </a>
-          </div>
+          <h5 class="mb-3">Vocabularies (<%= totalVocabularies %>)</h5>
+
           <% if (vocabularies.length === 0) { %>
           <p class="text-muted">No entries found.</p>
           <% } else { %>
+
           <div class="table-responsive">
             <table class="table table-bordered table-hover align-middle">
               <thead class="table-dark">
@@ -176,7 +171,7 @@
               <tbody>
                 <% vocabularies.forEach((vocab, index) => { %>
                 <tr>
-                  <td><%= index + 1 %></td>
+                  <td><%= index + 1 + (currentPage - 1) * 10 %></td>
                   <td><%= vocab.word %></td>
                   <td><%= vocab.pronunciation %></td>
                   <td><%= vocab.partOfSpeech %></td>
@@ -200,12 +195,9 @@
                       action="/api/v1/admin/dictionary/<%= vocab._id %>?_method=DELETE"
                       method="post"
                       style="display: inline"
+                      onsubmit="return confirm('Are you sure?');"
                     >
-                      <button
-                        type="submit"
-                        class="btn btn-sm btn-danger"
-                        onclick="return confirm('Are you sure?')"
-                      >
+                      <button type="submit" class="btn btn-sm btn-danger">
                         Delete
                       </button>
                     </form>
@@ -215,6 +207,44 @@
               </tbody>
             </table>
           </div>
+
+          <!-- Pagination -->
+          <nav aria-label="Vocabulary pagination">
+            <ul class="pagination justify-content-center">
+              <% if (currentPage > 1) { %>
+              <li class="page-item">
+                <a
+                  class="page-link"
+                  href="?page=<%= currentPage - 1 %>&search=<%= search %>"
+                  >Previous</a
+                >
+              </li>
+              <% } else { %>
+              <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+              </li>
+              <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
+              <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %>&search=<%= search %>"
+                  ><%= i %></a
+                >
+              </li>
+              <% } %> <% if (currentPage < totalPages) { %>
+              <li class="page-item">
+                <a
+                  class="page-link"
+                  href="?page=<%= currentPage + 1 %>&search=<%= search %>"
+                  >Next</a
+                >
+              </li>
+              <% } else { %>
+              <li class="page-item disabled">
+                <span class="page-link">Next</span>
+              </li>
+              <% } %>
+            </ul>
+          </nav>
+
           <% } %>
         </div>
       </div>

@@ -15,9 +15,9 @@
     <nav class="navbar navbar-dark bg-dark px-3">
       <span class="navbar-brand">Admin Panel</span>
       <div class="d-flex align-items-center ms-auto gap-2">
-        <span class="text-white"
-          >Welcome, <%= currentUser.username || "Admin" %></span
-        >
+        <span class="text-white">
+          Welcome, <%= currentUser.username || "Admin" %>
+        </span>
         <a
           href="/api/v1/admin/users/profile"
           class="btn btn-outline-light btn-sm"
@@ -54,32 +54,27 @@
         </div>
 
         <!-- Search -->
-        <form
-          action="/api/v1/admin/users/search"
-          method="get"
-          class="d-flex mb-4"
-        >
+        <form action="/api/v1/admin/users" method="get" class="d-flex mb-4">
           <input
             type="text"
-            name="query"
+            name="search"
+            value="<%= search %>"
             class="form-control me-2"
             placeholder="Search username or email"
-            required
           />
           <button type="submit" class="btn btn-primary">🔍 Search</button>
         </form>
-
+        <div class="text-end mt-3">
+          <a href="/api/v1/admin/users" class="btn btn-secondary">
+            🔄 Reload List
+          </a>
+        </div>
         <!-- User List -->
         <div class="content-placeholder">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5 class="mb-0">User List</h5>
+            <h5 class="mb-3">Users (<%= totalUsers %>)</h5>
           </div>
-          <!-- Load List -->
-          <div class="text-end mb-2">
-            <a href="/api/v1/admin/users" class="btn btn-secondary btn-sm">
-              🔄 Load Full List
-            </a>
-          </div>
+
           <% if (users.length === 0) { %>
           <p class="text-muted">No users found.</p>
           <% } else { %>
@@ -90,7 +85,6 @@
                 <tr>
                   <th>#</th>
                   <th>Username</th>
-                  <th>Password</th>
                   <th>Email</th>
                   <th>First name</th>
                   <th>Last name</th>
@@ -98,23 +92,14 @@
                   <th>Updated</th>
                   <th>Role</th>
                   <th>Actions</th>
-                  <th>change-password</th>
+                  <th>Change Password</th>
                 </tr>
               </thead>
               <tbody>
                 <% users.forEach((user, index) => { %>
                 <tr>
-                  <td><%= index + 1 %></td>
+                  <td><%= index + 1 + (currentPage - 1) * 10 %></td>
                   <td><%= user.username %></td>
-                  <td>
-                    <span
-                      class="d-inline-block text-truncate"
-                      style="max-width: 120px"
-                      title="<%= user.password %>"
-                    >
-                      <%= user.password.slice(0, 5) + '...' %>
-                    </span>
-                  </td>
                   <td>
                     <span
                       class="d-inline-block text-truncate"
@@ -184,6 +169,38 @@
               </tbody>
             </table>
           </div>
+
+          <!-- Pagination -->
+          <nav aria-label="User pagination">
+            <ul class="pagination justify-content-center">
+              <% if (currentPage > 1) { %>
+              <li class="page-item">
+                <a class="page-link" href="?page=<%= currentPage - 1 %>"
+                  >Previous</a
+                >
+              </li>
+              <% } else { %>
+              <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+              </li>
+              <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
+              <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+              </li>
+              <% } %> <% if (currentPage < totalPages) { %>
+              <li class="page-item">
+                <a class="page-link" href="?page=<%= currentPage + 1 %>"
+                  >Next</a
+                >
+              </li>
+              <% } else { %>
+              <li class="page-item disabled">
+                <span class="page-link">Next</span>
+              </li>
+              <% } %>
+            </ul>
+          </nav>
+
           <% } %>
         </div>
       </div>
