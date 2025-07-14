@@ -102,7 +102,7 @@ const getProjectsPage = async (req, res) => {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .select('title tech description live github')
+        .select('title tech description live github createdAt updatedAt')
         .lean(),
       Project.countDocuments(queryObj),
     ]);

@@ -132,6 +132,8 @@
                   <th>Description</th>
                   <th>Live</th>
                   <th>Github</th>
+                  <th>Created</th>
+                  <th>Updated</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -159,6 +161,14 @@
                     <a href="<%= project.github %>" target="_blank"
                       >📁 Github</a
                     >
+                  </td>
+                  <td>
+                    <%= new Date(project.createdAt).toLocaleDateString('vi-VN')
+                    %>
+                  </td>
+                  <td>
+                    <%= new Date(project.updatedAt).toLocaleDateString('vi-VN')
+                    %>
                   </td>
                   <td>
                     <div class="btn-group" role="group">
