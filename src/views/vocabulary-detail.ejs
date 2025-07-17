@@ -1,42 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Edit Vocabulary</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="container mt-5">
-  <h1 class="mb-4">Edit Vocabulary</h1>
+    <!-- Reset CSS -->
+    <link rel="stylesheet" href="/css/reset.css" />
 
-  <form action="/api/v1/admin/dictionary/<%= vocabulary._id %>?_method=PUT" method="POST">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+
+    <!-- Plugin CSS (AOS) -->
+    <link rel="stylesheet" href="/css/aos.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/vocab-detail.css" />
+    
+</head>
+
+<body class="container mt-5 edit-vocab-page">
+  <h1 class="mb-4 page-title">Edit Vocabulary</h1>
+
+  <form action="/api/v1/admin/dictionary/<%= vocabulary._id %>?_method=PUT" method="POST" class="edit-vocab-form">
     <div class="mb-3">
       <label class="form-label">Word</label>
-      <input type="text" name="word" class="form-control" value="<%= vocabulary.word %>" required>
+      <input type="text" name="word" class="form-control" value="<%= vocabulary.word %>" required />
     </div>
 
     <div class="mb-3">
       <label class="form-label">Pronunciation</label>
-      <input type="text" name="pronunciation" class="form-control" value="<%= vocabulary.pronunciation || '' %>">
+      <input type="text" name="pronunciation" class="form-control" value="<%= vocabulary.pronunciation || '' %>" />
     </div>
 
-   <div class="mb-3">
-  <label class="form-label">Part of Speech</label>
-  <select name="partOfSpeech" class="form-select">
-    <option value="noun" <%= vocabulary.partOfSpeech === 'noun' ? 'selected' : '' %>>Noun</option>
-    <option value="verb" <%= vocabulary.partOfSpeech === 'verb' ? 'selected' : '' %>>Verb</option>
-    <option value="adjective" <%= vocabulary.partOfSpeech === 'adjective' ? 'selected' : '' %>>Adjective</option>
-    <option value="adverb" <%= vocabulary.partOfSpeech === 'adverb' ? 'selected' : '' %>>Adverb</option>
-    <option value="preposition" <%= vocabulary.partOfSpeech === 'preposition' ? 'selected' : '' %>>Preposition</option>
-    <option value="conjunction" <%= vocabulary.partOfSpeech === 'conjunction' ? 'selected' : '' %>>Conjunction</option>
-    <option value="interjection" <%= vocabulary.partOfSpeech === 'interjection' ? 'selected' : '' %>>Interjection</option>
-    <option value="pronoun" <%= vocabulary.partOfSpeech === 'pronoun' ? 'selected' : '' %>>Pronoun</option>
-    <option value="determiner" <%= vocabulary.partOfSpeech === 'determiner' ? 'selected' : '' %>>Determiner</option>
-  </select>
-</div>
+    <div class="mb-3">
+      <label class="form-label">Part of Speech</label>
+      <select name="partOfSpeech" class="form-select">
+        <option value="noun" <%= vocabulary.partOfSpeech === 'noun' ? 'selected' : '' %>>Noun</option>
+        <option value="verb" <%= vocabulary.partOfSpeech === 'verb' ? 'selected' : '' %>>Verb</option>
+        <option value="adjective" <%= vocabulary.partOfSpeech === 'adjective' ? 'selected' : '' %>>Adjective</option>
+        <option value="adverb" <%= vocabulary.partOfSpeech === 'adverb' ? 'selected' : '' %>>Adverb</option>
+        <option value="preposition" <%= vocabulary.partOfSpeech === 'preposition' ? 'selected' : '' %>>Preposition</option>
+        <option value="conjunction" <%= vocabulary.partOfSpeech === 'conjunction' ? 'selected' : '' %>>Conjunction</option>
+        <option value="interjection" <%= vocabulary.partOfSpeech === 'interjection' ? 'selected' : '' %>>Interjection</option>
+        <option value="pronoun" <%= vocabulary.partOfSpeech === 'pronoun' ? 'selected' : '' %>>Pronoun</option>
+        <option value="determiner" <%= vocabulary.partOfSpeech === 'determiner' ? 'selected' : '' %>>Determiner</option>
+      </select>
+    </div>
 
     <div class="mb-3">
       <label class="form-label">Meaning</label>
-      <textarea name="meaning" class="form-control"><%= vocabulary.meaning || '' %></textarea>
+      <textarea name="meaning" class="form-control" rows="2"><%= vocabulary.meaning || '' %></textarea>
     </div>
 
     <div class="mb-3">
@@ -44,8 +57,13 @@
       <textarea name="examples" class="form-control" rows="4"><%= vocabulary.examples ? vocabulary.examples.join('\n') : '' %></textarea>
     </div>
 
-    <button type="submit" class="btn btn-primary">Update</button>
-    <a href="/api/v1/admin/dictionary" class="btn btn-secondary">Cancel</a>
+    <div class="form-buttons">
+      <button type="submit" class="btn btn-primary">Update</button>
+      <a href="/api/v1/admin/dictionary" class="btn btn-secondary">Cancel</a>
+    </div>
   </form>
+
+  <!-- Bootstrap JS -->
+  <script src="/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -4,27 +4,39 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create User</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+
+    <!-- Reset CSS -->
+    <link rel="stylesheet" href="/css/reset.css" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+
+    <!-- Plugin CSS (AOS) -->
+    <link rel="stylesheet" href="/css/aos.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/create-user.css" />
   </head>
-  <body class="bg-light">
+
+  <body>
     <div class="container py-5">
-      <h2 class="mb-4 text-center text-primary">➕ Create New User</h2>
+      <h2 class="mb-4 text-center text-primary create-user-title">
+        ➕ Create New User
+      </h2>
 
       <form
         action="/api/v1/admin/users"
         method="POST"
-        class="border p-4 rounded bg-white shadow-sm mx-auto"
-        style="max-width: 600px"
+        class="border p-4 rounded bg-white shadow-sm mx-auto create-user-form"
       >
         <!-- Username -->
         <div class="mb-3">
-          <label for="username" class="form-label">Username</label>
+          <label for="username" class="form-label create-user-label"
+            >Username</label
+          >
           <input
             type="text"
-            class="form-control"
+            class="form-control create-user-input"
             id="username"
             name="username"
             required
@@ -33,16 +45,23 @@
 
         <!-- Email -->
         <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
-          <input type="email" class="form-control" id="email" name="email" />
+          <label for="email" class="form-label create-user-label">Email</label>
+          <input
+            type="email"
+            class="form-control create-user-input"
+            id="email"
+            name="email"
+          />
         </div>
 
         <!-- Password -->
         <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
+          <label for="password" class="form-label create-user-label"
+            >Password</label
+          >
           <input
             type="password"
-            class="form-control"
+            class="form-control create-user-input"
             id="password"
             name="password"
             required
@@ -51,10 +70,9 @@
 
         <!-- Role -->
         <% if (currentUser && currentUser.role === 0) { %>
-        <!-- SuperAdmin: can create all roles -->
         <div class="mb-3">
-          <label for="role" class="form-label">Role</label>
-          <select class="form-select" id="role" name="role">
+          <label for="role" class="form-label create-user-label">Role</label>
+          <select class="form-select create-user-select" id="role" name="role">
             <option value="0">Super Admin</option>
             <option value="1">Admin</option>
             <option value="2" selected>User</option>
@@ -62,28 +80,32 @@
           </select>
         </div>
         <% } else if (currentUser && currentUser.role === 1) { %>
-        <!-- Admin: cannot create SuperAdmin -->
         <div class="mb-3">
-          <label for="role" class="form-label">Role</label>
-          <select class="form-select" id="role" name="role">
+          <label for="role" class="form-label create-user-label">Role</label>
+          <select class="form-select create-user-select" id="role" name="role">
             <option value="1">Admin</option>
             <option value="2" selected>User</option>
             <option value="3">Guest</option>
           </select>
         </div>
         <% } else { %>
-        <!-- Other: hidden input default User -->
         <input type="hidden" name="role" value="2" />
         <% } %>
 
         <!-- Buttons -->
         <div class="d-flex justify-content-between">
-          <a href="/api/v1/admin/users" class="btn btn-secondary">⬅️ Back</a>
-          <button type="submit" class="btn btn-primary">💾 Create User</button>
+          <a
+            href="/api/v1/admin/users"
+            class="btn btn-secondary create-user-back-btn"
+            >⬅️ Back</a
+          >
+          <button type="submit" class="btn btn-primary create-user-submit-btn">
+            💾 Create User
+          </button>
         </div>
       </form>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

@@ -1,0 +1,40 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  scroll-behavior: smooth;
+  background-color: #f8fff4;
+  color: #1b4332;
+}
+.create-user-form {
+  max-width: 600px;
+}
+
+.create-user-title {
+  color: #007bff;
+}
+
+.create-user-label {
+  font-size: 0.9rem;
+}
+
+.create-user-input,
+.create-user-select {
+  border-radius: 6px;
+}
+
+.create-user-submit-btn {
+  background-color: #007bff;
+  border: none;
+}
+
+.create-user-submit-btn:hover {
+  background-color: #0056b3;
+}
+
+.create-user-back-btn {
+  background-color: #6c757d;
+  border: none;
+}
+
+.create-user-back-btn:hover {
+  background-color: #5a6268;
+}

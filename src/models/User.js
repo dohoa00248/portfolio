@@ -11,25 +11,26 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-    },
-    firstName: {
-      type: String,
-      required: false,
-      trim: true,
-    },
-    lastName: {
-      type: String,
-      required: false,
       trim: true,
     },
     email: {
       type: String,
       required: true,
+      trim: true,
+    },
+    firstName: {
+      type: String,
+
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      trim: true,
     },
     role: {
       type: Number,
       enum: [0, 1, 2, 3],
-      required: false,
+      required: true,
       default: 2,
       // 0: superAdmin; 1: admin; 2: user; 3: guest
     },

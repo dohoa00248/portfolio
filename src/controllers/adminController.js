@@ -148,7 +148,7 @@ const getDictionaryPage = async (req, res) => {
         .skip(skip)
         .limit(limit)
         .select(
-          'word pronunciation partOfSpeech meaning example createdAt updatedAt'
+          'word pronunciation partOfSpeech meaning examples createdAt updatedAt'
         )
         .lean(),
       Vocabulary.countDocuments(queryObj),

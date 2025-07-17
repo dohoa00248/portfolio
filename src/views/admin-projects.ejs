@@ -2,245 +2,305 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Project Management</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/css/admin.css" />
+
+    <!-- Reset CSS -->
+    <link rel="stylesheet" href="/css/reset.css" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+
+    <!-- Plugin CSS (AOS) -->
+    <link rel="stylesheet" href="/css/aos.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/admin-projects.css" />
   </head>
+
   <body>
-    <!-- Top Navbar -->
-    <nav class="navbar navbar-dark bg-dark px-3">
-      <span class="navbar-brand">Admin Panel</span>
-      <div class="d-flex align-items-center ms-auto gap-2">
-        <span class="text-white"
-          >Welcome, <%= currentUser.username || "Admin" %></span
-        >
-        <a
-          href="/api/v1/admin/users/profile"
-          class="btn btn-outline-light btn-sm"
-          >Update Info</a
-        >
-        <a href="/api/v1/auth/signout" class="btn btn-outline-light btn-sm"
-          >Sign Out</a
-        >
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark fixed-top custom-navbar">
+      <div class="container-fluid">
+        <span class="navbar-brand">Admin Panel</span>
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-white"
+            >Welcome, <%= currentUser.username || "Admin" %></span
+          >
+          <a
+            href="/api/v1/admin/users/profile"
+            class="btn btn-outline-light btn-sm"
+            >Update Info</a
+          >
+          <a href="/api/v1/auth/signout" class="btn btn-outline-light btn-sm"
+            >Sign Out</a
+          >
+        </div>
       </div>
     </nav>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <a href="/api/v1/admin/dashboard">🏠 Dashboard</a>
-      <a href="/api/v1/admin/users">👥 User Management</a>
-      <a href="/api/v1/admin/projects">📁 Projects</a>
-      <a href="/api/v1/admin/dictionary">📚 Dictionary</a>
-      <a href="/api/v1/admin/statistics">📈 Statistics</a>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main">
-      <div class="container-fluid">
-        <h2 class="mb-4">📁 Project Management</h2>
-
-        <!-- Add Project Form -->
-        <div class="content-placeholder">
-          <h5 class="mb-3">Add New Project</h5>
-          <form action="/api/v1/admin/projects" method="post" class="row g-3">
-            <div class="col-md-4">
-              <input
-                type="text"
-                name="title"
-                class="form-control"
-                placeholder="Title"
-                required
-              />
-            </div>
-            <div class="col-md-3">
-              <input
-                type="text"
-                name="tech"
-                class="form-control"
-                placeholder="Tech Stack"
-                required
-              />
-            </div>
-            <div class="col-md-5">
-              <input
-                type="text"
-                name="description"
-                class="form-control"
-                placeholder="Description"
-                required
-              />
-            </div>
-            <div class="col-md-4">
-              <input
-                type="text"
-                name="live"
-                class="form-control"
-                placeholder="Live URL"
-              />
-            </div>
-            <div class="col-md-4">
-              <input
-                type="url"
-                name="github"
-                class="form-control"
-                placeholder="Github URL"
-                required
-              />
-            </div>
-            <div class="col-md-4 d-grid">
-              <button type="submit" class="btn btn-primary">
-                ➕ Add Project
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <!-- Search -->
-        <form action="/api/v1/admin/projects" method="get" class="d-flex my-4">
-          <input
-            type="text"
-            name="search"
-            value="<%= search || '' %>"
-            class="form-control me-2"
-            placeholder="Search by title"
-          />
-          <button type="submit" class="btn btn-primary">🔍 Search</button>
-        </form>
-        <div class="text-end mt-3">
-          <a href="/api/v1/admin/projects" class="btn btn-secondary">
-            🔄 Reload List
-          </a>
-        </div>
-        <!-- Projects Table -->
-        <div class="content-placeholder">
-          <h5 class="mb-3">Project List (<%= totalProjects %>)</h5>
-
-          <% if (projects.length === 0) { %>
-          <p class="text-muted">No projects found.</p>
-          <% } else { %>
-          <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle">
-              <thead class="table-dark">
-                <tr>
-                  <th>#</th>
-                  <th>Title</th>
-                  <th>Tech Stack</th>
-                  <th>Description</th>
-                  <th>Live</th>
-                  <th>Github</th>
-                  <th>Created</th>
-                  <th>Updated</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% projects.forEach((project, index) => { %>
-                <tr>
-                  <td><%= index + 1 + (currentPage - 1) * 10 %></td>
-                  <td><%= project.title %></td>
-                  <td><%= project.tech %></td>
-                  <td>
-                    <span
-                      class="d-inline-block text-truncate"
-                      style="max-width: 200px"
-                      title="<%= project.description %>"
-                    >
-                      <%= project.description.length > 60 ?
-                      project.description.slice(0, 60) + '...' :
-                      project.description %>
-                    </span>
-                  </td>
-                  <td>
-                    <a href="<%= project.live %>" target="_blank">🔗 Live</a>
-                  </td>
-                  <td>
-                    <a href="<%= project.github %>" target="_blank"
-                      >📁 Github</a
-                    >
-                  </td>
-                  <td>
-                    <%= new Date(project.createdAt).toLocaleDateString('vi-VN')
-                    %>
-                  </td>
-                  <td>
-                    <%= new Date(project.updatedAt).toLocaleDateString('vi-VN')
-                    %>
-                  </td>
-                  <td>
-                    <div class="btn-group" role="group">
-                      <a
-                        href="/api/v1/admin/projects/<%= project._id %>"
-                        class="btn btn-sm btn-primary"
-                        title="Edit"
-                        >✏️ Edit</a
-                      >
-                      <form
-                        action="/api/v1/admin/projects/<%= project._id %>?_method=DELETE"
-                        method="post"
-                        onsubmit="return confirm('Are you sure to delete this project?');"
-                        style="display: inline"
-                      >
-                        <button
-                          type="submit"
-                          class="btn btn-sm btn-danger"
-                          title="Delete"
-                        >
-                          🗑️ Delete
-                        </button>
-                      </form>
-                    </div>
-                  </td>
-                </tr>
-                <% }) %>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Pagination -->
-          <nav aria-label="Project pagination">
-            <ul class="pagination justify-content-center">
-              <% if (currentPage > 1) { %>
-              <li class="page-item">
-                <a
-                  class="page-link"
-                  href="?page=<%= currentPage - 1 %>&search=<%= search %>"
-                  >Previous</a
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <nav
+          id="sidebarMenu"
+          class="col-md-3 col-lg-2 d-md-block sidebar collapse pt-5 custom-sidebar"
+        >
+          <div class="position-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/dashboard"
+                  >🏠 Dashboard</a
                 >
               </li>
-              <% } else { %>
-              <li class="page-item disabled">
-                <span class="page-link">Previous</span>
-              </li>
-              <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
-              <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-                <a class="page-link" href="?page=<%= i %>&search=<%= search %>"
-                  ><%= i %></a
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/users"
+                  >👥 User Management</a
                 >
               </li>
-              <% } %> <% if (currentPage < totalPages) { %>
-              <li class="page-item">
-                <a
-                  class="page-link"
-                  href="?page=<%= currentPage + 1 %>&search=<%= search %>"
-                  >Next</a
+              <li class="nav-item">
+                <a class="nav-link active" href="/api/v1/admin/projects"
+                  >📁 Projects</a
                 >
               </li>
-              <% } else { %>
-              <li class="page-item disabled">
-                <span class="page-link">Next</span>
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/dictionary"
+                  >📚 Dictionary</a
+                >
               </li>
-              <% } %>
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/admin/statistics"
+                  >📈 Statistics</a
+                >
+              </li>
             </ul>
-          </nav>
-          <% } %>
-        </div>
+          </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">
+          <div class="pt-3">
+            <h2>Project Management</h2>
+
+            <!-- Add Project Card -->
+            <div class="card mb-4 custom-card">
+              <div class="card-header">Add New Project</div>
+              <div class="card-body">
+                <form
+                  action="/api/v1/admin/projects"
+                  method="post"
+                  class="row g-3"
+                >
+                  <div class="col-md-4">
+                    <input
+                      type="text"
+                      name="title"
+                      class="form-control"
+                      placeholder="Title"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-3">
+                    <input
+                      type="text"
+                      name="tech"
+                      class="form-control"
+                      placeholder="Tech Stack"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-5">
+                    <input
+                      type="text"
+                      name="description"
+                      class="form-control"
+                      placeholder="Description"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-4">
+                    <input
+                      type="text"
+                      name="live"
+                      class="form-control"
+                      placeholder="Live URL"
+                    />
+                  </div>
+                  <div class="col-md-4">
+                    <input
+                      type="url"
+                      name="github"
+                      class="form-control"
+                      placeholder="Github URL"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-4 d-grid">
+                    <button type="submit" class="btn btn-primary">
+                      ➕ Add Project
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Search Form -->
+            <form
+              action="/api/v1/admin/projects"
+              method="get"
+              class="d-flex mb-4"
+            >
+              <input
+                type="text"
+                name="search"
+                value="<%= search || '' %>"
+                class="form-control me-2"
+                placeholder="Search by title"
+              />
+              <button type="submit" class="btn btn-primary">🔍 Search</button>
+            </form>
+
+            <!-- Project Table Card -->
+            <div class="card mb-4 custom-card">
+              <div class="card-header">Project List (<%= totalProjects %>)</div>
+              <div class="card-body">
+                <a href="/api/v1/admin/projects" class="btn btn-secondary mb-3"
+                  >🔄 Reload List</a
+                >
+
+                <% if (projects.length === 0) { %>
+                <p class="text-muted">No projects found.</p>
+                <% } else { %>
+                <div class="table-responsive">
+                  <table
+                    class="table table-bordered table-hover custom-table align-middle"
+                  >
+                    <thead class="table-dark">
+                      <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Tech Stack</th>
+                        <th>Description</th>
+                        <th>Live</th>
+                        <th>Github</th>
+                        <th>Created</th>
+                        <th>Updated</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% projects.forEach((project, index) => { %>
+                      <tr>
+                        <td><%= index + 1 + (currentPage - 1) * 10 %></td>
+                        <td><%= project.title %></td>
+                        <td><%= project.tech %></td>
+                        <td>
+                          <span
+                            class="d-inline-block text-truncate"
+                            style="max-width: 200px"
+                            title="<%= project.description %>"
+                          >
+                            <%= project.description.length > 60 ?
+                            project.description.slice(0, 60) + '...' :
+                            project.description %>
+                          </span>
+                        </td>
+                        <td>
+                          <a href="<%= project.live %>" target="_blank"
+                            >🔗 Live</a
+                          >
+                        </td>
+                        <td>
+                          <a href="<%= project.github %>" target="_blank"
+                            >📁 Github</a
+                          >
+                        </td>
+                        <td>
+                          <%= new
+                          Date(project.createdAt).toLocaleDateString('vi-VN') %>
+                        </td>
+                        <td>
+                          <%= new
+                          Date(project.updatedAt).toLocaleDateString('vi-VN') %>
+                        </td>
+                        <td>
+                          <div class="btn-group btn-group-sm" role="group">
+                            <a
+                              href="/api/v1/admin/projects/<%= project._id %>"
+                              class="btn btn-primary"
+                              title="Edit"
+                              >✏️</a
+                            >
+                            <form
+                              action="/api/v1/admin/projects/<%= project._id %>?_method=DELETE"
+                              method="post"
+                              onsubmit="return confirm('Are you sure to delete this project?');"
+                            >
+                              <button
+                                type="submit"
+                                class="btn btn-danger"
+                                title="Delete"
+                              >
+                                🗑️
+                              </button>
+                            </form>
+                          </div>
+                        </td>
+                      </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Project pagination">
+                  <ul class="pagination justify-content-center">
+                    <% if (currentPage > 1) { %>
+                    <li class="page-item">
+                      <a
+                        class="page-link"
+                        href="?page=<%= currentPage - 1 %>&search=<%= search %>"
+                        >Previous</a
+                      >
+                    </li>
+                    <% } else { %>
+                    <li class="page-item disabled">
+                      <span class="page-link">Previous</span>
+                    </li>
+                    <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
+                    <li
+                      class="page-item <%= currentPage === i ? 'active' : '' %>"
+                    >
+                      <a
+                        class="page-link"
+                        href="?page=<%= i %>&search=<%= search %>"
+                        ><%= i %></a
+                      >
+                    </li>
+                    <% } %> <% if (currentPage < totalPages) { %>
+                    <li class="page-item">
+                      <a
+                        class="page-link"
+                        href="?page=<%= currentPage + 1 %>&search=<%= search %>"
+                        >Next</a
+                      >
+                    </li>
+                    <% } else { %>
+                    <li class="page-item disabled">
+                      <span class="page-link">Next</span>
+                    </li>
+                    <% } %>
+                  </ul>
+                </nav>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

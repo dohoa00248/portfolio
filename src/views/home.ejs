@@ -3,23 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Do The Hoa – Portfolio</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"
-      rel="stylesheet"
-    />
+    <title>Do The Hoa - Portfolio</title>
+
+    <!-- Reset CSS -->
+    <link rel="stylesheet" href="/css/reset.css" />
+
+    <!-- Framework CSS (Bootstrap) -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+
+    <!-- Plugin CSS (AOS) -->
+    <link rel="stylesheet" href="/css/aos.css" />
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/home.css" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
   </head>
 
-  <body class="bg-light text-dark">
+  <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg sticky-top shadow-sm">
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm my-navbar"
+    >
       <div class="container">
         <a class="navbar-brand fw-bold" href="#">Do The Hoa</a>
         <button
@@ -68,16 +71,15 @@
     <!-- Hero Section -->
     <section
       id="about"
-      class="py-5 text-center hero"
+      class="py-5 text-center hero my-hero"
       data-aos="fade-up"
       data-aos-duration="1000"
-      style="position: relative"
     >
-      <div class="container position-relative" style="z-index: 1">
+      <div class="container">
         <h1 class="display-4 fw-bold">Do The Hoa</h1>
         <p class="mb-1">
           <strong>Email:</strong>
-          <a href="mailto:dohoa00248@gmail.com" class="link-light"
+          <a href="mailto:dohoa00248@gmail.com" class="link-dark"
             >dohoa00248@gmail.com</a
           >
         </p>
@@ -85,7 +87,7 @@
           <strong>GitHub:</strong>
           <a
             href="https://github.com/dohoa00248"
-            class="link-light"
+            class="link-dark"
             target="_blank"
           >
             github.com/dohoa00248
@@ -95,13 +97,13 @@
           <strong>LinkedIn:</strong>
           <a
             href="https://www.linkedin.com/in/do-hoa-35497b352/"
-            class="link-light"
+            class="link-dark"
             target="_blank"
           >
             linkedin.com/in/do-hoa
           </a>
         </p>
-        <hr class="bg-light" />
+        <hr />
         <p class="lead">
           Enthusiastic IT student with hands-on experience in web development
           and database management. Built various applications through personal
@@ -119,7 +121,7 @@
     <!-- Projects Section -->
     <section
       id="projects"
-      class="container py-5"
+      class="container py-5 my-projects"
       data-aos="fade-right"
       data-aos-duration="1000"
     >
@@ -128,14 +130,16 @@
         <% dataList.forEach(project => { %>
         <div class="col-md-4">
           <div
-            class="card h-100 shadow-sm"
+            class="card h-100 shadow-sm my-card"
             data-aos="zoom-in"
             data-aos-duration="800"
           >
             <div class="card-body">
               <h5 class="card-title"><%= project.title %></h5>
-              <p><strong>Tech:</strong> <%= project.tech %></p>
-              <p><%= project.description %></p>
+              <p class="card-text">
+                <strong>Tech:</strong> <%= project.tech %>
+              </p>
+              <p class="card-text"><%= project.description %></p>
             </div>
             <div class="card-footer bg-transparent border-top-0">
               <a href="<%= project.live %>" target="_blank">🌐 Live</a> |
@@ -150,7 +154,7 @@
     <!-- Skills Section -->
     <section
       id="skills"
-      class="container py-5"
+      class="container py-5 my-skills"
       data-aos="fade-left"
       data-aos-duration="1000"
     >
@@ -169,8 +173,8 @@
             <li><strong>Frontend:</strong> jQuery, Bootstrap</li>
             <li><strong>Architecture:</strong> OOP, MVC, RESTful APIs</li>
             <li>
-              <strong>Data Analysis: </strong>
-              NumPy, Pandas, Matplotlib, Scikit-learn
+              <strong>Data Analysis:</strong> NumPy, Pandas, Matplotlib,
+              Scikit-learn
             </li>
           </ul>
         </div>
@@ -193,7 +197,7 @@
     <!-- Contact Section -->
     <section
       id="contact"
-      class="container py-5"
+      class="container py-5 my-contact"
       data-aos="zoom-in"
       data-aos-duration="1000"
     >
@@ -207,10 +211,17 @@
     </section>
 
     <!-- Footer -->
-    <footer class="text-center py-3 border-top">
+    <footer class="text-center py-3 border-top my-footer">
       <p class="mb-0">&copy; 2025 Do The Hoa. All rights reserved.</p>
     </footer>
 
+    <!-- Framework JS (Bootstrap) -->
+    <script src="/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Plugin JS (AOS) -->
+    <script src="/js/aos.js"></script>
+
+    <!-- Init AOS -->
     <script>
       AOS.init();
     </script>

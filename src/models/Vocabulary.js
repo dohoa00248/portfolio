@@ -10,10 +10,12 @@ const vocabularySchema = new mongoose.Schema(
     },
     pronunciation: {
       type: String,
+      required: true,
       trim: true,
     },
     partOfSpeech: {
       type: String,
+      required: true,
       enum: [
         'noun',
         'verb',
@@ -24,9 +26,7 @@ const vocabularySchema = new mongoose.Schema(
         'interjection',
         'pronoun',
         'determiner',
-        'null',
       ],
-      required: true,
     },
     meaning: {
       type: String,

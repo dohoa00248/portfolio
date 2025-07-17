@@ -153,6 +153,7 @@ router.get(
   auth.checkSuperAdmin,
   adminController.exportDictionary
 );
+
 router.get(
   '/dictionary/:id',
   auth.authSignin,

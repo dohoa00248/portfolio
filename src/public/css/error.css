@@ -1,0 +1,39 @@
+/* error.css */
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  scroll-behavior: smooth;
+  background-color: #f8fff4;
+  color: #1b4332;
+}
+.error-page-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.error-page-title {
+  font-weight: 600;
+}
+
+.error-page-message {
+  font-size: 1.1rem;
+}
+
+.error-page-detail {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background: #f1f1f1;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: left;
+  text-align: center;
+}
+
+.error-page-home-btn {
+  background-color: #007bff;
+  border: none;
+}
+
+.error-page-home-btn:hover {
+  background-color: #0056b3;
+}

@@ -5,21 +5,26 @@ const projectSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
+      trim: true,
     },
     tech: {
       type: String,
       required: true,
+      trim: true,
     },
     description: {
       type: String,
       required: true,
+      trim: true,
     },
     live: {
       type: String,
+      trim: true,
     },
     github: {
       type: String,
       required: true,
+      trim: true,
     },
   },
   {
