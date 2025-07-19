@@ -147,6 +147,15 @@ router.post(
   adminController.createVocabulary
 );
 
+// router.get('/my-dictionary/', auth.authSignin, adminController.getMyDictionary);
+
+// router.post(
+//   '/dictionary',
+//   auth.authSignin,
+//   // auth.checkSuperAdmin,
+//   adminController.createVocabulary
+// );
+
 router.get(
   '/dictionary/export-excel',
   auth.authSignin,

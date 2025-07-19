@@ -549,6 +549,7 @@ const createVocabulary = async (req, res) => {
       partOfSpeech,
       meaning,
       examples,
+      createdBy: req.session.user._id,
     });
 
     await newVocabulary.save();
@@ -771,6 +772,7 @@ const importVocab = async (req, res) => {
     });
   }
 };
+
 export default {
   getAdminDashboard,
   getUsersPage,

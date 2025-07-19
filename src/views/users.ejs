@@ -3,9 +3,60 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>My Vocabularies</title>
+
+    <!-- Reset CSS -->
+    <link rel="stylesheet" href="/css/reset.css" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+
+    <!-- Plugin CSS (AOS) -->
+    <link rel="stylesheet" href="/css/aos.css" />
+
+    <!-- Custom CSS -->
+    <!-- <link rel="stylesheet" href="/css/admin-dashboard.css" /> -->
   </head>
   <body>
-    hello users
+    <div class="container py-5">
+      <h1 class="mb-4">My Vocabularies (<%= vocabularies.length %>)</h1>
+
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Word</th>
+            <th>Pronunciation</th>
+            <th>Part of Speech</th>
+            <th>Meaning</th>
+            <th>Created By</th>
+            <th>Email</th>
+            <th>Created At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (vocabularies.length > 0) { %> <% vocabularies.forEach((vocab,
+          index) => { %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td><%= vocab.word %></td>
+            <td><%= vocab.pronunciation %></td>
+            <td><%= vocab.partOfSpeech %></td>
+            <td><%= vocab.meaning %></td>
+            <td><%= vocab.createdBy.username %></td>
+            <td><%= vocab.createdBy.email %></td>
+            <td><%= new Date(vocab.createdAt).toLocaleString() %></td>
+          </tr>
+          <% }) %> <% } else { %>
+          <tr>
+            <td colspan="8" class="text-center">No vocabularies found.</td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
