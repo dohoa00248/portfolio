@@ -4,11 +4,6 @@ import { fileURLToPath } from 'url';
 import setupViewEngine from './config/viewEngine.js';
 import setupStaticFiles from './config/staticFiles.js';
 
-//TEST
-// import applyMiddleware from './test/middlewares/index.js';
-// import applyRoutes from './test/routes/index.js';
-
-//
 import applyMiddleware from './middlewares/index.js';
 import applyRoutes from './routes/index.js';
 

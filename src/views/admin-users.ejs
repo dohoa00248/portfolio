@@ -32,9 +32,11 @@
             class="btn btn-outline-light btn-sm"
             >Update Info</a
           >
-          <a href="/api/v1/auth/signout" class="btn btn-outline-light btn-sm"
-            >Sign Out</a
-          >
+          <form action="/api/v1/auth/signout" method="POST">
+            <button type="submit" class="btn btn-outline-light btn-sm">
+              Sign Out
+            </button>
+          </form>
         </div>
       </div>
     </nav>
