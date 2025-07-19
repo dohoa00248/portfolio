@@ -19,15 +19,14 @@
     <div class="container py-5">
       <div class="text-center error-page-container">
         <h1 class="text-danger error-page-title">⚠️ Error</h1>
-
-        <% if (message) { %>
+        <% if (typeof message !== 'undefined' && message) { %>
         <p class="lead error-page-message"><%= message %></p>
         <% } else { %>
         <p class="lead error-page-message">An unexpected error occurred.</p>
-        <% } %> <% if (error && error.message) { %>
+        <% } %> <% if (typeof error !== 'undefined' && error && error.message) {
+        %>
         <pre class="text-muted error-page-detail"><%= error.message %></pre>
         <% } %>
-
         <a href="/" class="btn btn-primary mt-3 error-page-home-btn"
           >⬅️ Back to Home</a
         >
