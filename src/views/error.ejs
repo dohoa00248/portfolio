@@ -5,17 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Error</title>
 
+    <!-- Reset CSS -->
+    <link rel="stylesheet" href="/css/reset.css" />
+
     <!-- Bootstrap CSS -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    />
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+
+    <!-- Plugin CSS (AOS) -->
+    <link rel="stylesheet" href="/css/aos.css" />
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/error.css" />
   </head>
 
-  <body class="error-page-body">
+  <body>
     <div class="container py-5">
       <div class="text-center error-page-container">
         <h1 class="text-danger error-page-title">⚠️ Error</h1>
@@ -27,9 +30,10 @@
         %>
         <pre class="text-muted error-page-detail"><%= error.message %></pre>
         <% } %>
-        <a href="/" class="btn btn-primary mt-3 error-page-home-btn"
-          >⬅️ Back to Home</a
-        >
+
+        <a href="/" class="btn btn-primary mt-3 error-page-home-btn">
+          ⬅️ Back to Home
+        </a>
       </div>
     </div>
 
