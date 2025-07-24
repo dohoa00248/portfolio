@@ -25,7 +25,8 @@
         <span class="navbar-brand">Admin Panel</span>
         <div class="d-flex align-items-center gap-2">
           <span class="text-white">
-            Welcome, <%= currentUser.username || "Admin" %>
+            Welcome, <%= currentUser.username %> (<%= currentUser.firstName %>
+            <%= currentUser.lastName %>)
           </span>
           <a
             href="/api/v1/admin/users/profile"

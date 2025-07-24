@@ -178,6 +178,11 @@
                               title="Edit"
                               >✏️</a
                             >
+                            <a
+                              href="/api/v1/admin/users/<%= user._id %>/vocabularies"
+                              class="btn btn-sm btn-primary"
+                              >Vocabularies</a
+                            >
                             <form
                               action="/api/v1/admin/users/<%= user._id %>?_method=DELETE"
                               method="post"

@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 import path from 'path';
 import xlsx from 'xlsx';
 import fs from 'fs';
+
 const getAdminDashboard = async (req, res) => {
   try {
     const currentUser = req.session.user;
@@ -148,8 +149,9 @@ const getDictionaryPage = async (req, res) => {
         .skip(skip)
         .limit(limit)
         .select(
-          'word pronunciation partOfSpeech meaning examples createdAt updatedAt'
+          'word pronunciation partOfSpeech meaning examples createdBy createdAt updatedAt'
         )
+        .populate('createdBy', 'username')
         .lean(),
       Vocabulary.countDocuments(queryObj),
     ]);
@@ -166,6 +168,94 @@ const getDictionaryPage = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching dictionary:', error.message);
+
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
+      error,
+    });
+  }
+};
+
+const getMyDictionary = async (req, res) => {
+  try {
+    const currentUser = req.session.user;
+
+    const { search, page } = req.query;
+
+    const searchQuery = search ? search.trim() : '';
+
+    const pageNum = parseInt(page) || 1;
+    const limit = 10;
+    const skip = (pageNum - 1) * limit;
+
+    const queryObj = {
+      createdBy: currentUser._id, // chỉ lấy từ của user hiện tại
+    };
+
+    // Nếu có search, thêm điều kiện word regex
+    if (searchQuery) {
+      queryObj.word = { $regex: searchQuery, $options: 'i' };
+    }
+
+    const [vocabularies, totalVocabularies] = await Promise.all([
+      Vocabulary.find(queryObj)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .select(
+          'word pronunciation partOfSpeech meaning examples createdBy createdAt updatedAt'
+        )
+        .populate('createdBy', 'username')
+        .lean(),
+      Vocabulary.countDocuments(queryObj),
+    ]);
+
+    const totalPages = Math.ceil(totalVocabularies / limit);
+
+    return res.render('admin-my-dictionary', {
+      currentUser,
+      vocabularies,
+      totalVocabularies,
+      totalPages,
+      currentPage: pageNum,
+      search: searchQuery,
+    });
+  } catch (error) {
+    console.error('Error fetching user vocabularies:', error.message);
+
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
+      error,
+    });
+  }
+};
+
+const getUserVocabularies = async (req, res) => {
+  try {
+    const currentUser = req.session.user;
+    const userId = req.params.id;
+
+    // Tìm user trước
+    const user = await User.findById(userId).select('username').lean();
+
+    if (!user) {
+      return res.status(404).render('error', {
+        message: 'User not found',
+      });
+    }
+
+    // Lấy vocabularies của user đó
+    const vocabularies = await Vocabulary.find({ createdBy: userId })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return res.render('admin-user-vocabularies', {
+      currentUser,
+      user,
+      vocabularies,
+    });
+  } catch (error) {
+    console.error('Error loading user vocabularies:', error.message);
 
     return res.status(500).render('error', {
       message: 'Internal Server Error',
@@ -235,7 +325,7 @@ const updateProfile = async (req, res) => {
 
     req.session.user = updatedUser;
 
-    return res.redirect('/api/v1/admin/users/profile');
+    return res.redirect('/api/v1/admin/dashboard');
   } catch (error) {
     console.error('Error updating profile:', error.message);
     return res.status(500).render('error', {
@@ -244,6 +334,7 @@ const updateProfile = async (req, res) => {
     });
   }
 };
+
 const getCreateUserPage = async (req, res) => {
   try {
     const currentUser = req.session.user;
@@ -259,6 +350,7 @@ const getCreateUserPage = async (req, res) => {
     });
   }
 };
+
 const createUser = async (req, res) => {
   try {
     const currentUser = req.session.user;
@@ -306,6 +398,7 @@ const createUser = async (req, res) => {
     });
   }
 };
+
 const getUserById = async (req, res) => {
   try {
     const currentUser = req.session.user;
@@ -330,6 +423,7 @@ const getUserById = async (req, res) => {
     });
   }
 };
+
 const updateUser = async (req, res) => {
   try {
     const currentUser = req.session.user;
@@ -390,7 +484,7 @@ const getChangePasswordPage = async (req, res) => {
   }
 };
 
-const changPassWord = async (req, res) => {
+const changePassword = async (req, res) => {
   try {
     const currentUser = req.session.user;
     const { newPassword } = req.body;
@@ -411,6 +505,7 @@ const changPassWord = async (req, res) => {
     });
   }
 };
+
 const deleteUser = async (req, res) => {
   try {
     const currentUser = req.session.user;
@@ -567,42 +662,38 @@ const createVocabulary = async (req, res) => {
     });
   }
 };
+
 const exportDictionary = async (req, res) => {
   try {
-    // Query DB
     const vocabularies = await Vocabulary.find({}).lean();
 
-    // Format data
     const data = vocabularies.map((vocab) => ({
       Word: vocab.word,
       Pronunciation: vocab.pronunciation,
-      PartOfSpeech: vocab.partOfSpeech,
+      'Part Of Speech': vocab.partOfSpeech,
       Meaning: vocab.meaning,
       Examples: Array.isArray(vocab.examples) ? vocab.examples.join(', ') : '',
     }));
 
-    //worksheet and workbook
     const worksheet = xlsx.utils.json_to_sheet(data);
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, 'Dictionary');
 
-    // write file Excel to buffer
     const excelBuffer = xlsx.write(workbook, {
       type: 'buffer',
       bookType: 'xlsx',
     });
 
-    // Set header to browser recive that file
     res.setHeader(
       'Content-Disposition',
       'attachment; filename="dictionary_export.xlsx"'
     );
+
     res.setHeader(
       'Content-Type',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     );
 
-    // send file to client
     res.send(excelBuffer);
   } catch (error) {
     console.error('Error exporting excel:', error);
@@ -723,29 +814,44 @@ const importVocab = async (req, res) => {
       det: 'determiner',
     };
 
+    // Mapping Excel header ➔ schema field
+    const keyMap = {
+      Word: 'word',
+      Pronunciation: 'pronunciation',
+      'Part Of Speech': 'partOfSpeech',
+      Meaning: 'meaning',
+      Examples: 'examples',
+    };
+
+    // Chuẩn hóa key + map về schema field
     const normalizedData = data.map((item) => {
       const obj = {};
       for (let key in item) {
-        obj[key.trim().toLowerCase()] = item[key];
+        const cleanKey = key.trim();
+        if (keyMap[cleanKey]) {
+          obj[keyMap[cleanKey]] = item[key];
+        }
       }
       return obj;
     });
 
     const formattedData = normalizedData.map((item) => ({
-      word: item.word ? item.word.toLowerCase().trim() : null,
+      word: item.word ? item.word.trim().toLowerCase() : null,
       pronunciation: item.pronunciation ? item.pronunciation.trim() : null,
-      partOfSpeech: item.partofspeech
-        ? posMap[item.partofspeech.toLowerCase().trim()] ||
-          item.partofspeech.toLowerCase().trim()
+      partOfSpeech: item.partOfSpeech
+        ? posMap[item.partOfSpeech.trim().toLowerCase()] ||
+          item.partOfSpeech.trim().toLowerCase()
         : null,
       meaning: item.meaning ? item.meaning.trim() : null,
       examples: item.examples
         ? item.examples.split(',').map((e) => e.trim())
         : [],
+      createdBy: req.session.user._id,
     }));
 
     const validData = formattedData.filter(
-      (item) => item.word && item.meaning && item.partOfSpeech
+      (item) =>
+        item.word && item.pronunciation && item.partOfSpeech && item.meaning
     );
 
     const skipped = formattedData.length - validData.length;
@@ -772,7 +878,6 @@ const importVocab = async (req, res) => {
     });
   }
 };
-
 export default {
   getAdminDashboard,
   getUsersPage,
@@ -786,7 +891,7 @@ export default {
   getUserById,
   updateUser,
   getChangePasswordPage,
-  changPassWord,
+  changePassword,
   deleteUser,
   createProject,
   //projects
@@ -800,4 +905,6 @@ export default {
   updateVocab,
   deleteVocab,
   importVocab,
+  getUserVocabularies,
+  getMyDictionary,
 };

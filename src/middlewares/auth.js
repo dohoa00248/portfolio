@@ -123,6 +123,11 @@ const checkChangePasswordPermission = async (req, res, next) => {
   const currentUser = req.session.user;
   const { id } = req.params;
 
+  // Nếu không có id param, nghĩa là user tự đổi password
+  if (!id) {
+    return next();
+  }
+
   try {
     const userById = await User.findById(id);
     if (!userById) {
@@ -138,7 +143,13 @@ const checkChangePasswordPermission = async (req, res, next) => {
       return next();
     }
 
+    // Admin can change password of role 2 or 3
     if (currentUser.role === 1 && [2, 3].includes(userById.role)) {
+      return next();
+    }
+
+    // User can change their own password
+    if (currentUser._id.toString() === userById._id.toString()) {
       return next();
     }
 

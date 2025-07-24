@@ -99,7 +99,7 @@ router.post(
   auth.authSignin,
   auth.checkAdmin,
   auth.checkChangePasswordPermission,
-  adminController.changPassWord
+  adminController.changePassword
 );
 
 router.delete(
@@ -147,6 +147,13 @@ router.post(
   adminController.createVocabulary
 );
 
+router.get(
+  '/my-dictionary',
+  auth.authSignin,
+  auth.checkSuperAdmin,
+  adminController.getMyDictionary
+);
+
 // router.get('/my-dictionary/', auth.authSignin, adminController.getMyDictionary);
 
 // router.post(
@@ -191,5 +198,7 @@ router.post(
   auth.checkSuperAdmin,
   adminController.importVocab
 );
+
+router.get('/users/:id/vocabularies', adminController.getUserVocabularies);
 
 export default router;

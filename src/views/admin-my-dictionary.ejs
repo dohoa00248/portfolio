@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Project Management</title>
+    <title>My Dictionary</title>
 
     <!-- Reset CSS -->
     <link rel="stylesheet" href="/css/reset.css" />
@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/css/aos.css" />
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/admin-projects.css" />
+    <link rel="stylesheet" href="/css/admin-dictionary.css" />
   </head>
 
   <body>
@@ -33,6 +33,11 @@
             class="btn btn-outline-light btn-sm"
             >Update Info</a
           >
+          <a
+            href="/api/v1/admin/dictionary"
+            class="btn btn-outline-light btn-sm"
+            >📚 Dictionary Manager</a
+          >
           <form action="/api/v1/auth/signout" method="POST">
             <button type="submit" class="btn btn-outline-light btn-sm">
               Sign Out
@@ -42,7 +47,7 @@
       </div>
     </nav>
 
-    <div class="container-fluid">
+        <div class="container-fluid">
       <div class="row">
         <!-- Sidebar -->
         <nav
@@ -62,12 +67,12 @@
                 >
               </li>
               <li class="nav-item">
-                <a class="nav-link active" href="/api/v1/admin/projects"
+                <a class="nav-link" href="/api/v1/admin/projects"
                   >📁 Projects</a
                 >
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/api/v1/admin/dictionary"
+                <a class="nav-link active" href="/api/v1/admin/dictionary"
                   >📚 Dictionary</a
                 >
               </li>
@@ -83,64 +88,96 @@
         <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">
           <div class="pt-3">
-            <h2>Project Management</h2>
+            <h2>Dictionary Manager</h2>
 
-            <!-- Add Project Card -->
+            <!-- Add New Word Card -->
             <div class="card mb-4 custom-card">
-              <div class="card-header">Add New Project</div>
+              <div class="card-header">Add New Word</div>
               <div class="card-body">
                 <form
-                  action="/api/v1/admin/projects"
-                  method="post"
+                  action="/api/v1/admin/dictionary"
+                  method="POST"
                   class="row g-3"
                 >
                   <div class="col-md-4">
                     <input
                       type="text"
-                      name="title"
+                      name="word"
                       class="form-control"
-                      placeholder="Title"
-                      required
-                    />
-                  </div>
-                  <div class="col-md-3">
-                    <input
-                      type="text"
-                      name="tech"
-                      class="form-control"
-                      placeholder="Tech Stack"
-                      required
-                    />
-                  </div>
-                  <div class="col-md-5">
-                    <input
-                      type="text"
-                      name="description"
-                      class="form-control"
-                      placeholder="Description"
+                      placeholder="Word"
                       required
                     />
                   </div>
                   <div class="col-md-4">
                     <input
                       type="text"
-                      name="live"
+                      name="pronunciation"
                       class="form-control"
-                      placeholder="Live URL"
+                      placeholder="Pronunciation"
                     />
                   </div>
                   <div class="col-md-4">
+                    <select name="partOfSpeech" class="form-select" required>
+                      <option value="">Select Part of Speech</option>
+                      <option>noun</option>
+                      <option>verb</option>
+                      <option>adjective</option>
+                      <option>adverb</option>
+                      <option>preposition</option>
+                      <option>conjunction</option>
+                      <option>interjection</option>
+                      <option>pronoun</option>
+                      <option>determiner</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
                     <input
-                      type="url"
-                      name="github"
+                      type="text"
+                      name="meaning"
                       class="form-control"
-                      placeholder="Github URL"
+                      placeholder="Meaning"
                       required
                     />
                   </div>
-                  <div class="col-md-4 d-grid">
+                  <div class="col-md-6">
+                    <input
+                      type="text"
+                      name="examples"
+                      class="form-control"
+                      placeholder="Examples (comma separated)"
+                    />
+                  </div>
+                  <div class="col-12 text-end">
                     <button type="submit" class="btn btn-primary">
-                      ➕ Add Project
+                      ➕ Add Word
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Import Excel Card -->
+            <div class="card mb-4 custom-card">
+              <div class="card-header">Import Vocabulary from Excel</div>
+              <div class="card-body">
+                <form
+                  action="/api/v1/admin/dictionary/import-excel"
+                  method="POST"
+                  enctype="multipart/form-data"
+                  class="row g-3"
+                >
+                  <div class="col-md-8">
+                    <input
+                      type="file"
+                      name="file"
+                      class="form-control"
+                      accept=".xlsx,.xls"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-4">
+                    <button type="submit" class="btn btn-success w-100">
+                      📤 Upload File
                     </button>
                   </div>
                 </form>
@@ -149,30 +186,38 @@
 
             <!-- Search Form -->
             <form
-              action="/api/v1/admin/projects"
+              action="/api/v1/admin/dictionary"
               method="get"
               class="d-flex mb-4"
             >
               <input
                 type="text"
                 name="search"
-                value="<%= search || '' %>"
+                value="<%= search %>"
                 class="form-control me-2"
-                placeholder="Search by title"
+                placeholder="Search vocabulary"
               />
               <button type="submit" class="btn btn-primary">🔍 Search</button>
             </form>
 
-            <!-- Project Table Card -->
+            <!-- Vocabulary Table Card -->
             <div class="card mb-4 custom-card">
-              <div class="card-header">Project List (<%= totalProjects %>)</div>
+              <div class="card-header">
+                Vocabularies (<%= totalVocabularies %>)
+              </div>
               <div class="card-body">
-                <a href="/api/v1/admin/projects" class="btn btn-secondary mb-3"
+                <a
+                  href="/api/v1/admin/dictionary"
+                  class="btn btn-secondary mb-3"
                   >🔄 Reload List</a
                 >
-
-                <% if (projects.length === 0) { %>
-                <p class="text-muted">No projects found.</p>
+                <a
+                  href="/api/v1/admin/dictionary/export-excel"
+                  class="btn btn-success mb-3 ms-2"
+                  >📥 Export to Excel</a
+                >
+                <% if (vocabularies.length === 0) { %>
+                <p class="text-muted">No entries found.</p>
                 <% } else { %>
                 <div class="table-responsive">
                   <table
@@ -181,63 +226,59 @@
                     <thead class="table-dark">
                       <tr>
                         <th>#</th>
-                        <th>Title</th>
-                        <th>Tech Stack</th>
-                        <th>Description</th>
-                        <th>Live</th>
-                        <th>Github</th>
-                        <th>Created</th>
-                        <th>Updated</th>
+                        <th>Word</th>
+                        <th>Pronunciation</th>
+                        <th>Part of Speech</th>
+                        <th>Meaning</th>
+                        <th>Examples</th>
+                        <td>createdAt</td>
+                        <td>updatedAt</td>
+                        <td>createdBy</td>
                         <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <% projects.forEach((project, index) => { %>
+                      <% vocabularies.forEach((vocab, index) => { %>
                       <tr>
                         <td><%= index + 1 + (currentPage - 1) * 10 %></td>
-                        <td><%= project.title %></td>
-                        <td><%= project.tech %></td>
+                        <td><%= vocab.word %></td>
+                        <td><%= vocab.pronunciation %></td>
+                        <td><%= vocab.partOfSpeech %></td>
+                        <td><%= vocab.meaning %></td>
+
                         <td>
-                          <span
-                            class="d-inline-block text-truncate"
-                            style="max-width: 200px"
-                            title="<%= project.description %>"
-                          >
-                            <%= project.description.length > 60 ?
-                            project.description.slice(0, 60) + '...' :
-                            project.description %>
-                          </span>
-                        </td>
-                        <td>
-                          <a href="<%= project.live %>" target="_blank"
-                            >🔗 Live</a
-                          >
-                        </td>
-                        <td>
-                          <a href="<%= project.github %>" target="_blank"
-                            >📁 Github</a
-                          >
+                          <% if (Array.isArray(vocab.examples)) { %>
+                          <ul class="mb-0 ps-3">
+                            <% vocab.examples.forEach(ex => { %>
+                            <li><%= ex %></li>
+                            <% }) %>
+                          </ul>
+                          <% } else { %> <%= vocab.examples %> <% } %>
                         </td>
                         <td>
                           <%= new
-                          Date(project.createdAt).toLocaleDateString('vi-VN') %>
+                          Date(vocab.createdAt).toLocaleDateString('vi-VN') %>
                         </td>
                         <td>
                           <%= new
-                          Date(project.updatedAt).toLocaleDateString('vi-VN') %>
+                          Date(vocab.updatedAt).toLocaleDateString('vi-VN') %>
+                        </td>
+                        <td>
+                          <%= vocab.createdBy ? vocab.createdBy.username :
+                          "Unknown" %>
                         </td>
                         <td>
                           <div class="btn-group btn-group-sm" role="group">
                             <a
-                              href="/api/v1/admin/projects/<%= project._id %>"
+                              href="/api/v1/admin/dictionary/<%= vocab._id %>"
                               class="btn btn-primary"
                               title="Edit"
                               >✏️</a
                             >
                             <form
-                              action="/api/v1/admin/projects/<%= project._id %>?_method=DELETE"
+                              action="/api/v1/admin/dictionary/<%= vocab._id %>?_method=DELETE"
                               method="post"
-                              onsubmit="return confirm('Are you sure to delete this project?');"
+                              onsubmit="return confirm('Are you sure?');"
                             >
                               <button
                                 type="submit"
@@ -256,7 +297,7 @@
                 </div>
 
                 <!-- Pagination -->
-                <nav aria-label="Project pagination">
+                <nav aria-label="Vocabulary pagination">
                   <ul class="pagination justify-content-center">
                     <% if (currentPage > 1) { %>
                     <li class="page-item">
@@ -301,6 +342,7 @@
           </div>
         </main>
       </div>
+    </div>
     </div>
 
     <!-- Bootstrap JS -->

@@ -21,7 +21,7 @@
 <body class="container mt-5 edit-vocab-page">
   <h1 class="mb-4 page-title">Edit Vocabulary</h1>
 
-  <form action="/api/v1/admin/dictionary/<%= vocabulary._id %>?_method=PUT" method="POST" class="edit-vocab-form">
+  <form action="/api/v1/user/dictionary/<%= vocabulary._id %>?_method=PUT" method="POST" class="edit-vocab-form">
     <div class="mb-3">
       <label class="form-label">Word</label>
       <input type="text" name="word" class="form-control" value="<%= vocabulary.word %>" required />
@@ -59,7 +59,9 @@
 
     <div class="form-buttons">
       <button type="submit" class="btn btn-primary">Update</button>
-      <a href="/api/v1/admin/dictionary" class="btn btn-secondary">Cancel</a>
+       <a href="/api/v1/user/dashboard" class="btn profile-btn-secondary"
+            >⬅️ Cancel</a
+          >
       <button type="button" onclick="history.back()">Back</button>
     </div>
   </form>

@@ -39,6 +39,8 @@ const signIn = async (req, res) => {
       username: user.username,
       role: user.role,
       email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
     };
     console.log(req.session);
 

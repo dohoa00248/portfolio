@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Vocabularies</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dictionary Manager</title>
 
     <!-- Reset CSS -->
     <link rel="stylesheet" href="/css/reset.css" />
@@ -15,48 +15,310 @@
     <link rel="stylesheet" href="/css/aos.css" />
 
     <!-- Custom CSS -->
-    <!-- <link rel="stylesheet" href="/css/admin-dashboard.css" /> -->
+    <link rel="stylesheet" href="/css/admin-dictionary.css" />
   </head>
-  <body>
-    <div class="container py-5">
-      <h1 class="mb-4">My Vocabularies (<%= vocabularies.length %>)</h1>
 
-      <table class="table table-bordered table-hover">
-        <thead class="table-light">
-          <tr>
-            <th>#</th>
-            <th>Word</th>
-            <th>Pronunciation</th>
-            <th>Part of Speech</th>
-            <th>Meaning</th>
-            <th>Created By</th>
-            <th>Email</th>
-            <th>Created At</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% if (vocabularies.length > 0) { %> <% vocabularies.forEach((vocab,
-          index) => { %>
-          <tr>
-            <td><%= index + 1 %></td>
-            <td><%= vocab.word %></td>
-            <td><%= vocab.pronunciation %></td>
-            <td><%= vocab.partOfSpeech %></td>
-            <td><%= vocab.meaning %></td>
-            <td><%= vocab.createdBy.username %></td>
-            <td><%= vocab.createdBy.email %></td>
-            <td><%= new Date(vocab.createdAt).toLocaleString() %></td>
-          </tr>
-          <% }) %> <% } else { %>
-          <tr>
-            <td colspan="8" class="text-center">No vocabularies found.</td>
-          </tr>
-          <% } %>
-        </tbody>
-      </table>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark fixed-top custom-navbar">
+      <div class="container-fluid">
+        <span class="navbar-brand">User Panel</span>
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-white">
+            Welcome, <%= currentUser.username %> (<%= currentUser.firstName %>
+            <%= currentUser.lastName %>)
+          </span>
+          <a href="/api/v1/user/profile" class="btn btn-outline-light btn-sm"
+            >Update Info</a
+          >
+          <form action="/api/v1/auth/signout" method="POST">
+            <button type="submit" class="btn btn-outline-light btn-sm">
+              Sign Out
+            </button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <nav
+          id="sidebarMenu"
+          class="col-md-3 col-lg-2 d-md-block sidebar collapse pt-5 custom-sidebar"
+        >
+          <div class="position-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/user/dashboard"
+                  >🏠 Dashboard</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="/api/v1/user/change-password"
+                  >🔑 Change password</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/api/v1/user/setting">📈 Setting</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">
+          <div class="pt-3">
+            <h2>Dictionary Manager</h2>
+
+            <!-- Add New Word Card -->
+            <div class="card mb-4 custom-card">
+              <div class="card-header">Add New Word</div>
+              <div class="card-body">
+                <form
+                  action="/api/v1/user/dictionary"
+                  method="POST"
+                  class="row g-3"
+                >
+                  <div class="col-md-4">
+                    <input
+                      type="text"
+                      name="word"
+                      class="form-control"
+                      placeholder="Word"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-4">
+                    <input
+                      type="text"
+                      name="pronunciation"
+                      class="form-control"
+                      placeholder="Pronunciation"
+                    />
+                  </div>
+                  <div class="col-md-4">
+                    <select name="partOfSpeech" class="form-select" required>
+                      <option value="">Select Part of Speech</option>
+                      <option>noun</option>
+                      <option>verb</option>
+                      <option>adjective</option>
+                      <option>adverb</option>
+                      <option>preposition</option>
+                      <option>conjunction</option>
+                      <option>interjection</option>
+                      <option>pronoun</option>
+                      <option>determiner</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <input
+                      type="text"
+                      name="meaning"
+                      class="form-control"
+                      placeholder="Meaning"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <input
+                      type="text"
+                      name="examples"
+                      class="form-control"
+                      placeholder="Examples (comma separated)"
+                    />
+                  </div>
+                  <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-primary">
+                      ➕ Add Word
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Import Excel Card -->
+            <div class="card mb-4 custom-card">
+              <div class="card-header">Import Vocabulary from Excel</div>
+              <div class="card-body">
+                <form
+                  action="/api/v1/user/dictionary/import-excel"
+                  method="POST"
+                  enctype="multipart/form-data"
+                  class="row g-3"
+                >
+                  <div class="col-md-8">
+                    <input
+                      type="file"
+                      name="file"
+                      class="form-control"
+                      accept=".xlsx,.xls"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-4">
+                    <button type="submit" class="btn btn-success w-100">
+                      📤 Upload File
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Search Form -->
+            <form
+              action="/api/v1/user/dashboard"
+              method="get"
+              class="d-flex mb-4"
+            >
+              <input
+                type="text"
+                name="search"
+                value="<%= search %>"
+                class="form-control me-2"
+                placeholder="Search vocabulary"
+              />
+              <button type="submit" class="btn btn-primary">🔍 Search</button>
+            </form>
+
+            <!-- Vocabulary Table Card -->
+            <div class="card mb-4 custom-card">
+              <div class="card-header">
+                Vocabularies (<%= totalVocabularies %>)
+              </div>
+              <div class="card-body">
+                <a href="/api/v1/user/dashboard" class="btn btn-secondary mb-3"
+                  >🔄 Reload List</a
+                >
+                <a
+                  href="/api/v1/user/dictionary/export-excel"
+                  class="btn btn-success mb-3 ms-2"
+                  >📥 Export to Excel</a
+                >
+                <% if (vocabularies.length === 0) { %>
+                <p class="text-muted">No entries found.</p>
+                <% } else { %>
+                <div class="table-responsive">
+                  <table
+                    class="table table-bordered table-hover custom-table align-middle"
+                  >
+                    <thead class="table-dark">
+                      <tr>
+                        <th>#</th>
+                        <th>Word</th>
+                        <th>Pronunciation</th>
+                        <th>Part of Speech</th>
+                        <th>Meaning</th>
+                        <th>Examples</th>
+                        <td>createdAt</td>
+                        <td>updatedAt</td>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% vocabularies.forEach((vocab, index) => { %>
+                      <tr>
+                        <td><%= index + 1 + (currentPage - 1) * 10 %></td>
+                        <td><%= vocab.word %></td>
+                        <td><%= vocab.pronunciation %></td>
+                        <td><%= vocab.partOfSpeech %></td>
+                        <td><%= vocab.meaning %></td>
+
+                        <td>
+                          <% if (Array.isArray(vocab.examples)) { %>
+                          <ul class="mb-0 ps-3">
+                            <% vocab.examples.forEach(ex => { %>
+                            <li><%= ex %></li>
+                            <% }) %>
+                          </ul>
+                          <% } else { %> <%= vocab.examples %> <% } %>
+                        </td>
+                        <td>
+                          <%= new
+                          Date(vocab.createdAt).toLocaleDateString('vi-VN') %>
+                        </td>
+                        <td>
+                          <%= new
+                          Date(vocab.updatedAt).toLocaleDateString('vi-VN') %>
+                        </td>
+                        <td>
+                          <div class="btn-group btn-group-sm" role="group">
+                            <a
+                              href="/api/v1/user/dictionary/<%= vocab._id %>"
+                              class="btn btn-primary"
+                              title="Edit"
+                              >✏️</a
+                            >
+                            <form
+                              action="/api/v1/user/dictionary/<%= vocab._id %>?_method=DELETE"
+                              method="post"
+                              onsubmit="return confirm('Are you sure?');"
+                            >
+                              <button
+                                type="submit"
+                                class="btn btn-danger"
+                                title="Delete"
+                              >
+                                🗑️
+                              </button>
+                            </form>
+                          </div>
+                        </td>
+                      </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Vocabulary pagination">
+                  <ul class="pagination justify-content-center">
+                    <% if (currentPage > 1) { %>
+                    <li class="page-item">
+                      <a
+                        class="page-link"
+                        href="?page=<%= currentPage - 1 %>&search=<%= search %>"
+                        >Previous</a
+                      >
+                    </li>
+                    <% } else { %>
+                    <li class="page-item disabled">
+                      <span class="page-link">Previous</span>
+                    </li>
+                    <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
+                    <li
+                      class="page-item <%= currentPage === i ? 'active' : '' %>"
+                    >
+                      <a
+                        class="page-link"
+                        href="?page=<%= i %>&search=<%= search %>"
+                        ><%= i %></a
+                      >
+                    </li>
+                    <% } %> <% if (currentPage < totalPages) { %>
+                    <li class="page-item">
+                      <a
+                        class="page-link"
+                        href="?page=<%= currentPage + 1 %>&search=<%= search %>"
+                        >Next</a
+                      >
+                    </li>
+                    <% } else { %>
+                    <li class="page-item disabled">
+                      <span class="page-link">Next</span>
+                    </li>
+                    <% } %>
+                  </ul>
+                </nav>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
 
-    <!-- Bootstrap JS Bundle -->
+    <!-- Bootstrap JS -->
     <script src="/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

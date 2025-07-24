@@ -24,14 +24,21 @@
       <div class="container-fluid">
         <span class="navbar-brand">Admin Panel</span>
         <div class="d-flex align-items-center gap-2">
-          <span class="text-white"
-            >Welcome, <%= currentUser.username || "Admin" %></span
-          >
+          <span class="text-white">
+            Welcome, <%= currentUser.username %> (<%= currentUser.firstName %>
+            <%= currentUser.lastName %>)
+          </span>
           <a
             href="/api/v1/admin/users/profile"
             class="btn btn-outline-light btn-sm"
             >Update Info</a
           >
+          <a
+            href="/api/v1/admin/my-dictionary"
+            class="btn btn-outline-light btn-sm"
+          >
+            My Dictionary
+          </a>
           <form action="/api/v1/auth/signout" method="POST">
             <button type="submit" class="btn btn-outline-light btn-sm">
               Sign Out
@@ -205,7 +212,11 @@
                   class="btn btn-secondary mb-3"
                   >🔄 Reload List</a
                 >
-
+                <a
+                  href="/api/v1/admin/dictionary/export-excel"
+                  class="btn btn-success mb-3 ms-2"
+                  >📥 Export to Excel</a
+                >
                 <% if (vocabularies.length === 0) { %>
                 <p class="text-muted">No entries found.</p>
                 <% } else { %>
@@ -223,6 +234,7 @@
                         <th>Examples</th>
                         <td>createdAt</td>
                         <td>updatedAt</td>
+                        <td>createdBy</td>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -251,6 +263,10 @@
                         <td>
                           <%= new
                           Date(vocab.updatedAt).toLocaleDateString('vi-VN') %>
+                        </td>
+                        <td>
+                          <%= vocab.createdBy ? vocab.createdBy.username :
+                          "Unknown" %>
                         </td>
                         <td>
                           <div class="btn-group btn-group-sm" role="group">
