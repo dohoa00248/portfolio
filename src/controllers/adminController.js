@@ -587,7 +587,16 @@ const updateProject = async (req, res) => {
 
     const updatedProject = await Project.findByIdAndUpdate(
       id,
-      { title, tech, description, live, github },
+      {
+        title,
+        tech,
+        description: description
+          .split('\n')
+          .map((desc) => desc.trim())
+          .filter((desc) => desc),
+        live,
+        github,
+      },
       { new: true }
     );
 

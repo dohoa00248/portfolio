@@ -134,16 +134,47 @@
             data-aos="zoom-in"
             data-aos-duration="800"
           >
-            <div class="card-body">
-              <h5 class="card-title"><%= project.title %></h5>
-              <p class="card-text">
-                <strong>Tech:</strong> <%= project.tech %>
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title text-primary fw-bold">
+                <%= project.title %>
+              </h5>
+
+              <p class="mb-2">
+                <span class="fw-semibold text-dark">Tech:</span>
+                <span class="text-muted"><%= project.tech %></span>
               </p>
-              <p class="card-text"><%= project.description %></p>
+
+              <div class="mb-3">
+                <span class="fw-semibold text-dark">Description:</span>
+                <% if (Array.isArray(project.description)) { %>
+                <ul class="ps-3 mb-0 mt-1">
+                  <% project.description.forEach(desc => { %>
+                  <li><%= desc %></li>
+                  <% }) %>
+                </ul>
+                <% } else { %>
+                <p class="text-muted mt-1 mb-0"><%= project.description %></p>
+                <% } %>
+              </div>
             </div>
-            <div class="card-footer bg-transparent border-top-0">
-              <a href="<%= project.live %>" target="_blank">🌐 Live</a> |
-              <a href="<%= project.github %>" target="_blank">GitHub</a>
+
+            <div
+              class="card-footer bg-transparent border-top-0 d-flex justify-content-start gap-3"
+            >
+              <a
+                href="<%= project.live %>"
+                target="_blank"
+                class="text-decoration-none"
+              >
+                🌐 <span class="text-primary">Live</span>
+              </a>
+              <a
+                href="<%= project.github %>"
+                target="_blank"
+                class="text-decoration-none"
+              >
+                <i class="bi bi-github"></i> GitHub
+              </a>
             </div>
           </div>
         </div>

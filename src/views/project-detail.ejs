@@ -67,7 +67,7 @@
                 name="description"
                 rows="3"
                 required
-              ><%= project.description %></textarea>
+              ><%= project.description ? project.description.join('\n') : '' %></textarea>
             </div>
 
             <div class="mb-3">

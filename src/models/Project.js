@@ -13,9 +13,10 @@ const projectSchema = new mongoose.Schema(
       trim: true,
     },
     description: {
-      type: String,
+      type: [String],
       required: true,
       trim: true,
+      default: [],
     },
     live: {
       type: String,
