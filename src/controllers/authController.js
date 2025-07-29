@@ -49,9 +49,6 @@ const signIn = async (req, res) => {
     } else {
       return res.redirect('/api/v1/user/dashboard');
     }
-
-    // // 5. Redirect to admin dashboard
-    // return res.redirect('/api/v1/admin/dashboard');
   } catch (error) {
     console.error('Error during signin:', error);
     return res.status(500).render('signin.ejs', {
@@ -69,8 +66,64 @@ const signOut = (req, res) => {
     res.redirect('/api/v1/auth/signin');
   });
 };
+const getSignUpPage = (req, res) => {
+  try {
+    return res.render('signup');
+  } catch (error) {
+    console.error('Error getting signup:', error.message);
+    return res.status(500).render('error', {
+      message: 'Internal Server Error',
+      error,
+    });
+  }
+};
+const signUp = async (req, res) => {
+  try {
+    const { username, password, confirmPassword, email } = req.body;
+
+    console.log(
+      `username: ${username}, password: ${password}, confirm password: ${confirmPassword}, email: ${email}`
+    );
+
+    const existingUser = await User.findOne({ username });
+    console.log(existingUser);
+
+    if (existingUser) {
+      return res.render('signup', {
+        message: 'Username already exists.',
+      });
+    }
+
+    if (password !== confirmPassword) {
+      return res.render('signup', {
+        message: 'Passwords do not match.',
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+      role: 2,
+    });
+
+    await newUser.save();
+
+    return res.redirect('/api/v1/auth/signin');
+  } catch (error) {
+    console.error('Error creating user:', error.message);
+    return res.status(500).render('error', {
+      message: 'Internal server error',
+      error,
+    });
+  }
+};
 export default {
   getSigninPage,
   signIn,
   signOut,
+  getSignUpPage,
+  signUp,
 };
