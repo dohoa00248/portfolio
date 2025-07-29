@@ -1,0 +1,39 @@
+body {
+  background-color: #f8fff4;
+  color: #1b4332;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.card {
+  background-color: #d8f3dc;
+  border-color: #b7e4c7;
+  border-radius: 1rem;
+}
+
+h3 {
+  color: #2d6a4f;
+}
+
+.btn-primary {
+  background-color: #40916c;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #2d6a4f;
+}
+
+.btn-secondary {
+  background-color: #95d5b2;
+  color: #1b4332;
+  border: none;
+}
+
+.btn-secondary:hover {
+  background-color: #74c69d;
+  color: white;
+}
+
+a {
+  text-decoration: none;
+}
