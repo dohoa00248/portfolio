@@ -22,6 +22,17 @@
     <!-- Navbar -->
     <nav class="navbar navbar-dark bg-dark fixed-top custom-navbar">
       <div class="container-fluid">
+        <button
+          class="navbar-toggler d-md-none"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#sidebarMenu"
+          aria-controls="sidebarMenu"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
         <span class="navbar-brand">Admin Panel</span>
         <div class="d-flex align-items-center gap-2">
           <span class="text-white">
@@ -31,8 +42,9 @@
           <a
             href="/api/v1/admin/users/profile"
             class="btn btn-outline-light btn-sm"
-            >Update Info</a
           >
+            Update Info
+          </a>
           <form action="/api/v1/auth/signout" method="POST">
             <button type="submit" class="btn btn-outline-light btn-sm">
               Sign Out
