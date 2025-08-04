@@ -8,10 +8,10 @@
     <!-- Reset CSS -->
     <link rel="stylesheet" href="/css/reset.css" />
 
-    <!-- Framework CSS (Bootstrap) -->
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css" />
 
-    <!-- Plugin CSS (AOS) -->
+    <!-- AOS Animation CSS -->
     <link rel="stylesheet" href="/css/aos.css" />
 
     <!-- Custom CSS -->
@@ -21,7 +21,7 @@
   <body>
     <!-- Navbar -->
     <nav
-      class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm my-navbar"
+      class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm navbar-custom"
     >
       <div class="container">
         <a class="navbar-brand fw-bold" href="#">Do The Hoa</a>
@@ -29,12 +29,12 @@
           class="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
-          data-bs-target="#nav"
+          data-bs-target="#navbarContent"
         >
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="nav">
-          <ul class="navbar-nav ms-auto">
+        <div class="collapse navbar-collapse" id="navbarContent">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
               <a class="nav-link" href="#about">About</a>
             </li>
@@ -56,7 +56,7 @@
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/api/v1/auth/signin">Signin</a>
+              <a class="nav-link" href="/api/v1/auth/signin">Sign In</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/files/CV.pdf" download
@@ -71,45 +71,35 @@
     <!-- Hero Section -->
     <section
       id="about"
-      class="py-5 text-center hero my-hero"
+      class="py-5 text-center bg-white section-about"
       data-aos="fade-up"
-      data-aos-duration="1000"
     >
       <div class="container">
         <h1 class="display-4 fw-bold">Do The Hoa</h1>
-        <p class="mb-1">
+        <p>
           <strong>Email:</strong>
-          <a href="mailto:dohoa00248@gmail.com" class="link-dark"
-            >dohoa00248@gmail.com</a
-          >
+          <a href="mailto:dohoa00248@gmail.com">dohoa00248@gmail.com</a>
         </p>
-        <p class="mb-1">
+        <p>
           <strong>GitHub:</strong>
-          <a
-            href="https://github.com/dohoa00248"
-            class="link-dark"
-            target="_blank"
+          <a href="https://github.com/dohoa00248" target="_blank"
+            >github.com/dohoa00248</a
           >
-            github.com/dohoa00248
-          </a>
         </p>
         <p>
           <strong>LinkedIn:</strong>
           <a
             href="https://www.linkedin.com/in/do-hoa-35497b352/"
-            class="link-dark"
             target="_blank"
+            >linkedin.com/in/do-hoa</a
           >
-            linkedin.com/in/do-hoa
-          </a>
         </p>
         <hr />
         <p class="lead">
-          Enthusiastic IT student with hands-on experience in web development
-          and database management. Built various applications through personal
-          projects. Highly motivated to learn and grow, seeking an opportunity
-          to develop skills and contribute effectively in a professional
-          environment.
+          IT student with basic experience in web development and database
+          management through self-learning and personal projects. Looking for an
+          opportunity to apply knowledge and gain practical experience in a real
+          working environment.
         </p>
         <p>
           <strong>Education:</strong> (2020–2025) – Information Technology,
@@ -121,106 +111,93 @@
     <!-- Projects Section -->
     <section
       id="projects"
-      class="container py-5 my-projects"
+      class="py-5 bg-light section-projects"
       data-aos="fade-right"
-      data-aos-duration="1000"
     >
-      <h2 class="section-title text-center mb-4">📁 Projects</h2>
-      <div class="row g-4">
-        <% dataList.forEach(project => { %>
-        <div class="col-md-4">
-          <div
-            class="card h-100 shadow-sm my-card"
-            data-aos="zoom-in"
-            data-aos-duration="800"
-          >
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title text-primary fw-bold">
-                <%= project.title %>
-              </h5>
-
-              <p class="mb-2">
-                <span class="fw-semibold text-dark">Tech:</span>
-                <span class="text-muted"><%= project.tech %></span>
-              </p>
-
-              <div class="mb-3">
-                <span class="fw-semibold text-dark">Description:</span>
-                <% if (Array.isArray(project.description)) { %>
-                <ul class="ps-3 mb-0 mt-1">
-                  <% project.description.forEach(desc => { %>
-                  <li><%= desc %></li>
-                  <% }) %>
-                </ul>
-                <% } else { %>
-                <p class="text-muted mt-1 mb-0"><%= project.description %></p>
-                <% } %>
+      <div class="container">
+        <h2 class="text-center mb-4">📁 Projects</h2>
+        <div class="row g-4">
+          <% dataList.forEach(project => { %>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-primary fw-bold">
+                  <%= project.title %>
+                </h5>
+                <p>
+                  <strong>Tech:</strong>
+                  <span class="text-muted"><%= project.tech %></span>
+                </p>
+                <div>
+                  <strong>Description:</strong>
+                  <% if (Array.isArray(project.description)) { %>
+                  <ul class="ps-3 mt-1">
+                    <% project.description.forEach(desc => { %>
+                    <li><%= desc %></li>
+                    <% }) %>
+                  </ul>
+                  <% } else { %>
+                  <p class="text-muted mt-1"><%= project.description %></p>
+                  <% } %>
+                </div>
+              </div>
+              <div class="card-footer bg-transparent border-top-0 d-flex gap-3">
+                <a
+                  href="<%= project.live %>"
+                  target="_blank"
+                  class="text-decoration-none"
+                  >🌐 <span class="text-primary">Live</span></a
+                >
+                <a
+                  href="<%= project.github %>"
+                  target="_blank"
+                  class="text-decoration-none"
+                  >🔗 GitHub</a
+                >
               </div>
             </div>
-
-            <div
-              class="card-footer bg-transparent border-top-0 d-flex justify-content-start gap-3"
-            >
-              <a
-                href="<%= project.live %>"
-                target="_blank"
-                class="text-decoration-none"
-              >
-                🌐 <span class="text-primary">Live</span>
-              </a>
-              <a
-                href="<%= project.github %>"
-                target="_blank"
-                class="text-decoration-none"
-              >
-                <i class="bi bi-github"></i> GitHub
-              </a>
-            </div>
           </div>
+          <% }) %>
         </div>
-        <% }) %>
       </div>
     </section>
 
     <!-- Skills Section -->
     <section
       id="skills"
-      class="container py-5 my-skills"
-      data-aos="fade-left"
-      data-aos-duration="1000"
+      class="py-5 bg-white section-skills"
+      data-aos="fade-up"
     >
-      <h2 class="section-title text-center mb-4">🛠 Skills</h2>
-      <div class="row">
-        <div class="col-md-6">
-          <ul class="list-unstyled">
-            <li>
-              <strong>Programming:</strong> Java, JavaScript, Python, HTML, CSS,
-              C, PHP
-            </li>
-            <li>
-              <strong>Backend:</strong> Node.js, Express.js, JWT, Session/Cookie
-              Auth, EJS, WebSocket, JDBC, SOAP Web Service
-            </li>
-            <li><strong>Frontend:</strong> jQuery, Bootstrap</li>
-            <li><strong>Architecture:</strong> OOP, MVC, RESTful APIs</li>
-            <li>
-              <strong>Data Analysis:</strong> NumPy, Pandas, Matplotlib,
-              Scikit-learn
-            </li>
-          </ul>
-        </div>
-        <div class="col-md-6">
-          <ul class="list-unstyled">
-            <li>
-              <strong>Databases:</strong> MySQL, SQL Server, MongoDB (Atlas)
-            </li>
-            <li><strong>ORM/ODM:</strong> Sequelize, Mongoose</li>
-            <li>
-              <strong>Tools & Others:</strong> GitHub, Postman, Jupyter Notebook
-            </li>
-            <li><strong>DevOps:</strong> Docker, CI/CD, Render</li>
-            <li><strong>Interests:</strong> Soccer, video games, music</li>
-          </ul>
+      <div class="container">
+        <h2 class="text-center mb-4">🛠 Skills</h2>
+        <div class="row">
+          <div class="col-12 col-md-6">
+            <ul>
+              <li>
+                <strong>Programming:</strong> Java, JavaScript, Python, HTML,
+                CSS, C, PHP
+              </li>
+              <li>
+                <strong>Backend:</strong> Node.js, Express.js, JWT, EJS,
+                WebSocket, SOAP
+              </li>
+              <li><strong>Frontend:</strong> jQuery, Bootstrap</li>
+              <li><strong>Architecture:</strong> OOP, MVC, RESTful APIs</li>
+              <li>
+                <strong>Data Analysis:</strong> NumPy, Pandas, Matplotlib,
+                Scikit-learn
+              </li>
+            </ul>
+          </div>
+          <div class="col-12 col-md-6">
+            <ul>
+              <li><strong>Databases:</strong> MySQL, SQL Server, MongoDB</li>
+              <li><strong>ORM/ODM:</strong> Sequelize, Mongoose</li>
+              <li><strong>Tools:</strong> GitHub, Postman, Jupyter Notebook</li>
+              <li><strong>DevOps:</strong> Docker, CI/CD, Render</li>
+              <li><strong>Interests:</strong> Soccer, video games, music</li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
@@ -228,31 +205,28 @@
     <!-- Contact Section -->
     <section
       id="contact"
-      class="container py-5 my-contact"
+      class="py-5 bg-light section-contact"
       data-aos="zoom-in"
-      data-aos-duration="1000"
     >
-      <h2 class="section-title text-center mb-4">📧 Contact</h2>
-      <p class="text-center">
-        📧 Email me at
-        <a href="mailto:dohoa00248@gmail.com">dohoa00248@gmail.com</a><br />
-        🔗 Or visit my
-        <a href="https://github.com/dohoa00248" target="_blank">GitHub</a>
-      </p>
+      <div class="container text-center">
+        <h2 class="mb-4">📧 Contact</h2>
+        <p>
+          📧 Email me at
+          <a href="mailto:dohoa00248@gmail.com">dohoa00248@gmail.com</a><br />
+          🔗 Visit my
+          <a href="https://github.com/dohoa00248" target="_blank">GitHub</a>
+        </p>
+      </div>
     </section>
 
     <!-- Footer -->
-    <footer class="text-center py-3 border-top my-footer">
+    <footer class="text-center py-3 border-top bg-white footer-custom">
       <p class="mb-0">&copy; 2025 Do The Hoa. All rights reserved.</p>
     </footer>
 
-    <!-- Framework JS (Bootstrap) -->
+    <!-- JS Scripts -->
     <script src="/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Plugin JS (AOS) -->
     <script src="/js/aos.js"></script>
-
-    <!-- Init AOS -->
     <script>
       AOS.init();
     </script>

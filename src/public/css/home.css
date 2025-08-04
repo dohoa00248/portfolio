@@ -1,61 +1,116 @@
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  scroll-behavior: smooth;
-  background-color: #f8fff4;
-  color: #1b4332;
+/* Root Variables */
+:root {
+  /* Navbar */
+  --navbar-bg: #74c69d;
+  --navbar-text: #ffffff;
+  --navbar-hover: #081c15;
+
+  /* About Section */
+  --about-bg-gradient-start: #7fe0b5;
+  --about-bg-gradient-end: #bfce5a;
+  --about-text: #ffffff;
+  --about-link: #caffbf;
+
+  /* Projects Section */
+  --projects-bg: #f0fdf4;
+  --projects-card-bg: #d8f3dc;
+  --projects-border: #95d5b2;
+  --projects-title: #1b4332;
+
+  /* Skills Section */
+  --skills-bg: #e9f5ee;
+  --skills-text: #081c15;
+
+  /* Contact Section */
+  --contact-bg: #f8fff4;
+  --contact-link: #40916c;
+  --contact-hover: #1b4332;
+
+  /* Footer */
+  --footer-bg: #52b788;
+  --footer-text: #ffffff;
+
+  /* General */
+  --text-color: #1b4332;
+  --white: #ffffff;
 }
 
-/* NAVBAR */
-.my-navbar {
-  background-color: #95d5b2 !important;
+/* Navbar */
+.navbar-custom {
+  background-color: var(--navbar-bg) !important;
+  border-bottom: 1px solid var(--projects-border) !important;
 }
 
-.my-navbar .navbar-brand,
-.my-navbar .nav-link {
-  color: #1b4332 !important;
+.navbar-custom .nav-link,
+.navbar-custom .navbar-brand {
+  color: var(--navbar-text) !important;
 }
 
-.my-navbar .nav-link:hover {
-  color: #2d6a4f !important;
+.navbar-custom .nav-link:hover {
+  color: var(--navbar-hover) !important;
 }
 
-/* HERO SECTION */
-.my-hero {
-  background: linear-gradient(135deg, #40916c, #95d5b2);
-  color: white;
+/* Hero / About Section */
+.section-about {
+  background: linear-gradient(
+    135deg,
+    var(--about-bg-gradient-start),
+    var(--about-bg-gradient-end)
+  ) !important;
+  color: var(--about-text) !important;
 }
 
-/* PROJECTS SECTION */
-
-.my-projects .card {
-  background-color: #d8f3dc;
-  border-color: #b7e4c7;
+.section-about a {
+  color: var(--about-link) !important;
 }
 
-.my-projects .card-title {
-  color: #1b4332;
+/* Projects Section */
+.section-projects {
+  background-color: var(--projects-bg) !important;
+  border-top: 1px solid var(--projects-border) !important;
+  border-bottom: 1px solid var(--projects-border) !important;
+}
+
+.section-projects .card {
+  background-color: var(--projects-card-bg) !important;
+  border-color: var(--projects-border) !important;
+}
+
+.section-projects .card-title {
+  color: var(--projects-title) !important;
 }
 
 .section-title {
-  color: #2d6a4f;
+  color: var(--navbar-hover) !important;
 }
 
-/* Skill SECTION */
-.my-skills ul li {
+/* Skills Section */
+.section-skills ul li {
   margin-bottom: 8px;
 }
 
-/* Contact SECTION */
-.my-contact a {
-  color: #40916c;
+.section-skills {
+  background-color: var(--skills-bg) !important;
+  color: var(--skills-text) !important;
 }
 
-.my-contact a:hover {
-  color: #1b4332;
+/* Contact Section */
+.section-contact {
+  background-color: var(--contact-bg) !important;
+  border-top: 1px solid var(--projects-border) !important;
 }
 
-/* Footer SECTION */
-.my-footer {
-  background-color: #95d5b2;
-  color: #1b4332;
+.section-contact a {
+  color: var(--contact-link) !important;
+}
+
+.section-contact a:hover {
+  color: var(--contact-hover) !important;
+}
+
+/* Footer */
+.footer-custom {
+  background-color: var(--footer-bg) !important;
+  color: var(--footer-text) !important;
+  border-top: 1px solid var(--projects-border) !important;
 }
