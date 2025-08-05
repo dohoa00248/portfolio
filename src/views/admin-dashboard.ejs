@@ -11,7 +11,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css" />
 
-    <!-- Plugin CSS (AOS) -->
+    <!-- AOS Animation CSS -->
     <link rel="stylesheet" href="/css/aos.css" />
 
     <!-- Custom CSS -->
@@ -20,179 +20,176 @@
 
   <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-dark bg-dark fixed-top custom-navbar">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-custom">
       <div class="container-fluid">
+        <a class="navbar-brand" href="#">Admin Panel</a>
+
+        <!-- Toggle Button for mobile sidebar -->
         <button
-          class="navbar-toggler d-md-none"
+          class="btn btn-outline-light d-lg-none"
           type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#sidebarMenu"
-          aria-controls="sidebarMenu"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
+          id="sidebarToggle"
         >
-          <span class="navbar-toggler-icon"></span>
+          ☰
         </button>
-        <span class="navbar-brand">Admin Panel</span>
-        <div class="d-flex align-items-center gap-2">
-          <span class="text-white">
-            Welcome, <%= currentUser.username %> (<%= currentUser.firstName %>
-            <%= currentUser.lastName %>)
-          </span>
-          <a
-            href="/api/v1/admin/users/profile"
-            class="btn btn-outline-light btn-sm"
+
+        <!-- Welcome + Account Menu -->
+        <div class="ms-auto d-flex align-items-center gap-3 position-relative">
+          <div class="text-white fw-semibold d-none d-sm-block">
+            Welcome, <%= currentUser.username %>
+          </div>
+
+          <!-- Account Button -->
+          <button
+            id="accountToggle"
+            class="btn btn-outline-light btn-sm account-toggle"
+            style="min-width: 90px"
           >
-            Update Info
-          </a>
-          <form action="/api/v1/auth/signout" method="POST">
-            <button type="submit" class="btn btn-outline-light btn-sm">
-              Sign Out
-            </button>
-          </form>
+            Account
+          </button>
+
+          <!-- Custom Menu -->
+          <div
+            class="account-menu position-absolute"
+            id="accountMenu"
+            style="display: none"
+          >
+            <a class="dropdown-item" href="/api/v1/admin/users/profile">
+              Update Info
+            </a>
+            <form action="/api/v1/auth/signout" method="POST" class="mb-0">
+              <button type="submit" class="dropdown-item">Sign Out</button>
+            </form>
+          </div>
         </div>
       </div>
     </nav>
 
-    <div class="container-fluid">
-      <div class="row">
-        <!-- Sidebar -->
-        <nav
-          id="sidebarMenu"
-          class="col-md-3 col-lg-2 d-md-block sidebar collapse pt-5 custom-sidebar"
-        >
-          <div class="position-sticky">
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                <a class="nav-link" href="/api/v1/admin/dashboard">
-                  🏠 Dashboard
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/api/v1/admin/users">
-                  👥 User Management
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/api/v1/admin/projects">
-                  📁 Projects
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/api/v1/admin/dictionary">
-                  📚 Dictionary
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/api/v1/admin/statistics">
-                  📈 Statistics
-                </a>
-              </li>
-            </ul>
-          </div>
-        </nav>
+    <!-- Sidebar -->
+    <nav
+      id="sidebarMenu"
+      class="sidebar-custom sidebar-fixed sidebar-slide d-lg-block"
+    >
+      <ul class="nav flex-column px-3 pt-4">
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/dashboard">🏠 Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/users">👥 User Management</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/projects">📁 Projects</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/dictionary">📚 Dictionary</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/v1/admin/statistics">📈 Statistics</a>
+        </li>
+      </ul>
+    </nav>
 
-        <!-- Main Content -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">
-          <div class="pt-3">
-            <h2>Dashboard Overview</h2>
-            <!-- Stats Cards -->
-            <div class="row my-4">
-              <div class="col-md-4">
-                <div class="card text-center shadow-sm custom-card">
-                  <div class="card-body">
-                    <h5 class="card-title">Total Users</h5>
-                    <p class="fs-4 fw-bold text-primary mb-0">
-                      <%= totalUsers || 0 %>
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="card text-center shadow-sm custom-card">
-                  <div class="card-body">
-                    <h5 class="card-title">Total Vocabulary</h5>
-                    <p class="fs-4 fw-bold text-success mb-0">
-                      <%= totalVocabulary || 0 %>
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="card text-center shadow-sm custom-card">
-                  <div class="card-body">
-                    <h5 class="card-title">Total Projects</h5>
-                    <p class="fs-4 fw-bold text-warning mb-0">
-                      <%= totalProjects || 0 %>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+    <!-- Main Content -->
+    <main class="main-content-fixed">
+      <div class="container-fluid pt-5">
+        <h2 class="mb-4 pt-4">Dashboard Overview</h2>
 
-            <!-- Chart -->
-            <div class="card mb-4 custom-card">
-              <div class="card-header">Statistics Chart</div>
+        <!-- Stats Cards -->
+        <div class="row stats-cards mb-4">
+          <div class="col-md-4 mb-3">
+            <div class="card">
               <div class="card-body">
-                <canvas id="statsChart" height="100"></canvas>
-              </div>
-            </div>
-
-            <!-- User Table -->
-            <div class="card mb-4 custom-card">
-              <div class="card-header">User List</div>
-              <div class="card-body">
-                <% if (users.length === 0) { %>
-                <p class="text-muted">No users found.</p>
-                <% } else { %>
-                <div class="table-responsive">
-                  <table class="table table-bordered table-hover custom-table">
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <% users.forEach((user, index) => { %>
-                      <tr>
-                        <td><%= index + 1 %></td>
-                        <td><%= user.username %></td>
-                        <td><%= user.email %></td>
-                      </tr>
-                      <% }) %>
-                    </tbody>
-                  </table>
-                </div>
-                <% } %>
+                <h5 class="card-title fw-bold">Total Users</h5>
+                <p class="card-text fs-4"><%= totalUsers %></p>
               </div>
             </div>
           </div>
-        </main>
+          <div class="col-md-4 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title fw-bold">Dictionaries</h5>
+                <p class="card-text fs-4"><%= totalVocabulary %></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title fw-bold">Project</h5>
+                <p class="card-text fs-4"><%= totalProjects %></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="card mb-4 chart-card">
+          <div class="card-header">Statistics Chart</div>
+          <div class="card-body">
+            <canvas id="statsChart" height="100"></canvas>
+          </div>
+        </div>
+
+        <!-- User Table -->
+        <div class="card mb-4 user-table">
+          <div class="card-header">User List</div>
+          <div class="card-body">
+            <% if (users.length === 0) { %>
+            <p class="text-muted">No users found.</p>
+            <% } else { %>
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% users.forEach((user, index) => { %>
+                  <tr>
+                    <td><%= index + 1 %></td>
+                    <td><%= user.username %></td>
+                    <td><%= user.email %></td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+            <% } %>
+          </div>
+        </div>
       </div>
-    </div>
-    <!-- Framework JS (Bootstrap) -->
-    <script src="/js/bootstrap.bundle.min.js"></script>
+    </main>
 
-    <!-- Chart JS -->
+    <!-- JS -->
+    <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/js/chart.js"></script>
+    <script src="/js/admin-dashboard.js"></script>
+    <!-- ChartJS -->
     <script>
-      const ctx = document.getElementById('statsChart').getContext('2d');
-      const statsChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Total Users', 'Total Vocabulary', 'Total Projects'],
-          datasets: [{
-            label: 'Statistics',
-            data: [<%= totalUsers || 0 %>, <%= totalVocabulary || 0 %>, <%= totalProjects || 0 %>],
-            backgroundColor: ['#007bff', '#28a745', '#ffc107'],
-          }],
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false } },
-        },
+      document.addEventListener('DOMContentLoaded', () => {
+        const ctx = document.getElementById('statsChart')?.getContext('2d');
+        if (ctx) {
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: ['Total Users', 'Total Vocabulary', 'Total Projects'],
+              datasets: [{
+                label: 'Statistics',
+                data: [<%= totalUsers || 0 %>, <%= totalVocabulary || 0 %>, <%= totalProjects || 0 %>],
+                backgroundColor: ['#007bff', '#28a745', '#ffc107'],
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { display: false }
+              }
+            }
+          });
+        }
       });
     </script>
   </body>
