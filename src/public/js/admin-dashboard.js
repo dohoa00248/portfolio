@@ -1,5 +1,5 @@
 //  <!-- Sidebar Toggle -->
-document.activeElement('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const toggleBtn = document.getElementById('sidebarToggle');
   const sidebar = document.getElementById('sidebarMenu');
 
@@ -16,7 +16,7 @@ document.activeElement('DOMContentLoaded', () => {
   }
 });
 
-// <!-- Avatar Toggle -->
+// <!-- Account Toggle -->
 document.addEventListener('DOMContentLoaded', () => {
   const accountToggle = document.getElementById('accountToggle');
   const accountMenu = document.getElementById('accountMenu');
