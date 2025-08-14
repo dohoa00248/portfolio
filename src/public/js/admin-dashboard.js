@@ -1,5 +1,5 @@
-//  <!-- Sidebar Toggle -->
 document.addEventListener('DOMContentLoaded', () => {
+  // Sidebar Toggle
   const toggleBtn = document.getElementById('sidebarToggle');
   const sidebar = document.getElementById('sidebarMenu');
 
@@ -14,10 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-});
 
-// <!-- Account Toggle -->
-document.addEventListener('DOMContentLoaded', () => {
+  // Account Toggle
   const accountToggle = document.getElementById('accountToggle');
   const accountMenu = document.getElementById('accountMenu');
 
