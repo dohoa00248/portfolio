@@ -1,0 +1,109 @@
+:root {
+  --navbar-bg: #74c69d;
+  --navbar-text: #304419;
+  --navbar-hover: #081c15;
+  --sidebar-bg: #f0fdf4;
+  --sidebar-hover: #d8f3dc;
+  --sidebar-active: #40916c;
+  --main-bg: #ffffff;
+  --text-color: #1b4332;
+}
+
+/* Navbar */
+.navbar-custom {
+  background-color: var(--navbar-bg) !important;
+  border-bottom: 1px solid var(--sidebar-hover);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1050;
+}
+.navbar-custom .navbar-brand,
+.navbar-custom .btn {
+  color: var(--navbar-text) !important;
+}
+.navbar-custom .btn:hover {
+  background-color: var(--navbar-hover);
+  color: #fff !important;
+}
+
+/* Account Menu */
+.account-menu {
+  right: 0;
+  top: 100%;
+  margin-top: 10px;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  min-width: 160px;
+  z-index: 999;
+}
+.account-menu .dropdown-item {
+  padding: 10px 15px;
+  color: #000;
+}
+.account-menu .dropdown-item:hover {
+  background-color: var(--sidebar-hover);
+}
+
+/* Sidebar */
+.sidebar-custom {
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-hover);
+}
+.sidebar-custom .nav-link {
+  color: var(--text-color);
+  font-weight: 500;
+  padding: 10px 15px;
+}
+.sidebar-custom .nav-link:hover {
+  background-color: var(--sidebar-hover);
+}
+.sidebar-custom .nav-link.active {
+  background-color: var(--sidebar-active);
+  color: #fff;
+}
+
+/* Desktop - sidebar fixed dưới navbar */
+@media (min-width: 992px) {
+  .sidebar-fixed {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    width: 200px;
+    height: calc(100vh - 56px);
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-hover);
+  }
+  .main-content-fixed {
+    margin-top: 56px;
+    margin-left: 200px;
+    padding: 20px;
+    background-color: var(--main-bg);
+    min-height: 100vh;
+  }
+}
+
+/* Mobile - slide in sidebar */
+@media (max-width: 991.98px) {
+  .sidebar-fixed {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    width: 250px;
+    height: calc(100vh - 56px);
+    background-color: var(--sidebar-bg);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1045;
+  }
+  .sidebar-fixed.show {
+    transform: translateX(0);
+  }
+  .main-content-fixed {
+    margin-top: 56px;
+    margin-left: 0;
+    padding: 20px;
+  }
+}
