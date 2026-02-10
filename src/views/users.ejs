@@ -12,47 +12,50 @@
   <body>
     <div class="a-page">
       <!-- Navbar -->
-      <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-custom">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#">User Panel</a>
-
-          <!-- Toggle Button for mobile sidebar -->
-          <button
-            class="btn btn-outline-light d-lg-none"
-            type="button"
-            id="sidebarToggle"
-          >
+          <button class="btn btn-outline-dark" type="button" id="sidebarToggle">
             ☰
           </button>
-
-          <!-- Welcome + Account Menu -->
+          <a class="navbar-brand" href="#">User Panel</a>
           <div
             class="ms-auto d-flex align-items-center gap-3 position-relative"
           >
-            <div class="text-white fw-semibold d-none d-sm-block">
+            <div class="fw-semibold d-none d-sm-block">
               Welcome, <%= currentUser.username %>
             </div>
-
-            <!-- Account Button -->
-            <button
-              id="accountToggle"
-              class="btn btn-outline-light btn-sm account-toggle"
-              style="min-width: 90px"
-            >
-              Account
-            </button>
-
-            <!-- Custom Menu -->
-            <div class="account-menu position-absolute d-none" id="accountMenu">
-              <a class="dropdown-item" href="/api/v1/user/profile">
-                Update Info
-              </a>
-              <a class="dropdown-item" href="/api/v1/user/change-password">
-                Change Password
-              </a>
-              <form action="/api/v1/auth/signout" method="POST" class="mb-0">
-                <button type="submit" class="dropdown-item">Sign Out</button>
-              </form>
+            <div class="dropdown">
+              <button
+                class="btn btn-outline-dark btn-sm dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+              >
+                Account
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" href="/api/v1/user/profile"
+                    >Update Info</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="/api/v1/user/change-password"
+                    >Change Password</a
+                  >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <form
+                    action="/api/v1/auth/signout"
+                    method="POST"
+                    class="mb-0"
+                  >
+                    <button type="submit" class="dropdown-item">
+                      Sign Out
+                    </button>
+                  </form>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -61,34 +64,29 @@
       <div class="container-fluid">
         <div class="row">
           <!-- Sidebar -->
-          <nav
-            id="sidebarMenu"
-            class="sidebar-custom sidebar-fixed col-lg-2 p-3"
-          >
+          <nav id="sidebarMenu" class="col-lg-2 p-1 sidebar-custom">
             <h5 class="mb-3">User Menu</h5>
-            <ul class="nav flex-column px-3 pt-4">
+            <ul class="nav flex-column px-3 pt-3">
               <li class="nav-item">
-                <a class="nav-link" href="/user/dashboard">Dashboard</a>
+                <a class="nav-link" href="/api/v1/user/dashboard">Dashboard</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/user/profile">Profile</a>
+                <a class="nav-link" href="/api/v1/user/profile">Profile</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/user/orders">My Orders</a>
+                <a class="nav-link" href="/api/v1/user/blog">My Blog</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/user/settings">Settings</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link text-danger" href="/logout">Logout</a>
+                <a class="nav-link" href="/api/v1/user/settings">Settings</a>
               </li>
             </ul>
           </nav>
 
           <!-- Main Content -->
-          <main class="main-content-fixed col-lg-10 ms-auto px-4 pt-4">
-            <h1>Main Content</h1>
-            <p>This is where your page content goes.</p>
+          <main
+            id="mainContent"
+            class="col-lg-10 ms-auto px-4 pt-4 main-custom"
+          >
             <div class="pt-3">
               <h2>Dictionary Manager</h2>
 
@@ -195,7 +193,7 @@
                 <input
                   type="text"
                   name="search"
-                  value="<%= search %>"
+                  value="<%= search || '' %>"
                   class="form-control me-2"
                   placeholder="Search vocabulary"
                 />
@@ -233,8 +231,8 @@
                           <th>Part of Speech</th>
                           <th>Meaning</th>
                           <th>Examples</th>
-                          <td>createdAt</td>
-                          <td>updatedAt</td>
+                          <th>createdAt</th>
+                          <th>updatedAt</th>
                           <th>Actions</th>
                         </tr>
                       </thead>

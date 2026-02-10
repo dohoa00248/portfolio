@@ -7,6 +7,9 @@ const router = express.Router();
 
 router.get('/', homeController.getHomePage);
 router.get('/dashboard', userController.getMyDashboard);
+router.get('/testuser', (req, res) => {
+  res.render('testlayoutuser.ejs');
+});
 
 router.post('/dictionary', auth.authSignin, userController.createVocabulary);
 router.get('/profile', auth.authSignin, userController.getProfilePage);
