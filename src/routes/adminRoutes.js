@@ -20,31 +20,31 @@ router.get(
   '/dashboard',
   auth.authSignin,
   auth.checkAdmin,
-  adminController.getAdminDashboard
+  adminController.getAdminDashboard,
 );
 router.get(
   '/users',
   auth.authSignin,
   auth.checkAdmin,
-  adminController.getUsersPage
+  adminController.getUsersPage,
 );
 router.get(
   '/projects',
   auth.authSignin,
   auth.checkAdmin,
-  adminController.getProjectsPage
+  adminController.getProjectsPage,
 );
 router.get(
   '/dictionary',
   auth.authSignin,
   auth.checkAdmin,
-  adminController.getDictionaryPage
+  adminController.getDictionaryPage,
 );
 router.get(
   '/statistics',
   auth.authSignin,
   auth.checkAdmin,
-  adminController.getStatisticsPage
+  adminController.getStatisticsPage,
 );
 
 /**
@@ -61,21 +61,21 @@ router.get(
   '/users/create',
   auth.authSignin,
   auth.checkAdmin,
-  adminController.getCreateUserPage
+  adminController.getCreateUserPage,
 );
 router.post(
   '/users',
   auth.authSignin,
   auth.checkAdmin,
   auth.assignCreateUserRole,
-  adminController.createUser
+  adminController.createUser,
 );
 
 router.get(
   '/users/:id',
   auth.authSignin,
   auth.checkAdmin,
-  adminController.getUserById
+  adminController.getUserById,
 );
 
 router.put(
@@ -84,14 +84,14 @@ router.put(
   auth.checkAdmin,
   auth.checkUpdateUserPermission,
   auth.assignUpdateUserRole,
-  adminController.updateUser
+  adminController.updateUser,
 );
 
 router.get(
   '/users/:id/change-password',
   auth.authSignin,
   auth.checkAdmin,
-  adminController.getChangePasswordPage
+  adminController.getChangePasswordPage,
 );
 
 router.post(
@@ -99,7 +99,7 @@ router.post(
   auth.authSignin,
   auth.checkAdmin,
   auth.checkChangePasswordPermission,
-  adminController.changePassword
+  adminController.changePassword,
 );
 
 router.delete(
@@ -107,7 +107,7 @@ router.delete(
   auth.authSignin,
   auth.checkAdmin,
   auth.checkDeleteUserPermission,
-  adminController.deleteUser
+  adminController.deleteUser,
 );
 
 // project
@@ -115,28 +115,28 @@ router.post(
   '/projects',
   auth.authSignin,
   auth.checkSuperAdmin,
-  adminController.createProject
+  adminController.createProject,
 );
 
 router.get(
   '/projects/:id',
   auth.authSignin,
   auth.checkSuperAdmin,
-  adminController.getProjectById
+  adminController.getProjectById,
 );
 
 router.put(
   '/projects/:id',
   auth.authSignin,
   auth.checkSuperAdmin,
-  adminController.updateProject
+  adminController.updateProject,
 );
 
 router.delete(
   '/projects/:id',
   auth.authSignin,
   auth.checkSuperAdmin,
-  adminController.deleteProject
+  adminController.deleteProject,
 );
 
 // dictionary
@@ -144,51 +144,35 @@ router.post(
   '/dictionary',
   auth.authSignin,
   auth.checkSuperAdmin,
-  adminController.createVocabulary
+  adminController.createVocabulary,
 );
-
-router.get(
-  '/my-dictionary',
-  auth.authSignin,
-  auth.checkSuperAdmin,
-  adminController.getMyDictionary
-);
-
-// router.get('/my-dictionary/', auth.authSignin, adminController.getMyDictionary);
-
-// router.post(
-//   '/dictionary',
-//   auth.authSignin,
-//   // auth.checkSuperAdmin,
-//   adminController.createVocabulary
-// );
 
 router.get(
   '/dictionary/export-excel',
   auth.authSignin,
   auth.checkSuperAdmin,
-  adminController.exportDictionary
+  adminController.exportDictionary,
 );
 
 router.get(
   '/dictionary/:id',
   auth.authSignin,
   auth.checkSuperAdmin,
-  adminController.getVocabById
+  adminController.getVocabById,
 );
 
 router.put(
   '/dictionary/:id',
   auth.authSignin,
   auth.checkSuperAdmin,
-  adminController.updateVocab
+  adminController.updateVocab,
 );
 
 router.delete(
   '/dictionary/:id',
   auth.authSignin,
   auth.checkSuperAdmin,
-  adminController.deleteVocab
+  adminController.deleteVocab,
 );
 
 router.post(
@@ -196,7 +180,7 @@ router.post(
   upload.single('file'),
   auth.authSignin,
   auth.checkSuperAdmin,
-  adminController.importVocab
+  adminController.importVocab,
 );
 
 router.get('/users/:id/vocabularies', adminController.getUserVocabularies);

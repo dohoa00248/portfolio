@@ -126,7 +126,35 @@ const getProjectsPage = async (req, res) => {
     });
   }
 };
+const getPaginationRange = (currentPage, totalPages) => {
+  const delta = 2;
+  const range = [];
+  const rangeWithDots = [];
+  let l;
 
+  for (let i = 1; i <= totalPages; i++) {
+    if (
+      i === 1 ||
+      i === totalPages ||
+      (i >= currentPage - delta && i <= currentPage + delta)
+    ) {
+      range.push(i);
+    }
+  }
+
+  for (let i of range) {
+    if (l) {
+      if (i - l === 2) {
+        rangeWithDots.push(l + 1);
+      } else if (i - l !== 1) {
+        rangeWithDots.push('...');
+      }
+    }
+    rangeWithDots.push(i);
+    l = i;
+  }
+  return rangeWithDots;
+};
 const getDictionaryPage = async (req, res) => {
   try {
     const currentUser = req.session.user;
@@ -149,7 +177,7 @@ const getDictionaryPage = async (req, res) => {
         .skip(skip)
         .limit(limit)
         .select(
-          'word pronunciation partOfSpeech meaning examples createdBy createdAt updatedAt'
+          'word pronunciation partOfSpeech meaning examples createdBy createdAt updatedAt',
         )
         .populate('createdBy', 'username')
         .lean(),
@@ -157,6 +185,8 @@ const getDictionaryPage = async (req, res) => {
     ]);
 
     const totalPages = Math.ceil(totalVocabularies / limit);
+
+    const paginationRange = getPaginationRange(pageNum, totalPages);
 
     return res.render('admin-dictionary', {
       currentUser,
@@ -165,63 +195,10 @@ const getDictionaryPage = async (req, res) => {
       totalPages,
       currentPage: pageNum,
       search: searchQuery,
+      paginationRange,
     });
   } catch (error) {
     console.error('Error fetching dictionary:', error.message);
-
-    return res.status(500).render('error', {
-      message: 'Internal Server Error',
-      error,
-    });
-  }
-};
-
-const getMyDictionary = async (req, res) => {
-  try {
-    const currentUser = req.session.user;
-
-    const { search, page } = req.query;
-
-    const searchQuery = search ? search.trim() : '';
-
-    const pageNum = parseInt(page) || 1;
-    const limit = 10;
-    const skip = (pageNum - 1) * limit;
-
-    const queryObj = {
-      createdBy: currentUser._id, // chỉ lấy từ của user hiện tại
-    };
-
-    // Nếu có search, thêm điều kiện word regex
-    if (searchQuery) {
-      queryObj.word = { $regex: searchQuery, $options: 'i' };
-    }
-
-    const [vocabularies, totalVocabularies] = await Promise.all([
-      Vocabulary.find(queryObj)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .select(
-          'word pronunciation partOfSpeech meaning examples createdBy createdAt updatedAt'
-        )
-        .populate('createdBy', 'username')
-        .lean(),
-      Vocabulary.countDocuments(queryObj),
-    ]);
-
-    const totalPages = Math.ceil(totalVocabularies / limit);
-
-    return res.render('admin-my-dictionary', {
-      currentUser,
-      vocabularies,
-      totalVocabularies,
-      totalPages,
-      currentPage: pageNum,
-      search: searchQuery,
-    });
-  } catch (error) {
-    console.error('Error fetching user vocabularies:', error.message);
 
     return res.status(500).render('error', {
       message: 'Internal Server Error',
@@ -314,7 +291,7 @@ const updateProfile = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       req.session.user._id,
       { username, email, firstName, lastName },
-      { new: true }
+      { new: true },
     );
 
     if (!updatedUser) {
@@ -539,7 +516,7 @@ const createProject = async (req, res) => {
     await newProject.save();
 
     console.log(
-      `Created new project "${title}" by ${req.session.user.username}`
+      `Created new project "${title}" by ${req.session.user.username}`,
     );
 
     return res.redirect('/api/v1/admin/projects');
@@ -597,7 +574,7 @@ const updateProject = async (req, res) => {
         live,
         github,
       },
-      { new: true }
+      { new: true },
     );
 
     if (!updatedProject) {
@@ -659,7 +636,7 @@ const createVocabulary = async (req, res) => {
     await newVocabulary.save();
 
     console.log(
-      `Created new vocabulary "${word}" by ${req.session.user.username}`
+      `Created new vocabulary "${word}" by ${req.session.user.username}`,
     );
 
     return res.redirect('/api/v1/admin/dictionary');
@@ -695,12 +672,12 @@ const exportDictionary = async (req, res) => {
 
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename="dictionary_export.xlsx"'
+      'attachment; filename="dictionary_export.xlsx"',
     );
 
     res.setHeader(
       'Content-Type',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     );
 
     res.send(excelBuffer);
@@ -756,7 +733,7 @@ const updateVocab = async (req, res) => {
           .map((e) => e.trim())
           .filter((e) => e),
       },
-      { new: true }
+      { new: true },
     );
 
     if (!updated) {
@@ -790,7 +767,7 @@ const deleteVocab = async (req, res) => {
     }
 
     console.log(
-      `Deleted vocabulary ${req.params.id} by ${req.session.user.username}`
+      `Deleted vocabulary ${req.params.id} by ${req.session.user.username}`,
     );
 
     return res.redirect('/api/v1/admin/dictionary');
@@ -860,7 +837,7 @@ const importVocab = async (req, res) => {
 
     const validData = formattedData.filter(
       (item) =>
-        item.word && item.pronunciation && item.partOfSpeech && item.meaning
+        item.word && item.pronunciation && item.partOfSpeech && item.meaning,
     );
 
     const skipped = formattedData.length - validData.length;
@@ -872,7 +849,7 @@ const importVocab = async (req, res) => {
     fs.unlinkSync(filePath);
 
     console.log(
-      `Imported ${validData.length} vocabulary items by ${req.session.user.username}`
+      `Imported ${validData.length} vocabulary items by ${req.session.user.username}`,
     );
     if (skipped > 0) {
       console.log(`Skipped ${skipped} rows due to missing required fields`);
@@ -891,6 +868,7 @@ export default {
   getAdminDashboard,
   getUsersPage,
   getProjectsPage,
+  getPaginationRange,
   getDictionaryPage,
   getStatisticsPage,
   getProfilePage,
@@ -915,5 +893,4 @@ export default {
   deleteVocab,
   importVocab,
   getUserVocabularies,
-  getMyDictionary,
 };
